@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 22, fontWeight: "800", color: "#0F172A",
-    fontFamily: "Inter_700Bold", marginBottom: 6,
+    fontFamily: "Inter_700Bold", marginBottom: 6, textAlign: "center",
   },
   cardSub: {
     fontSize: 13, color: "#64748B", fontFamily: "Inter_400Regular",
