@@ -84,7 +84,7 @@ function PlaceCard({
         <View style={styles.placeRight}>
           <View style={[styles.distanceBadge, { backgroundColor: categoryBg }]}>
             <Feather name="navigation" size={10} color={categoryColor} />
-            <Text style={[styles.distanceText, { color: categoryColor }]}>{place.distance}</Text>
+            <Text style={styles.distanceText}>{place.distance}</Text>
           </View>
           {place.timing && (
             <Text style={styles.timingText} numberOfLines={1}>{place.timing}</Text>
@@ -117,12 +117,12 @@ function PlaceCard({
             <Feather name="phone" size={11} color={categoryColor} />
           </View>
           <Text style={styles.quickContactRole}>{c.role || c.name}</Text>
-          <Text style={[styles.quickContactPhone, { color: categoryColor }]}>{c.phone}</Text>
+          <Text style={styles.quickContactPhone}>{c.phone}</Text>
         </View>
       ))}
       {place.contacts.length > 2 && (
         <TouchableOpacity style={styles.moreContacts} onPress={handleTap} activeOpacity={0.8}>
-          <Text style={[styles.moreContactsText, { color: categoryColor }]}>
+          <Text style={styles.moreContactsText}>
             +{place.contacts.length - 2} more contacts — Tap to view all details
           </Text>
         </TouchableOpacity>
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     flexDirection: "row", alignItems: "center", gap: 3,
     paddingHorizontal: 8, paddingVertical: 4, borderRadius: 20,
   },
-  distanceText: { fontSize: 11, fontWeight: "700", fontFamily: "Inter_600SemiBold" },
+  distanceText: { fontSize: 11, fontWeight: "700", fontFamily: "Inter_600SemiBold", color: "#374151" },
   timingText: {
     fontSize: 9, color: "#94A3B8", marginTop: 4,
     fontFamily: "Inter_400Regular", maxWidth: 80, textAlign: "right",
@@ -305,17 +305,17 @@ const styles = StyleSheet.create({
     alignItems: "center", justifyContent: "center",
   },
   quickContactRole: {
-    fontSize: 11, color: "#64748B",
+    fontSize: 11, color: "#374151",
     fontFamily: "Inter_400Regular", flex: 1,
   },
   quickContactPhone: {
-    fontSize: 12, fontWeight: "700", fontFamily: "Inter_700Bold",
+    fontSize: 12, fontWeight: "700", fontFamily: "Inter_700Bold", color: "#0F172A",
   },
   moreContacts: {
     paddingHorizontal: 14, paddingVertical: 8,
     borderTopWidth: 1, borderTopColor: "#F1F5F9",
   },
   moreContactsText: {
-    fontSize: 11, fontFamily: "Inter_500Medium", fontWeight: "600",
+    fontSize: 11, fontFamily: "Inter_500Medium", fontWeight: "600", color: "#374151",
   },
 });
