@@ -11,10 +11,125 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, router } from "expo-router";
+import * as Haptics from "expo-haptics";
 
-import { ServiceCard } from "@/components/ServiceCard";
-import { serviceCategories, ServiceCategory } from "@/data/mumbaiServices";
+import { serviceCategories, ServiceCategory, ServicePlace } from "@/data/mumbaiServices";
+
+function StarRow({ rating }: { rating?: number }) {
+  if (!rating) return null;
+  return (
+    <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
+      {[1, 2, 3, 4, 5].map((s) => (
+        <Feather
+          key={s}
+          name="star"
+          size={10}
+          color={s <= Math.round(rating) ? "#F59E0B" : "#E2E8F0"}
+        />
+      ))}
+      <Text style={{ fontSize: 10, color: "#94A3B8", marginLeft: 2 }}>{rating.toFixed(1)}</Text>
+    </View>
+  );
+}
+
+function PlaceCard({
+  place,
+  categoryColor,
+  categoryBg,
+  categoryId,
+}: {
+  place: ServicePlace;
+  categoryColor: string;
+  categoryBg: string;
+  categoryId: string;
+}) {
+  const handleTap = () => {
+    if (Platform.OS !== "web") Haptics.selectionAsync();
+    router.push({
+      pathname: "/service/[id]",
+      params: { id: place.id, category: categoryId },
+    } as any);
+  };
+
+  const bedsAvailable = place.beds !== undefined && place.bedsOccupied !== undefined
+    ? place.beds - place.bedsOccupied
+    : null;
+  const bedsFillPct = place.beds && place.bedsOccupied !== undefined
+    ? (place.bedsOccupied / place.beds) * 100
+    : null;
+
+  return (
+    <TouchableOpacity style={styles.placeCard} onPress={handleTap} activeOpacity={0.88}>
+      <View style={styles.placeCardTop}>
+        <View style={[styles.placeIconBadge, { backgroundColor: categoryBg }]}>
+          <Feather name="map-pin" size={15} color={categoryColor} />
+        </View>
+        <View style={styles.placeInfo}>
+          <Text style={styles.placeName} numberOfLines={2}>{place.name}</Text>
+          <Text style={styles.placeAddress} numberOfLines={1}>{place.address}</Text>
+          <View style={styles.placeTagRow}>
+            {place.speciality && (
+              <View style={[styles.placeTag, { backgroundColor: categoryBg }]}>
+                <Text style={[styles.placeTagText, { color: categoryColor }]}>{place.speciality}</Text>
+              </View>
+            )}
+            {place.govtType && (
+              <View style={[styles.placeTag, { backgroundColor: "#F1F5F9" }]}>
+                <Text style={[styles.placeTagText, { color: "#64748B" }]}>{place.govtType}</Text>
+              </View>
+            )}
+          </View>
+        </View>
+        <View style={styles.placeRight}>
+          <View style={[styles.distanceBadge, { backgroundColor: categoryBg }]}>
+            <Feather name="navigation" size={10} color={categoryColor} />
+            <Text style={[styles.distanceText, { color: categoryColor }]}>{place.distance}</Text>
+          </View>
+          {place.timing && (
+            <Text style={styles.timingText} numberOfLines={1}>{place.timing}</Text>
+          )}
+        </View>
+      </View>
+
+      {/* Rating + Beds mini strip */}
+      <View style={styles.placeBottomRow}>
+        {place.rating !== undefined && (
+          <StarRow rating={place.rating} />
+        )}
+        {place.reviewCount !== undefined && (
+          <Text style={styles.reviewCountText}>{place.reviewCount} reviews</Text>
+        )}
+        <View style={{ flex: 1 }} />
+        {place.beds !== undefined && bedsAvailable !== null && (
+          <View style={styles.bedsMini}>
+            <View style={[styles.bedsDot, { backgroundColor: (bedsFillPct ?? 0) > 85 ? "#DC2626" : (bedsFillPct ?? 0) > 65 ? "#D97706" : "#059669" }]} />
+            <Text style={styles.bedsText}>{bedsAvailable} beds free</Text>
+          </View>
+        )}
+        <Feather name="chevron-right" size={14} color="#CBD5E1" />
+      </View>
+
+      {/* Quick contacts */}
+      {place.contacts.slice(0, 2).map((c, i) => (
+        <View key={i} style={[styles.quickContact, { borderTopColor: categoryColor + "18" }]}>
+          <View style={[styles.quickContactIcon, { backgroundColor: categoryBg }]}>
+            <Feather name="phone" size={11} color={categoryColor} />
+          </View>
+          <Text style={styles.quickContactRole}>{c.role || c.name}</Text>
+          <Text style={[styles.quickContactPhone, { color: categoryColor }]}>{c.phone}</Text>
+        </View>
+      ))}
+      {place.contacts.length > 2 && (
+        <TouchableOpacity style={styles.moreContacts} onPress={handleTap} activeOpacity={0.8}>
+          <Text style={[styles.moreContactsText, { color: categoryColor }]}>
+            +{place.contacts.length - 2} more contacts — Tap to view all details
+          </Text>
+        </TouchableOpacity>
+      )}
+    </TouchableOpacity>
+  );
+}
 
 export default function ServicesScreen() {
   const insets = useSafeAreaInsets();
@@ -42,7 +157,7 @@ export default function ServicesScreen() {
         style={[styles.header, { paddingTop: topPad + 12 }]}
       >
         <Text style={styles.headerTitle}>Nearby Services</Text>
-        <Text style={styles.headerSub}>Mumbai — Sorted by distance</Text>
+        <Text style={styles.headerSub}>Ulhasnagar — Sorted by distance</Text>
 
         <ScrollView
           horizontal
@@ -79,17 +194,20 @@ export default function ServicesScreen() {
 
       <View style={styles.resultsBar}>
         <View style={[styles.catDot, { backgroundColor: selectedCat.color }]} />
-        <Text style={styles.resultsText}>{sortedData.length} places found near you</Text>
+        <Text style={styles.resultsText}>
+          {sortedData.length} {selectedCat.label.toLowerCase()} near you
+        </Text>
       </View>
 
       <FlatList
         data={sortedData}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <ServiceCard
+          <PlaceCard
             place={item}
             categoryColor={selectedCat.color}
             categoryBg={selectedCat.bgColor}
+            categoryId={selectedCat.id}
           />
         )}
         contentContainerStyle={[styles.listContent, { paddingBottom: bottomPad + 90 }]}
@@ -101,69 +219,99 @@ export default function ServicesScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: "#F8FAFC" },
-  header: {
-    paddingHorizontal: 20,
-    paddingBottom: 14,
-  },
+  header: { paddingHorizontal: 20, paddingBottom: 14 },
   headerTitle: {
-    fontSize: 22,
-    fontWeight: "800",
-    color: "#FFFFFF",
-    fontFamily: "Inter_700Bold",
-    letterSpacing: -0.3,
-    marginBottom: 2,
+    fontSize: 22, fontWeight: "800", color: "#FFFFFF",
+    fontFamily: "Inter_700Bold", letterSpacing: -0.3, marginBottom: 2,
   },
   headerSub: {
-    fontSize: 12,
-    color: "rgba(255,255,255,0.65)",
-    fontFamily: "Inter_400Regular",
-    marginBottom: 14,
+    fontSize: 12, color: "rgba(255,255,255,0.65)",
+    fontFamily: "Inter_400Regular", marginBottom: 14,
   },
-  chipRow: {
-    gap: 8,
-    paddingRight: 8,
-  },
+  chipRow: { gap: 8, paddingRight: 8 },
   chip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 20,
+    flexDirection: "row", alignItems: "center",
+    gap: 5, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20,
   },
-  chipActive: {
-    backgroundColor: "rgba(255,255,255,0.25)",
-  },
-  chipInactive: {
-    backgroundColor: "rgba(255,255,255,0.1)",
-  },
-  chipText: {
-    fontSize: 11,
-    fontWeight: "700",
-    fontFamily: "Inter_600SemiBold",
-  },
+  chipActive: { backgroundColor: "rgba(255,255,255,0.25)" },
+  chipInactive: { backgroundColor: "rgba(255,255,255,0.1)" },
+  chipText: { fontSize: 11, fontWeight: "700", fontFamily: "Inter_600SemiBold" },
   resultsBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    flexDirection: "row", alignItems: "center", gap: 8,
+    paddingHorizontal: 16, paddingVertical: 10,
     backgroundColor: "#FFFFFF",
-    borderBottomWidth: 1,
-    borderBottomColor: "#F1F5F9",
+    borderBottomWidth: 1, borderBottomColor: "#F1F5F9",
   },
-  catDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
+  catDot: { width: 8, height: 8, borderRadius: 4 },
   resultsText: {
-    fontSize: 12,
-    color: "#64748B",
-    fontFamily: "Inter_500Medium",
-    fontWeight: "600",
+    fontSize: 12, color: "#64748B",
+    fontFamily: "Inter_500Medium", fontWeight: "600",
   },
-  listContent: {
-    padding: 14,
+  listContent: { padding: 14 },
+  placeCard: {
+    backgroundColor: "#FFFFFF", borderRadius: 16, marginBottom: 12,
+    overflow: "hidden",
+    shadowColor: "#1E40AF", shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08, shadowRadius: 8, elevation: 2,
+  },
+  placeCardTop: {
+    flexDirection: "row", padding: 14, alignItems: "flex-start", gap: 10,
+  },
+  placeIconBadge: {
+    width: 38, height: 38, borderRadius: 11,
+    alignItems: "center", justifyContent: "center", flexShrink: 0,
+  },
+  placeInfo: { flex: 1 },
+  placeName: {
+    fontSize: 14, fontWeight: "700", color: "#0F172A",
+    fontFamily: "Inter_700Bold", marginBottom: 2,
+  },
+  placeAddress: {
+    fontSize: 11, color: "#64748B",
+    fontFamily: "Inter_400Regular", marginBottom: 6,
+  },
+  placeTagRow: { flexDirection: "row", gap: 5, flexWrap: "wrap" },
+  placeTag: { paddingHorizontal: 7, paddingVertical: 2, borderRadius: 20 },
+  placeTagText: { fontSize: 9, fontWeight: "700", fontFamily: "Inter_600SemiBold" },
+  placeRight: { alignItems: "flex-end", flexShrink: 0 },
+  distanceBadge: {
+    flexDirection: "row", alignItems: "center", gap: 3,
+    paddingHorizontal: 8, paddingVertical: 4, borderRadius: 20,
+  },
+  distanceText: { fontSize: 11, fontWeight: "700", fontFamily: "Inter_600SemiBold" },
+  timingText: {
+    fontSize: 9, color: "#94A3B8", marginTop: 4,
+    fontFamily: "Inter_400Regular", maxWidth: 80, textAlign: "right",
+  },
+  placeBottomRow: {
+    flexDirection: "row", alignItems: "center", gap: 8,
+    paddingHorizontal: 14, paddingBottom: 10, flexWrap: "wrap",
+  },
+  reviewCountText: { fontSize: 10, color: "#94A3B8", fontFamily: "Inter_400Regular" },
+  bedsMini: { flexDirection: "row", alignItems: "center", gap: 4 },
+  bedsDot: { width: 7, height: 7, borderRadius: 4 },
+  bedsText: { fontSize: 10, color: "#64748B", fontFamily: "Inter_400Regular" },
+  quickContact: {
+    flexDirection: "row", alignItems: "center", gap: 8,
+    paddingHorizontal: 14, paddingVertical: 8,
+    borderTopWidth: 1,
+  },
+  quickContactIcon: {
+    width: 24, height: 24, borderRadius: 7,
+    alignItems: "center", justifyContent: "center",
+  },
+  quickContactRole: {
+    fontSize: 11, color: "#64748B",
+    fontFamily: "Inter_400Regular", flex: 1,
+  },
+  quickContactPhone: {
+    fontSize: 12, fontWeight: "700", fontFamily: "Inter_700Bold",
+  },
+  moreContacts: {
+    paddingHorizontal: 14, paddingVertical: 8,
+    borderTopWidth: 1, borderTopColor: "#F1F5F9",
+  },
+  moreContactsText: {
+    fontSize: 11, fontFamily: "Inter_500Medium", fontWeight: "600",
   },
 });

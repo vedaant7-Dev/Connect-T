@@ -1,617 +1,602 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
-  View, Text, StyleSheet, TouchableOpacity, TextInput,
-  ScrollView, Platform, ActivityIndicator, KeyboardAvoidingView,
-  Image, Animated, Dimensions,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  ActivityIndicator,
+  Modal,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import * as Haptics from "expo-haptics";
+import { Image } from "expo-image";
+import { router } from "expo-router";
+
 import { useAuth, UserRole } from "@/context/AuthContext";
+import { ulhasnagarWards } from "@/data/mumbaiServices";
 
-const { width } = Dimensions.get("window");
+type Step = "phone" | "welcome_back" | "role" | "details";
 
-const WARDS = [
-  "Ward 1 — Colaba", "Ward 2 — Mazagaon", "Ward 3 — Byculla",
-  "Ward 4 — Parel", "Ward 5 — Dharavi", "Ward 6 — Sion",
-  "Ward 7 — Mahim", "Ward 8 — Dadar", "Ward 9 — Worli",
-  "Ward 10 — Lower Parel", "Ward 11 — Kurla", "Ward 12 — Ghatkopar",
-  "Ward 13 — Andheri", "Ward 14 — Borivali", "Ward 15 — Kandivali",
-];
-
-const roleCards = [
-  {
-    role: "citizen" as UserRole,
-    title: "Citizen",
-    subtitle: "नागरिक",
-    desc: "Submit complaints, access services & track status",
-    icon: "user" as const,
-    color: "#2563EB",
-    bg: "#EFF6FF",
-    border: "#BFDBFE",
-  },
-  {
-    role: "nagarsevak" as UserRole,
-    title: "Nagarsevak",
-    subtitle: "नगरसेवक",
-    desc: "Ward officer — manage & resolve ward complaints",
-    icon: "briefcase" as const,
-    color: "#059669",
-    bg: "#ECFDF5",
-    border: "#A7F3D0",
-  },
-  {
-    role: "head_admin" as UserRole,
-    title: "Head Admin",
-    subtitle: "मुख्य प्रशासक",
-    desc: "Full control — all wards, services & users",
-    icon: "shield" as const,
-    color: "#7C3AED",
-    bg: "#F5F3FF",
-    border: "#C4B5FD",
-  },
-];
-
-type Step = "phone" | "welcome_back" | "select_role" | "details";
+interface FormData {
+  mobile: string;
+  name: string;
+  age: string;
+  email: string;
+  ward: string;
+  role: UserRole;
+}
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
-  const router = useRouter();
+  const topPad = Platform.OS === "web" ? 44 : insets.top;
   const { checkPhone, register, loginWithPhone } = useAuth();
 
   const [step, setStep] = useState<Step>("phone");
-  const [mobile, setMobile] = useState("");
-  const [name, setName] = useState("");
-  const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
-  const [selectedWard, setSelectedWard] = useState(WARDS[7]);
-  const [showWardPicker, setShowWardPicker] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [existingUser, setExistingUser] = useState<{ name: string; role: UserRole } | null>(null);
   const [error, setError] = useState("");
+  const [wardModal, setWardModal] = useState(false);
 
-  const haptic = () => { if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); };
-  const hapticSuccess = () => { if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success); };
+  const [form, setForm] = useState<FormData>({
+    mobile: "",
+    name: "",
+    age: "",
+    email: "",
+    ward: "",
+    role: "citizen",
+  });
+  const [existingUser, setExistingUser] = useState<any>(null);
 
-  const selectedRoleCard = roleCards.find((r) => r.role === selectedRole);
+  const patch = (key: keyof FormData, val: string) =>
+    setForm((f) => ({ ...f, [key]: val }));
 
-  const handlePhoneSubmit = async () => {
-    const cleaned = mobile.trim().replace(/\D/g, "");
-    if (cleaned.length !== 10) { setError("Please enter a valid 10-digit number"); return; }
+  const handlePhoneNext = async () => {
     setError("");
+    const mobile = form.mobile.trim().replace(/\D/g, "");
+    if (mobile.length !== 10) {
+      setError("Please enter a valid 10-digit mobile number");
+      return;
+    }
     setLoading(true);
-    haptic();
     try {
-      const found = await checkPhone(cleaned);
+      const found = await checkPhone(mobile);
       if (found) {
-        setExistingUser({ name: found.name, role: found.role });
+        setExistingUser(found);
         setStep("welcome_back");
       } else {
-        setStep("select_role");
+        setStep("role");
       }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLoginExisting = async () => {
+  const handleWelcomeBack = async () => {
     setLoading(true);
-    hapticSuccess();
     try {
-      await loginWithPhone(mobile.trim().replace(/\D/g, ""));
-      router.replace("/(tabs)");
+      await loginWithPhone(form.mobile.trim().replace(/\D/g, ""));
+      router.replace("/(tabs)/");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSelectRole = (role: UserRole) => {
-    haptic();
-    setSelectedRole(role);
+  const handleRoleSelect = (role: UserRole) => {
+    patch("role", role);
     setStep("details");
   };
 
   const handleRegister = async () => {
-    if (!name.trim() || !selectedRole) return;
+    setError("");
+    if (!form.name.trim() || form.name.trim().length < 2) {
+      setError("Please enter your full name (at least 2 characters)");
+      return;
+    }
+    const ageNum = parseInt(form.age, 10);
+    if (!form.age || isNaN(ageNum) || ageNum < 1 || ageNum > 120) {
+      setError("Please enter a valid age (1–120)");
+      return;
+    }
+    if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      setError("Please enter a valid email address or leave it blank");
+      return;
+    }
+    if (!form.ward) {
+      setError("Please select your ward / area in Ulhasnagar");
+      return;
+    }
     setLoading(true);
-    hapticSuccess();
     try {
       await register({
-        name: name.trim(),
-        mobile: mobile.trim().replace(/\D/g, ""),
-        role: selectedRole,
-        ward: selectedRole === "nagarsevak" ? selectedWard : "Ward 8 — Dadar",
-        wardNumber: selectedRole === "nagarsevak" ? selectedWard.split(" ")[1] : "8",
+        name: form.name.trim(),
+        mobile: form.mobile.trim().replace(/\D/g, ""),
+        role: form.role,
+        ward: form.ward,
+        age: ageNum,
+        email: form.email.trim() || undefined,
       });
-      router.replace("/(tabs)");
+      router.replace("/(tabs)/");
+    } catch (e: any) {
+      setError(e.message ?? "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const roleOfExisting = existingUser ? roleCards.find((r) => r.role === existingUser.role) : null;
+  const roleOptions: {
+    id: UserRole; label: string; desc: string; icon: string; color: string; bg: string;
+  }[] = [
+    { id: "citizen", label: "Citizen", desc: "Register complaints, access civic services & community feed", icon: "user", color: "#2563EB", bg: "#EFF6FF" },
+    { id: "nagarsevak", label: "Nagarsevak / Ward Officer", desc: "Manage and resolve ward-level complaints", icon: "briefcase", color: "#059669", bg: "#ECFDF5" },
+    { id: "head_admin", label: "Head Admin", desc: "Full oversight across all wards and departments", icon: "shield", color: "#7C3AED", bg: "#F5F3FF" },
+  ];
+
+  const roleColor = (role: UserRole) =>
+    role === "citizen" ? "#2563EB" : role === "nagarsevak" ? "#059669" : "#7C3AED";
+  const roleBg = (role: UserRole) =>
+    role === "citizen" ? "#EFF6FF" : role === "nagarsevak" ? "#ECFDF5" : "#F5F3FF";
+  const roleIcon = (role: UserRole) =>
+    role === "citizen" ? "user" : role === "nagarsevak" ? "briefcase" : "shield";
+  const roleLabel = (role: UserRole) =>
+    role === "citizen" ? "Citizen" : role === "nagarsevak" ? "Nagarsevak / Ward Officer" : "Head Admin";
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-      {/* ─── Header gradient ─── */}
-      <LinearGradient
-        colors={["#0C1A3A", "#1E3A8A", "#1E40AF", "#2563EB"]}
-        locations={[0, 0.35, 0.7, 1]}
-        style={[styles.header, { paddingTop: (Platform.OS === "web" ? 52 : insets.top) + 24 }]}
+    <LinearGradient
+      colors={["#060F24", "#0D1B3E", "#1E3A8A", "#2563EB"]}
+      locations={[0, 0.3, 0.7, 1]}
+      style={[styles.root, { paddingTop: topPad }]}
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flex: 1 }}
       >
-        <View style={styles.logoRow}>
-          <View style={styles.logoImgWrap}>
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Logo */}
+          <View style={styles.logoBox}>
             <Image
-              source={require("../assets/images/logo_transparent.png")}
-              style={styles.logoImg}
-              resizeMode="contain"
+              source={require("@/assets/images/logo_transparent.png")}
+              style={styles.logo}
+              contentFit="contain"
             />
+            <Text style={styles.brand}>JanSeva</Text>
+            <Text style={styles.brandSub}>Ulhasnagar Citizens Platform</Text>
           </View>
-          <View>
-            <Text style={styles.logoTitle}>JanSeva</Text>
-            <Text style={styles.logoSub}>Citizen Services Platform</Text>
-          </View>
-        </View>
-        <View style={styles.headerMeta}>
-          <View style={styles.flagRow}>
-            <View style={[styles.flagStripe, { backgroundColor: "#F97316" }]} />
-            <View style={[styles.flagStripe, { backgroundColor: "rgba(255,255,255,0.7)" }]} />
-            <View style={[styles.flagStripe, { backgroundColor: "#22C55E" }]} />
-          </View>
-          <Text style={styles.headerTagline}>नागरिकों की सेवा में</Text>
-        </View>
-      </LinearGradient>
 
-      {/* ─── Card sheet ─── */}
-      <View style={styles.card}>
-        {step === "phone" && (
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 20 }}>
-            <View style={{ gap: 4 }}>
-              <Text style={styles.stepTitle}>Welcome to JanSeva</Text>
-              <Text style={styles.stepSub}>Enter your mobile number to get started</Text>
-            </View>
+          {/* ── STEP: Phone ─────────────────────────────────────────────── */}
+          {step === "phone" && (
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>Welcome</Text>
+              <Text style={styles.cardSub}>Enter your mobile number to login or register</Text>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>MOBILE NUMBER</Text>
-              <View style={[styles.inputRow, error ? styles.inputRowError : null]}>
+              <View style={styles.phoneRow}>
                 <View style={styles.countryCode}>
                   <Text style={styles.countryCodeText}>🇮🇳 +91</Text>
                 </View>
                 <TextInput
-                  style={[styles.input, { flex: 1 }]}
-                  value={mobile}
-                  onChangeText={(t) => { setMobile(t); setError(""); }}
+                  style={[styles.input, styles.phoneInput]}
                   placeholder="10-digit mobile number"
-                  placeholderTextColor="#CBD5E1"
+                  placeholderTextColor="#94A3B8"
                   keyboardType="phone-pad"
                   maxLength={10}
-                  autoFocus
-                  onSubmitEditing={handlePhoneSubmit}
+                  value={form.mobile}
+                  onChangeText={(v) => patch("mobile", v)}
+                  onSubmitEditing={handlePhoneNext}
                 />
               </View>
+
               {error ? <Text style={styles.errorText}>{error}</Text> : null}
-            </View>
 
-            <View style={styles.infoBox}>
-              <Feather name="info" size={14} color="#2563EB" />
-              <Text style={styles.infoText}>
-                Existing users will be logged in automatically. New users will be guided through registration.
-              </Text>
-            </View>
-
-            <TouchableOpacity
-              style={[styles.primaryBtn, (!mobile.trim() || mobile.trim().length < 10) && { opacity: 0.5 }]}
-              onPress={handlePhoneSubmit}
-              disabled={!mobile.trim() || mobile.trim().length < 10 || loading}
-              activeOpacity={0.85}
-            >
-              <LinearGradient colors={["#1E3A8A", "#2563EB"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.primaryBtnGrad}>
-                {loading ? <ActivityIndicator color="white" /> : (
+              <TouchableOpacity
+                style={styles.primaryBtn}
+                onPress={handlePhoneNext}
+                activeOpacity={0.85}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color="white" />
+                ) : (
                   <>
                     <Text style={styles.primaryBtnText}>Continue</Text>
                     <Feather name="arrow-right" size={18} color="white" />
                   </>
                 )}
-              </LinearGradient>
-            </TouchableOpacity>
+              </TouchableOpacity>
 
-            <Text style={styles.termsText}>
-              By continuing, you agree to our Terms of Service and Privacy Policy. Mumbai BMC · JanSeva 2025
-            </Text>
-          </ScrollView>
-        )}
+              <Text style={styles.disclaimer}>
+                Your number is only used for identification. No OTP needed.
+              </Text>
+            </View>
+          )}
 
-        {step === "welcome_back" && existingUser && roleOfExisting && (
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 20 }}>
-            <TouchableOpacity onPress={() => { setStep("phone"); setExistingUser(null); }} style={styles.backBtn} activeOpacity={0.7}>
-              <Feather name="arrow-left" size={16} color="#475569" />
-              <Text style={styles.backText}>Change number</Text>
-            </TouchableOpacity>
-
-            <View style={styles.welcomeCard}>
-              <View style={[styles.welcomeAvatar, { backgroundColor: roleOfExisting.color + "20" }]}>
-                <Text style={[styles.welcomeAvatarText, { color: roleOfExisting.color }]}>
-                  {existingUser.name.charAt(0).toUpperCase()}
+          {/* ── STEP: Welcome Back ──────────────────────────────────────── */}
+          {step === "welcome_back" && existingUser && (
+            <View style={styles.card}>
+              <View style={[styles.avatarCircle, { backgroundColor: existingUser.avatarColor ?? "#2563EB" }]}>
+                <Text style={styles.avatarText}>
+                  {existingUser.name?.charAt(0).toUpperCase()}
                 </Text>
               </View>
-              <View style={styles.welcomeCheck}>
-                <Feather name="check" size={12} color="white" />
-              </View>
-              <Text style={styles.welcomeGreet}>Welcome back!</Text>
+              <Text style={styles.cardTitle}>Welcome back!</Text>
               <Text style={styles.welcomeName}>{existingUser.name}</Text>
-              <View style={[styles.welcomeRolePill, { backgroundColor: roleOfExisting.bg, borderColor: roleOfExisting.border }]}>
-                <Feather name={roleOfExisting.icon} size={12} color={roleOfExisting.color} />
-                <Text style={[styles.welcomeRoleText, { color: roleOfExisting.color }]}>{roleOfExisting.title}</Text>
+              <View style={styles.infoRow}>
+                <Feather name="map-pin" size={12} color="#2563EB" />
+                <Text style={styles.infoText}>{existingUser.ward ?? "Ulhasnagar"}</Text>
               </View>
-              <View style={styles.welcomePhone}>
-                <Feather name="phone" size={13} color="#64748B" />
-                <Text style={styles.welcomePhoneText}>+91 {mobile}</Text>
+              <View style={[styles.rolePillWrap, { backgroundColor: roleBg(existingUser.role) }]}>
+                <Feather name={roleIcon(existingUser.role) as any} size={11} color={roleColor(existingUser.role)} />
+                <Text style={[styles.rolePillText, { color: roleColor(existingUser.role) }]}>
+                  {roleLabel(existingUser.role)}
+                </Text>
               </View>
-            </View>
 
-            <TouchableOpacity style={styles.primaryBtn} onPress={handleLoginExisting} disabled={loading} activeOpacity={0.85}>
-              <LinearGradient colors={["#1E3A8A", "#2563EB"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.primaryBtnGrad}>
-                {loading ? <ActivityIndicator color="white" /> : (
+              <TouchableOpacity
+                style={styles.primaryBtn}
+                onPress={handleWelcomeBack}
+                activeOpacity={0.85}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color="white" />
+                ) : (
                   <>
+                    <Text style={styles.primaryBtnText}>Login</Text>
                     <Feather name="log-in" size={18} color="white" />
-                    <Text style={styles.primaryBtnText}>Login to JanSeva</Text>
                   </>
                 )}
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.secondaryBtn}
-              onPress={() => { setStep("select_role"); setExistingUser(null); }}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.secondaryBtnText}>Not you? Register new account</Text>
-            </TouchableOpacity>
-          </ScrollView>
-        )}
-
-        {step === "select_role" && (
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 14 }}>
-            <View style={styles.backRow}>
-              <TouchableOpacity onPress={() => setStep("phone")} style={styles.backBtnIcon} activeOpacity={0.7}>
-                <Feather name="arrow-left" size={16} color="#475569" />
               </TouchableOpacity>
-              <View style={{ gap: 2 }}>
-                <Text style={styles.stepTitle}>Create Account</Text>
-                <Text style={styles.stepSub}>Select your role to continue</Text>
-              </View>
-            </View>
-
-            <View style={styles.newBadge}>
-              <Feather name="user-plus" size={13} color="#059669" />
-              <Text style={styles.newBadgeText}>New user — +91 {mobile}</Text>
-            </View>
-
-            {roleCards.map((rc) => (
               <TouchableOpacity
-                key={rc.role}
-                style={[styles.roleCard, { borderColor: rc.border, backgroundColor: rc.bg }]}
-                onPress={() => handleSelectRole(rc.role)}
-                activeOpacity={0.85}
+                onPress={() => { setStep("phone"); setExistingUser(null); }}
+                style={styles.backLink}
               >
-                <View style={[styles.roleCardIcon, { backgroundColor: rc.color + "22" }]}>
-                  <Feather name={rc.icon} size={24} color={rc.color} />
-                </View>
-                <View style={styles.roleCardText}>
-                  <View style={styles.roleCardTitleRow}>
-                    <Text style={[styles.roleCardTitle, { color: rc.color }]}>{rc.title}</Text>
-                    <Text style={styles.roleCardHindi}>{rc.subtitle}</Text>
-                  </View>
-                  <Text style={styles.roleCardDesc}>{rc.desc}</Text>
-                </View>
-                <Feather name="chevron-right" size={18} color={rc.color} />
+                <Feather name="chevron-left" size={14} color="#64748B" />
+                <Text style={styles.backLinkText}>Use a different number</Text>
               </TouchableOpacity>
-            ))}
-          </ScrollView>
-        )}
-
-        {step === "details" && selectedRoleCard && (
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 16 }}>
-            <View style={styles.backRow}>
-              <TouchableOpacity onPress={() => setStep("select_role")} style={styles.backBtnIcon} activeOpacity={0.7}>
-                <Feather name="arrow-left" size={16} color="#475569" />
-              </TouchableOpacity>
-              <View style={[styles.rolePill, { backgroundColor: selectedRoleCard.bg, borderColor: selectedRoleCard.border }]}>
-                <Feather name={selectedRoleCard.icon} size={12} color={selectedRoleCard.color} />
-                <Text style={[styles.rolePillText, { color: selectedRoleCard.color }]}>{selectedRoleCard.title}</Text>
-              </View>
             </View>
+          )}
 
-            <View style={{ gap: 4 }}>
-              <Text style={styles.stepTitle}>Your Details</Text>
-              <Text style={styles.stepSub}>Almost done — fill in your information</Text>
-            </View>
+          {/* ── STEP: Role Selection ────────────────────────────────────── */}
+          {step === "role" && (
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>Select Your Role</Text>
+              <Text style={styles.cardSub}>Choose the role that best describes you</Text>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>FULL NAME</Text>
-              <View style={styles.inputRow}>
-                <View style={styles.inputIcon}>
-                  <Feather name="user" size={16} color="#2563EB" />
-                </View>
-                <TextInput
-                  style={styles.input}
-                  value={name}
-                  onChangeText={setName}
-                  placeholder="Enter your full name"
-                  placeholderTextColor="#CBD5E1"
-                  autoCapitalize="words"
-                  autoFocus
-                />
-              </View>
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>MOBILE NUMBER</Text>
-              <View style={[styles.inputRow, { backgroundColor: "#F8FAFC" }]}>
-                <View style={styles.countryCode}>
-                  <Text style={styles.countryCodeText}>🇮🇳 +91</Text>
-                </View>
-                <Text style={[styles.input, { color: "#475569", lineHeight: 48 }]}>{mobile}</Text>
-                <View style={{ paddingRight: 14 }}>
-                  <Feather name="lock" size={14} color="#94A3B8" />
-                </View>
-              </View>
-            </View>
-
-            {selectedRole === "nagarsevak" && (
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>ASSIGNED WARD</Text>
+              {roleOptions.map((opt) => (
                 <TouchableOpacity
-                  style={styles.wardPicker}
-                  onPress={() => setShowWardPicker(!showWardPicker)}
+                  key={opt.id}
+                  style={[styles.roleOption, { borderColor: opt.color + "40" }]}
+                  onPress={() => handleRoleSelect(opt.id)}
                   activeOpacity={0.8}
                 >
-                  <Feather name="map-pin" size={16} color="#2563EB" />
-                  <Text style={styles.wardPickerText}>{selectedWard}</Text>
-                  <Feather name={showWardPicker ? "chevron-up" : "chevron-down"} size={16} color="#64748B" />
-                </TouchableOpacity>
-                {showWardPicker && (
-                  <View style={styles.wardDropdown}>
-                    <ScrollView style={{ maxHeight: 200 }} nestedScrollEnabled>
-                      {WARDS.map((w) => (
-                        <TouchableOpacity
-                          key={w}
-                          style={[styles.wardOption, w === selectedWard && styles.wardOptionSelected]}
-                          onPress={() => { setSelectedWard(w); setShowWardPicker(false); }}
-                          activeOpacity={0.8}
-                        >
-                          <Text style={[styles.wardOptionText, w === selectedWard && { color: "#2563EB", fontFamily: "Inter_700Bold" }]}>
-                            {w}
-                          </Text>
-                          {w === selectedWard && <Feather name="check" size={14} color="#2563EB" />}
-                        </TouchableOpacity>
-                      ))}
-                    </ScrollView>
+                  <View style={[styles.roleIconBox, { backgroundColor: opt.bg }]}>
+                    <Feather name={opt.icon as any} size={22} color={opt.color} />
                   </View>
-                )}
-              </View>
-            )}
+                  <View style={styles.roleTextBox}>
+                    <Text style={styles.roleLabel}>{opt.label}</Text>
+                    <Text style={styles.roleDesc}>{opt.desc}</Text>
+                  </View>
+                  <Feather name="chevron-right" size={16} color="#CBD5E1" />
+                </TouchableOpacity>
+              ))}
 
-            <View style={styles.secureBox}>
-              <Feather name="shield" size={14} color="#059669" />
-              <Text style={styles.secureText}>Your information is securely stored. OTP verification active.</Text>
+              <TouchableOpacity onPress={() => setStep("phone")} style={styles.backLink}>
+                <Feather name="chevron-left" size={14} color="#64748B" />
+                <Text style={styles.backLinkText}>Back</Text>
+              </TouchableOpacity>
             </View>
+          )}
 
-            <TouchableOpacity
-              style={[styles.primaryBtn, !name.trim() && { opacity: 0.5 }]}
-              onPress={handleRegister}
-              disabled={!name.trim() || loading}
-              activeOpacity={0.85}
-            >
-              <LinearGradient colors={["#1E3A8A", "#2563EB"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.primaryBtnGrad}>
-                {loading ? <ActivityIndicator color="white" /> : (
+          {/* ── STEP: Details (Registration) ────────────────────────────── */}
+          {step === "details" && (
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>Your Details</Text>
+              <Text style={styles.cardSub}>Complete your profile to finish registration</Text>
+
+              {/* Mobile (locked) */}
+              <Text style={styles.fieldLabel}>Mobile Number</Text>
+              <View style={[styles.input, styles.lockedInput]}>
+                <Feather name="smartphone" size={14} color="#64748B" />
+                <Text style={styles.lockedText}>+91 {form.mobile}</Text>
+                <Feather name="lock" size={12} color="#94A3B8" />
+              </View>
+
+              {/* Full Name */}
+              <Text style={styles.fieldLabel}>
+                Full Name <Text style={styles.required}>*</Text>
+              </Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your full name"
+                placeholderTextColor="#94A3B8"
+                value={form.name}
+                onChangeText={(v) => patch("name", v)}
+                autoCapitalize="words"
+              />
+
+              {/* Age */}
+              <Text style={styles.fieldLabel}>
+                Age <Text style={styles.required}>*</Text>
+              </Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Your age (e.g. 28)"
+                placeholderTextColor="#94A3B8"
+                keyboardType="number-pad"
+                maxLength={3}
+                value={form.age}
+                onChangeText={(v) => patch("age", v)}
+              />
+
+              {/* Email */}
+              <Text style={styles.fieldLabel}>
+                Email Address <Text style={styles.optional}>(optional)</Text>
+              </Text>
+              <TextInput
+                style={styles.input}
+                placeholder="yourname@email.com"
+                placeholderTextColor="#94A3B8"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={form.email}
+                onChangeText={(v) => patch("email", v)}
+              />
+
+              {/* Ward */}
+              <Text style={styles.fieldLabel}>
+                Ward / Area in Ulhasnagar <Text style={styles.required}>*</Text>
+              </Text>
+              <TouchableOpacity
+                style={[styles.input, styles.pickerInput]}
+                onPress={() => setWardModal(true)}
+                activeOpacity={0.8}
+              >
+                <Feather name="map-pin" size={14} color={form.ward ? "#2563EB" : "#94A3B8"} />
+                <Text style={[styles.pickerText, !form.ward && { color: "#94A3B8" }]}>
+                  {form.ward || "Select your ward / camp"}
+                </Text>
+                <Feather name="chevron-down" size={14} color="#94A3B8" />
+              </TouchableOpacity>
+
+              {/* Role (changeable) */}
+              <Text style={styles.fieldLabel}>Role</Text>
+              <TouchableOpacity
+                style={[styles.input, styles.pickerInput]}
+                onPress={() => setStep("role")}
+                activeOpacity={0.8}
+              >
+                <Feather name={roleIcon(form.role) as any} size={14} color="#2563EB" />
+                <Text style={[styles.pickerText, { color: "#0F172A" }]}>
+                  {roleLabel(form.role)}
+                </Text>
+                <Text style={styles.changeBtn}>Change</Text>
+              </TouchableOpacity>
+
+              {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+              <TouchableOpacity
+                style={styles.primaryBtn}
+                onPress={handleRegister}
+                activeOpacity={0.85}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color="white" />
+                ) : (
                   <>
-                    <Feather name="user-check" size={18} color="white" />
-                    <Text style={styles.primaryBtnText}>Create Account & Enter</Text>
+                    <Text style={styles.primaryBtnText}>Create Account</Text>
+                    <Feather name="check-circle" size={18} color="white" />
                   </>
                 )}
-              </LinearGradient>
-            </TouchableOpacity>
+              </TouchableOpacity>
 
-            <Text style={styles.termsText}>
-              By registering, you agree to our Terms of Service and Privacy Policy. Mumbai BMC · JanSeva 2025
-            </Text>
-          </ScrollView>
-        )}
-      </View>
-    </KeyboardAvoidingView>
+              <TouchableOpacity onPress={() => setStep("role")} style={styles.backLink}>
+                <Feather name="chevron-left" size={14} color="#64748B" />
+                <Text style={styles.backLinkText}>Back</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </ScrollView>
+      </KeyboardAvoidingView>
+
+      {/* Ward Picker Modal */}
+      <Modal
+        visible={wardModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setWardModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalSheet}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Select Your Ward / Area</Text>
+              <TouchableOpacity onPress={() => setWardModal(false)}>
+                <Feather name="x" size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {ulhasnagarWards.map((ward) => (
+                <TouchableOpacity
+                  key={ward}
+                  style={[
+                    styles.wardRow,
+                    form.ward === ward && styles.wardRowActive,
+                  ]}
+                  onPress={() => {
+                    patch("ward", ward);
+                    setWardModal(false);
+                  }}
+                  activeOpacity={0.8}
+                >
+                  <Feather
+                    name="map-pin"
+                    size={14}
+                    color={form.ward === ward ? "#2563EB" : "#94A3B8"}
+                  />
+                  <Text
+                    style={[
+                      styles.wardRowText,
+                      form.ward === ward && { color: "#2563EB", fontWeight: "700" },
+                    ]}
+                  >
+                    {ward}
+                  </Text>
+                  {form.ward === ward && (
+                    <Feather name="check" size={14} color="#2563EB" />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: 24,
-    paddingBottom: 52,
+  root: { flex: 1 },
+  scroll: { padding: 20, paddingBottom: 40, alignItems: "center" },
+  logoBox: { alignItems: "center", marginBottom: 24, marginTop: 12 },
+  logo: { width: 72, height: 72, marginBottom: 10 },
+  brand: {
+    fontSize: 28, fontWeight: "900", color: "#FFFFFF",
+    fontFamily: "Inter_700Bold", letterSpacing: -0.5,
   },
-  logoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
-    marginBottom: 16,
+  brandSub: {
+    fontSize: 11, color: "rgba(255,255,255,0.55)",
+    fontFamily: "Inter_400Regular", marginTop: 3, textAlign: "center",
   },
-  logoImgWrap: {
-    width: 68,
-    height: 68,
-    borderRadius: 18,
-    backgroundColor: "rgba(255,255,255,0.1)",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.15)",
-  },
-  logoImg: { width: 56, height: 56 },
-  logoTitle: {
-    fontSize: 30,
-    fontWeight: "900",
-    color: "white",
-    fontFamily: "Inter_700Bold",
-    letterSpacing: -0.8,
-  },
-  logoSub: {
-    fontSize: 12,
-    color: "rgba(255,255,255,0.5)",
-    fontFamily: "Inter_400Regular",
-    marginTop: 2,
-  },
-  headerMeta: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  flagRow: { flexDirection: "row", gap: 2 },
-  flagStripe: { width: 18, height: 3, borderRadius: 2 },
-  headerTagline: {
-    fontSize: 13,
-    color: "rgba(255,255,255,0.4)",
-    fontFamily: "Inter_400Regular",
-    letterSpacing: 0.5,
-  },
-
   card: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    marginTop: -28,
-    paddingTop: 28,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+    backgroundColor: "white", borderRadius: 24, padding: 24,
+    width: "100%", maxWidth: 420,
+    shadowColor: "#000", shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.15, shadowRadius: 30, elevation: 12,
   },
-  stepTitle: { fontSize: 20, fontWeight: "800", color: "#0F172A", fontFamily: "Inter_700Bold" },
-  stepSub: { fontSize: 13, color: "#64748B", fontFamily: "Inter_400Regular", marginTop: 2 },
-
-  inputGroup: { gap: 8 },
-  label: { fontSize: 10, fontWeight: "700", color: "#94A3B8", letterSpacing: 1.2, fontFamily: "Inter_600SemiBold" },
-  inputRow: {
-    flexDirection: "row", alignItems: "center",
-    borderWidth: 1.5, borderColor: "#E2E8F0", borderRadius: 14, overflow: "hidden",
-    backgroundColor: "white",
+  cardTitle: {
+    fontSize: 22, fontWeight: "800", color: "#0F172A",
+    fontFamily: "Inter_700Bold", marginBottom: 6,
   },
-  inputRowError: { borderColor: "#EF4444" },
-  inputIcon: { width: 46, height: 48, alignItems: "center", justifyContent: "center", backgroundColor: "#EFF6FF" },
+  cardSub: {
+    fontSize: 13, color: "#64748B", fontFamily: "Inter_400Regular",
+    marginBottom: 20, lineHeight: 18,
+  },
+  phoneRow: { flexDirection: "row", gap: 10, marginBottom: 0 },
   countryCode: {
-    paddingHorizontal: 12, height: 48, alignItems: "center", justifyContent: "center",
-    backgroundColor: "#F8FAFC", borderRightWidth: 1, borderRightColor: "#E2E8F0",
+    backgroundColor: "#F1F5F9", borderRadius: 12,
+    paddingHorizontal: 12, justifyContent: "center",
+    borderWidth: 1, borderColor: "#E2E8F0",
   },
-  countryCodeText: { fontSize: 13, fontWeight: "700", color: "#1E40AF", fontFamily: "Inter_700Bold" },
+  countryCodeText: {
+    fontSize: 14, fontWeight: "600", color: "#0F172A", fontFamily: "Inter_600SemiBold",
+  },
+  phoneInput: { flex: 1, marginBottom: 0 },
   input: {
-    flex: 1, height: 48, paddingHorizontal: 14,
-    fontSize: 14, color: "#0F172A", fontFamily: "Inter_400Regular",
+    backgroundColor: "#F8FAFC", borderRadius: 12,
+    paddingHorizontal: 14, paddingVertical: 13,
+    fontSize: 15, color: "#0F172A",
+    borderWidth: 1, borderColor: "#E2E8F0",
+    fontFamily: "Inter_400Regular", marginBottom: 12,
   },
-  errorText: { fontSize: 12, color: "#EF4444", fontFamily: "Inter_400Regular" },
-
-  infoBox: {
-    flexDirection: "row", alignItems: "flex-start", gap: 8,
-    backgroundColor: "#EFF6FF", borderRadius: 12, padding: 12,
-    borderWidth: 1, borderColor: "#BFDBFE",
+  lockedInput: { flexDirection: "row", alignItems: "center", gap: 8 },
+  lockedText: { flex: 1, fontSize: 14, color: "#64748B", fontFamily: "Inter_400Regular" },
+  pickerInput: { flexDirection: "row", alignItems: "center", gap: 10 },
+  pickerText: { flex: 1, fontSize: 14, color: "#0F172A", fontFamily: "Inter_400Regular" },
+  changeBtn: {
+    fontSize: 11, color: "#2563EB", fontFamily: "Inter_600SemiBold", fontWeight: "700",
   },
-  infoText: { fontSize: 12, color: "#1E40AF", fontFamily: "Inter_400Regular", flex: 1, lineHeight: 18 },
-
+  fieldLabel: {
+    fontSize: 12, fontWeight: "700", color: "#374151",
+    fontFamily: "Inter_600SemiBold", marginBottom: 6, marginTop: 2,
+  },
+  required: { color: "#DC2626" },
+  optional: { color: "#94A3B8", fontWeight: "400" },
+  errorText: {
+    color: "#DC2626", fontSize: 12, fontFamily: "Inter_400Regular",
+    marginVertical: 8, textAlign: "center",
+  },
   primaryBtn: {
-    borderRadius: 16, overflow: "hidden",
-    shadowColor: "#1E40AF", shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3, shadowRadius: 10, elevation: 5,
-  },
-  primaryBtnGrad: {
+    backgroundColor: "#2563EB", borderRadius: 14, paddingVertical: 15,
     flexDirection: "row", alignItems: "center", justifyContent: "center",
-    gap: 10, paddingVertical: 16,
+    gap: 8, marginTop: 16, marginBottom: 4,
   },
-  primaryBtnText: { fontSize: 16, fontWeight: "700", color: "white", fontFamily: "Inter_700Bold" },
-  secondaryBtn: { alignItems: "center", paddingVertical: 12 },
-  secondaryBtnText: { fontSize: 13, color: "#2563EB", fontFamily: "Inter_500Medium", textDecorationLine: "underline" },
-
-  termsText: {
-    fontSize: 11, color: "#94A3B8", textAlign: "center",
-    fontFamily: "Inter_400Regular", lineHeight: 16,
+  primaryBtnText: { color: "white", fontSize: 16, fontWeight: "800", fontFamily: "Inter_700Bold" },
+  disclaimer: {
+    fontSize: 10, color: "#94A3B8", textAlign: "center",
+    marginTop: 10, lineHeight: 14, fontFamily: "Inter_400Regular",
   },
-
-  backBtn: { flexDirection: "row", alignItems: "center", gap: 6 },
-  backText: { fontSize: 13, color: "#64748B", fontFamily: "Inter_400Regular" },
-  backRow: { flexDirection: "row", alignItems: "center", gap: 12 },
-  backBtnIcon: {
-    width: 36, height: 36, borderRadius: 10, backgroundColor: "#F1F5F9",
+  backLink: {
+    flexDirection: "row", alignItems: "center", justifyContent: "center",
+    gap: 4, marginTop: 14,
+  },
+  backLinkText: { fontSize: 13, color: "#64748B", fontFamily: "Inter_400Regular" },
+  avatarCircle: {
+    width: 72, height: 72, borderRadius: 36,
     alignItems: "center", justifyContent: "center",
+    alignSelf: "center", marginBottom: 12,
   },
-  newBadge: {
-    flexDirection: "row", alignItems: "center", gap: 6,
-    backgroundColor: "#ECFDF5", borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8,
-    borderWidth: 1, borderColor: "#A7F3D0", alignSelf: "flex-start",
+  avatarText: { fontSize: 32, fontWeight: "900", color: "white", fontFamily: "Inter_700Bold" },
+  welcomeName: {
+    fontSize: 20, fontWeight: "800", color: "#0F172A",
+    fontFamily: "Inter_700Bold", textAlign: "center", marginBottom: 6,
   },
-  newBadgeText: { fontSize: 12, color: "#065F46", fontFamily: "Inter_500Medium" },
-
-  roleCard: {
-    flexDirection: "row", alignItems: "center", gap: 14,
-    padding: 16, borderRadius: 18, borderWidth: 1.5,
-  },
-  roleCardIcon: { width: 52, height: 52, borderRadius: 16, alignItems: "center", justifyContent: "center", flexShrink: 0 },
-  roleCardText: { flex: 1 },
-  roleCardTitleRow: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 4 },
-  roleCardTitle: { fontSize: 16, fontWeight: "800", fontFamily: "Inter_700Bold" },
-  roleCardHindi: { fontSize: 12, color: "#94A3B8", fontFamily: "Inter_400Regular" },
-  roleCardDesc: { fontSize: 12, color: "#64748B", fontFamily: "Inter_400Regular", lineHeight: 17 },
-
-  rolePill: {
+  infoRow: {
     flexDirection: "row", alignItems: "center", gap: 5,
-    paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1,
+    justifyContent: "center", marginBottom: 10,
+  },
+  infoText: { fontSize: 13, color: "#64748B", fontFamily: "Inter_400Regular" },
+  rolePillWrap: {
+    flexDirection: "row", alignItems: "center", gap: 5,
+    paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20,
+    alignSelf: "center", marginBottom: 20,
   },
   rolePillText: { fontSize: 12, fontWeight: "700", fontFamily: "Inter_600SemiBold" },
-
-  wardPicker: {
-    flexDirection: "row", alignItems: "center", gap: 10,
-    borderWidth: 1.5, borderColor: "#E2E8F0", borderRadius: 14,
-    paddingHorizontal: 14, paddingVertical: 13, backgroundColor: "white",
+  roleOption: {
+    flexDirection: "row", alignItems: "center", gap: 14,
+    borderWidth: 1.5, borderRadius: 16, padding: 14, marginBottom: 12,
   },
-  wardPickerText: { flex: 1, fontSize: 14, color: "#0F172A", fontFamily: "Inter_400Regular" },
-  wardDropdown: {
-    borderWidth: 1.5, borderColor: "#E2E8F0", borderRadius: 14,
-    backgroundColor: "white", overflow: "hidden", marginTop: -4,
+  roleIconBox: {
+    width: 48, height: 48, borderRadius: 14,
+    alignItems: "center", justifyContent: "center", flexShrink: 0,
   },
-  wardOption: {
-    flexDirection: "row", alignItems: "center", justifyContent: "space-between",
-    paddingHorizontal: 14, paddingVertical: 11,
-    borderBottomWidth: 1, borderBottomColor: "#F8FAFC",
+  roleTextBox: { flex: 1 },
+  roleLabel: {
+    fontSize: 15, fontWeight: "700", color: "#0F172A",
+    fontFamily: "Inter_700Bold", marginBottom: 2,
   },
-  wardOptionSelected: { backgroundColor: "#EFF6FF" },
-  wardOptionText: { fontSize: 13, color: "#334155", fontFamily: "Inter_400Regular" },
-
-  secureBox: {
-    flexDirection: "row", alignItems: "flex-start", gap: 8,
-    backgroundColor: "#ECFDF5", borderRadius: 12, padding: 12,
-    borderWidth: 1, borderColor: "#A7F3D0",
+  roleDesc: {
+    fontSize: 11, color: "#64748B",
+    fontFamily: "Inter_400Regular", lineHeight: 15,
   },
-  secureText: { fontSize: 12, color: "#065F46", fontFamily: "Inter_400Regular", flex: 1 },
-
-  welcomeCard: {
-    backgroundColor: "#F8FAFC", borderRadius: 20, padding: 28,
-    alignItems: "center", gap: 12, borderWidth: 1, borderColor: "#E2E8F0",
+  modalOverlay: {
+    flex: 1, backgroundColor: "rgba(0,0,0,0.4)", justifyContent: "flex-end",
   },
-  welcomeAvatar: {
-    width: 80, height: 80, borderRadius: 40,
-    alignItems: "center", justifyContent: "center",
+  modalSheet: {
+    backgroundColor: "white", borderTopLeftRadius: 24,
+    borderTopRightRadius: 24, padding: 20, maxHeight: "75%",
   },
-  welcomeAvatarText: { fontSize: 32, fontWeight: "900", fontFamily: "Inter_700Bold" },
-  welcomeCheck: {
-    position: "absolute",
-    top: 28 + 80 - 16,
-    right: (width - 80) / 2 - 4,
-    width: 22, height: 22, borderRadius: 11,
-    backgroundColor: "#059669",
-    alignItems: "center", justifyContent: "center",
-    borderWidth: 2, borderColor: "white",
+  modalHeader: {
+    flexDirection: "row", justifyContent: "space-between",
+    alignItems: "center", marginBottom: 16,
   },
-  welcomeGreet: { fontSize: 14, color: "#64748B", fontFamily: "Inter_400Regular", marginTop: 8 },
-  welcomeName: { fontSize: 24, fontWeight: "800", color: "#0F172A", fontFamily: "Inter_700Bold" },
-  welcomeRolePill: {
-    flexDirection: "row", alignItems: "center", gap: 6,
-    paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, borderWidth: 1,
+  modalTitle: {
+    fontSize: 16, fontWeight: "800", color: "#0F172A", fontFamily: "Inter_700Bold",
   },
-  welcomeRoleText: { fontSize: 13, fontWeight: "700", fontFamily: "Inter_600SemiBold" },
-  welcomePhone: { flexDirection: "row", alignItems: "center", gap: 6, marginTop: 4 },
-  welcomePhoneText: { fontSize: 13, color: "#64748B", fontFamily: "Inter_400Regular" },
+  wardRow: {
+    flexDirection: "row", alignItems: "center", gap: 12,
+    paddingVertical: 13, paddingHorizontal: 4,
+    borderBottomWidth: 1, borderBottomColor: "#F1F5F9",
+  },
+  wardRowActive: {
+    backgroundColor: "#EFF6FF", borderRadius: 10, paddingHorizontal: 10,
+  },
+  wardRowText: {
+    flex: 1, fontSize: 14, color: "#374151", fontFamily: "Inter_400Regular",
+  },
 });

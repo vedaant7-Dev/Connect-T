@@ -55,7 +55,7 @@ export function AppSplash({ onFinish }: AppSplashProps) {
           <View style={[styles.stripe, { backgroundColor: "rgba(255,255,255,0.75)" }]} />
           <View style={[styles.stripe, { backgroundColor: "#22C55E" }]} />
         </View>
-        <Text style={styles.footerText}>Mumbai BMC  ·  JanSeva 2025</Text>
+        <Text style={styles.footerText}>ULMC Ulhasnagar  ·  JanSeva 2025</Text>
 
         {/* Continue button */}
         <TouchableOpacity

@@ -54,6 +54,10 @@ function RootLayoutNav() {
         name="complaint/[id]"
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="service/[id]"
+        options={{ headerShown: false }}
+      />
     </Stack>
   );
 }

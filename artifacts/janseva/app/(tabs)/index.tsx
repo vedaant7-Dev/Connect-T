@@ -15,11 +15,11 @@ import { useComplaints, ComplaintStatus } from "@/context/ComplaintContext";
 import { useAuth } from "@/context/AuthContext";
 
 const alertsAndNews = [
-  { id: "1", type: "alert", icon: "alert-triangle", color: "#DC2626", bg: "#FEE2E2", title: "Water Supply Restricted", body: "Area 4 (Dadar East): 8AM–2PM today. Store water in advance.", time: "2h ago" },
-  { id: "2", type: "news", icon: "info", color: "#2563EB", bg: "#DBEAFE", title: "Road Work Notice", body: "LT Marg repair from 26-Apr to 30-Apr. Expect delays — use alternate routes.", time: "5h ago" },
-  { id: "3", type: "alert", icon: "zap", color: "#D97706", bg: "#FEF3C7", title: "Planned Power Cut", body: "Sectors 11–14 (Mahim): 10AM–4PM on 27-Apr for transformer upgrade.", time: "Yesterday" },
-  { id: "4", type: "news", icon: "calendar", color: "#059669", bg: "#D1FAE5", title: "Community Cleanliness Drive", body: "Join BMC's ward-wide cleanliness drive this Sunday at 7AM — Shivaji Park.", time: "1d ago" },
-  { id: "5", type: "alert", icon: "cloud-drizzle", color: "#7C3AED", bg: "#EDE9FE", title: "Heavy Rain Warning", body: "IMD: Orange alert for Mumbai on 28-Apr. Avoid waterlogging-prone areas.", time: "3h ago" },
+  { id: "1", type: "alert", icon: "alert-triangle", color: "#DC2626", bg: "#FEE2E2", title: "Water Supply Restricted", body: "Camp 4 area: Supply from 8AM–2PM only today. Store water in advance.", time: "2h ago" },
+  { id: "2", type: "news", icon: "info", color: "#2563EB", bg: "#DBEAFE", title: "Road Repair Notice", body: "Station Road, Camp 4 repair from 26-Apr to 30-Apr. Expect delays.", time: "5h ago" },
+  { id: "3", type: "alert", icon: "zap", color: "#D97706", bg: "#FEF3C7", title: "Planned Power Cut", body: "Camp 2 & Camp 3: 10AM–4PM on 27-Apr for transformer upgrade.", time: "Yesterday" },
+  { id: "4", type: "news", icon: "calendar", color: "#059669", bg: "#D1FAE5", title: "Cleanliness Drive", body: "ULMC Swachh Ulhasnagar drive this Sunday 7AM — Camp 4 Municipal Ground.", time: "1d ago" },
+  { id: "5", type: "alert", icon: "cloud-drizzle", color: "#7C3AED", bg: "#EDE9FE", title: "Heavy Rain Warning", body: "IMD: Orange alert for Thane district on 28-Apr. Avoid low-lying areas.", time: "3h ago" },
 ];
 
 const quickServices = [
@@ -46,8 +46,6 @@ const categoryIcons: Record<string, string> = {
   drainage: "git-merge", streetlight: "sun", encroachment: "alert-triangle", other: "more-horizontal",
 };
 
-const greetings = ["Jai Bhim", "Jai Maharashtra", "Namaste", "Pranam"];
-
 function getGreeting(): string {
   const hour = new Date().getHours();
   if (hour < 12) return "Good Morning";
@@ -73,19 +71,23 @@ export default function HomeScreen() {
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const bottomPad = Platform.OS === "web" ? 34 : 0;
   const { complaints } = useComplaints();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   const recentComplaints = complaints.slice(0, 3);
   const pendingCount = complaints.filter((c) => ["submitted", "assigned", "in_progress"].includes(c.status)).length;
   const resolvedCount = complaints.filter((c) => c.status === "resolved").length;
   const roleColor = getRoleColor(user?.role);
 
-  const [notifOpen, setNotifOpen] = React.useState(false);
   const notifCount = alertsAndNews.length;
 
   const handleCall = (number: string) => {
     if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     Linking.openURL(`tel:${number}`);
+  };
+
+  const handleServiceTap = (categoryId: string) => {
+    if (Platform.OS !== "web") Haptics.selectionAsync();
+    router.push({ pathname: "/(tabs)/services", params: { category: categoryId } } as any);
   };
 
   const greeting = `${getGreeting()}, ${user?.name?.split(" ")[0] || "Citizen"} 👋`;
@@ -103,18 +105,18 @@ export default function HomeScreen() {
             <Text style={styles.greeting}>{greeting}</Text>
             <View style={styles.metaRow}>
               <View style={[styles.rolePill, { backgroundColor: roleColor.bg + "33", borderColor: "rgba(255,255,255,0.3)" }]}>
-                <Feather name={user?.role === "head_admin" ? "shield" : user?.role === "nagarsevak" ? "briefcase" : "user"} size={9} color="rgba(255,255,255,0.8)" />
+                <Feather
+                  name={user?.role === "head_admin" ? "shield" : user?.role === "nagarsevak" ? "briefcase" : "user"}
+                  size={9}
+                  color="rgba(255,255,255,0.8)"
+                />
                 <Text style={styles.rolePillText}>{getRoleLabel(user?.role)}</Text>
               </View>
-              <Text style={styles.wardText}>{user?.ward || "Ward 8 — Dadar"}</Text>
+              <Text style={styles.wardText}>{user?.ward || "Ulhasnagar"}</Text>
             </View>
           </View>
           <View style={styles.headerRight}>
-            <TouchableOpacity
-              onPress={() => setNotifOpen(!notifOpen)}
-              style={styles.notifBtn}
-              activeOpacity={0.82}
-            >
+            <TouchableOpacity style={styles.notifBtn} activeOpacity={0.82}>
               <Feather name="bell" size={18} color="white" />
               {notifCount > 0 && (
                 <View style={styles.notifBadge}>
@@ -126,12 +128,12 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.alertBanner}>
-          <View style={styles.alertIcon}>
+          <View style={styles.alertIconBox}>
             <Feather name="info" size={14} color="#F59E0B" />
           </View>
           <View style={styles.alertText}>
-            <Text style={styles.alertTitle}>BMC Update</Text>
-            <Text style={styles.alertBody}>Water supply restricted in Area 4 — 8AM to 2PM today</Text>
+            <Text style={styles.alertTitle}>ULMC Update</Text>
+            <Text style={styles.alertBody}>Water supply restricted in Camp 4 — 8AM to 2PM today</Text>
           </View>
           <Feather name="chevron-right" size={14} color="rgba(255,255,255,0.4)" />
         </View>
@@ -142,7 +144,7 @@ export default function HomeScreen() {
         contentContainerStyle={[styles.content, { paddingBottom: bottomPad + 100 }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* MAIN FEATURE — REPORT A PROBLEM */}
+        {/* REPORT A PROBLEM CTA */}
         <TouchableOpacity style={styles.complaintCTA} onPress={() => router.push("/complaint/new")} activeOpacity={0.88}>
           <LinearGradient colors={["#1E3A8A", "#2563EB", "#3B82F6"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.complaintCTAGrad}>
             <View style={styles.complaintCTAIcon}>
@@ -192,12 +194,12 @@ export default function HomeScreen() {
           )}
         </View>
 
-        {/* ALERTS & IMPORTANT NEWS */}
+        {/* ALERTS & NEWS */}
         <View style={styles.alertsSection}>
           <View style={styles.alertsSectionHeader}>
             <View style={styles.alertsSectionTitleRow}>
               <View style={styles.alertsDot} />
-              <Text style={styles.alertsSectionTitle}>Alerts & Important News</Text>
+              <Text style={styles.alertsSectionTitle}>Alerts & News</Text>
             </View>
             <View style={styles.alertsLivePill}>
               <View style={styles.alertsLiveDot} />
@@ -275,9 +277,14 @@ export default function HomeScreen() {
         <View style={styles.servicesCard}>
           <View style={styles.servicesGrid}>
             {quickServices.map((svc) => (
-              <TouchableOpacity key={svc.id} style={styles.serviceItem} activeOpacity={0.8}>
+              <TouchableOpacity
+                key={svc.id}
+                style={styles.serviceItem}
+                activeOpacity={0.8}
+                onPress={() => handleServiceTap(svc.id)}
+              >
                 <View style={[styles.serviceIcon, { backgroundColor: svc.bg }]}>
-                  <Feather name={svc.icon as any} size={20} color={svc.color} />
+                  <Feather name={svc.icon as any} size={22} color={svc.color} />
                 </View>
                 <Text style={styles.serviceLabel}>{svc.label}</Text>
               </TouchableOpacity>
@@ -309,30 +316,15 @@ const styles = StyleSheet.create({
   headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 },
   greeting: { fontSize: 18, fontWeight: "800", color: "#FFFFFF", fontFamily: "Inter_700Bold", letterSpacing: -0.3, marginBottom: 6 },
   metaRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  rolePill: {
-    flexDirection: "row", alignItems: "center", gap: 4,
-    paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20,
-    borderWidth: 1,
-  },
+  rolePill: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20, borderWidth: 1 },
   rolePillText: { fontSize: 9, fontWeight: "700", color: "rgba(255,255,255,0.85)", fontFamily: "Inter_600SemiBold" },
   wardText: { fontSize: 10, color: "rgba(255,255,255,0.55)", fontFamily: "Inter_400Regular" },
   headerRight: { gap: 6, alignItems: "flex-end" },
-  notifBtn: {
-    width: 42, height: 42, borderRadius: 13,
-    backgroundColor: "rgba(255,255,255,0.18)",
-    borderWidth: 1, borderColor: "rgba(255,255,255,0.25)",
-    alignItems: "center", justifyContent: "center",
-  },
-  notifBadge: {
-    position: "absolute", top: -4, right: -4,
-    width: 17, height: 17, borderRadius: 9,
-    backgroundColor: "#DC2626",
-    alignItems: "center", justifyContent: "center",
-    borderWidth: 1.5, borderColor: "white",
-  },
+  notifBtn: { width: 42, height: 42, borderRadius: 13, backgroundColor: "rgba(255,255,255,0.18)", borderWidth: 1, borderColor: "rgba(255,255,255,0.25)", alignItems: "center", justifyContent: "center" },
+  notifBadge: { position: "absolute", top: -4, right: -4, width: 17, height: 17, borderRadius: 9, backgroundColor: "#DC2626", alignItems: "center", justifyContent: "center", borderWidth: 1.5, borderColor: "white" },
   notifBadgeText: { fontSize: 8, fontWeight: "900", color: "white", fontFamily: "Inter_700Bold" },
   alertBanner: { flexDirection: "row", gap: 10, backgroundColor: "rgba(255,255,255,0.12)", borderRadius: 14, padding: 12, alignItems: "center" },
-  alertIcon: { width: 28, height: 28, borderRadius: 8, backgroundColor: "rgba(245,158,11,0.2)", alignItems: "center", justifyContent: "center", flexShrink: 0 },
+  alertIconBox: { width: 28, height: 28, borderRadius: 8, backgroundColor: "rgba(245,158,11,0.2)", alignItems: "center", justifyContent: "center", flexShrink: 0 },
   alertText: { flex: 1 },
   alertTitle: { fontSize: 12, fontWeight: "700", color: "#FDE68A", fontFamily: "Inter_700Bold", marginBottom: 1 },
   alertBody: { fontSize: 11, color: "rgba(255,255,255,0.7)", fontFamily: "Inter_400Regular", lineHeight: 15 },
@@ -362,10 +354,32 @@ const styles = StyleSheet.create({
   noComplaintsText: { fontSize: 13, color: "#2563EB", fontFamily: "Inter_500Medium", fontWeight: "600" },
   utilityRow: { flexDirection: "row", gap: 10, marginBottom: 18 },
   servicesCard: { backgroundColor: "#FFFFFF", borderRadius: 18, padding: 16, marginBottom: 18, shadowColor: "#1E40AF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
-  servicesGrid: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
-  serviceItem: { width: "21%", alignItems: "center", gap: 6 },
-  serviceIcon: { width: 54, height: 54, borderRadius: 16, alignItems: "center", justifyContent: "center" },
-  serviceLabel: { fontSize: 10, fontWeight: "700", color: "#475569", textAlign: "center", fontFamily: "Inter_600SemiBold" },
+  servicesGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: 14,
+  },
+  serviceItem: {
+    width: 72,
+    alignItems: "center",
+    gap: 6,
+  },
+  serviceIcon: {
+    width: 58,
+    height: 58,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  serviceLabel: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#475569",
+    textAlign: "center",
+    fontFamily: "Inter_600SemiBold",
+    lineHeight: 13,
+  },
   emergencyGrid: { flexDirection: "row", gap: 10, marginBottom: 18 },
   emergencyItem: { flex: 1, backgroundColor: "#FFFFFF", borderRadius: 16, padding: 12, alignItems: "center", gap: 4, shadowColor: "#1E40AF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
   emergencyIconBox: { width: 44, height: 44, borderRadius: 14, alignItems: "center", justifyContent: "center", marginBottom: 2 },
@@ -379,11 +393,7 @@ const styles = StyleSheet.create({
   alertsLivePill: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: "#FEE2E2", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 },
   alertsLiveDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: "#DC2626" },
   alertsLiveText: { fontSize: 9, fontWeight: "900", color: "#DC2626", fontFamily: "Inter_700Bold", letterSpacing: 1 },
-  alertCard: {
-    width: 230, backgroundColor: "white", borderRadius: 16, overflow: "hidden",
-    shadowColor: "#1E40AF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3,
-    borderWidth: 1, borderColor: "#F1F5F9",
-  },
+  alertCard: { width: 230, backgroundColor: "white", borderRadius: 16, overflow: "hidden", shadowColor: "#1E40AF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3, borderWidth: 1, borderColor: "#F1F5F9" },
   alertCardIcon: { padding: 14, paddingBottom: 0, alignSelf: "flex-start" },
   alertCardBody: { padding: 12 },
   alertCardRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 6 },

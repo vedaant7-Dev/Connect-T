@@ -10,6 +10,8 @@ export interface User {
   role: UserRole;
   ward?: string;
   wardNumber?: string;
+  age?: number;
+  email?: string;
   avatarColor?: string;
   createdAt?: string;
 }
