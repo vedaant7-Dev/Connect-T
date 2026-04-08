@@ -19,6 +19,7 @@ import { router } from "expo-router";
 
 import { useAuth, UserRole } from "@/context/AuthContext";
 import { ulhasnagarWards } from "@/data/mumbaiServices";
+import { useLanguage, languageOptions, Language } from "@/context/LanguageContext";
 
 type Step = "phone" | "welcome_back" | "role" | "details";
 
@@ -35,6 +36,7 @@ export default function LoginScreen() {
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === "web" ? 44 : insets.top;
   const { checkPhone, register, loginWithPhone } = useAuth();
+  const { language, setLanguage, t } = useLanguage();
 
   const [step, setStep] = useState<Step>("phone");
   const [loading, setLoading] = useState(false);
@@ -159,6 +161,22 @@ export default function LoginScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
+          {/* Language Selector */}
+          <View style={styles.langRow}>
+            {languageOptions.map((opt) => (
+              <TouchableOpacity
+                key={opt.code}
+                style={[styles.langPill, language === opt.code && styles.langPillActive]}
+                onPress={() => setLanguage(opt.code)}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.langPillText, language === opt.code && styles.langPillTextActive]}>
+                  {opt.nativeLabel}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
           {/* Logo */}
           <View style={styles.logoBox}>
             <Image
@@ -166,7 +184,7 @@ export default function LoginScreen() {
               style={styles.logo}
               contentFit="contain"
             />
-            <Text style={styles.brandSub}>Powered by Vanchit Bahujan Aaghadi</Text>
+            <Text style={styles.brandSub}>{t("poweredBy")}</Text>
           </View>
 
           {/* ── STEP: Phone ─────────────────────────────────────────────── */}
@@ -462,6 +480,23 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1 },
   scroll: { padding: 20, paddingBottom: 40, alignItems: "center" },
+  langRow: {
+    flexDirection: "row", gap: 8, marginBottom: 12, alignSelf: "center",
+  },
+  langPill: {
+    paddingHorizontal: 14, paddingVertical: 6, borderRadius: 20,
+    backgroundColor: "rgba(255,255,255,0.12)", borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.2)",
+  },
+  langPillActive: {
+    backgroundColor: "rgba(255,255,255,0.25)", borderColor: "rgba(255,255,255,0.5)",
+  },
+  langPillText: {
+    fontSize: 12, color: "rgba(255,255,255,0.55)", fontFamily: "Inter_600SemiBold", fontWeight: "700",
+  },
+  langPillTextActive: {
+    color: "white",
+  },
   logoBox: { alignItems: "center", marginBottom: 10, marginTop: 8 },
   logo: { width: 120, height: 120, marginBottom: 6 },
   brandSub: {

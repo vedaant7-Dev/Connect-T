@@ -18,6 +18,7 @@ import { AppSplash } from "@/components/AppSplash";
 import { ComplaintProvider } from "@/context/ComplaintContext";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { FeedProvider } from "@/context/FeedContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -83,22 +84,24 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <ComplaintProvider>
-              <FeedProvider>
-                <GestureHandlerRootView style={{ flex: 1 }}>
-                  <KeyboardProvider>
-                    <AuthGate>
-                      <RootLayoutNav />
-                    </AuthGate>
-                    {!splashDone && (
-                      <AppSplash onFinish={() => setSplashDone(true)} />
-                    )}
-                  </KeyboardProvider>
-                </GestureHandlerRootView>
-              </FeedProvider>
-            </ComplaintProvider>
-          </AuthProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              <ComplaintProvider>
+                <FeedProvider>
+                  <GestureHandlerRootView style={{ flex: 1 }}>
+                    <KeyboardProvider>
+                      <AuthGate>
+                        <RootLayoutNav />
+                      </AuthGate>
+                      {!splashDone && (
+                        <AppSplash onFinish={() => setSplashDone(true)} />
+                      )}
+                    </KeyboardProvider>
+                  </GestureHandlerRootView>
+                </FeedProvider>
+              </ComplaintProvider>
+            </AuthProvider>
+          </LanguageProvider>
         </QueryClientProvider>
       </ErrorBoundary>
     </SafeAreaProvider>

@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, Linking, Platform,
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, Linking, Platform, Modal,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
@@ -13,13 +13,14 @@ import { SectionHeader } from "@/components/SectionHeader";
 import { emergencyContacts } from "@/data/mumbaiServices";
 import { useComplaints, ComplaintStatus } from "@/context/ComplaintContext";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 const alertsAndNews = [
-  { id: "1", type: "alert", icon: "alert-triangle", color: "#DC2626", bg: "#FEE2E2", title: "Water Supply Restricted", body: "Camp 4 area: Supply from 8AM–2PM only today. Store water in advance.", time: "2h ago" },
-  { id: "2", type: "news", icon: "info", color: "#2563EB", bg: "#DBEAFE", title: "Road Repair Notice", body: "Station Road, Camp 4 repair from 26-Apr to 30-Apr. Expect delays.", time: "5h ago" },
-  { id: "3", type: "alert", icon: "zap", color: "#D97706", bg: "#FEF3C7", title: "Planned Power Cut", body: "Camp 2 & Camp 3: 10AM–4PM on 27-Apr for transformer upgrade.", time: "Yesterday" },
-  { id: "4", type: "news", icon: "calendar", color: "#059669", bg: "#D1FAE5", title: "Cleanliness Drive", body: "ULMC Swachh Ulhasnagar drive this Sunday 7AM — Camp 4 Municipal Ground.", time: "1d ago" },
-  { id: "5", type: "alert", icon: "cloud-drizzle", color: "#7C3AED", bg: "#EDE9FE", title: "Heavy Rain Warning", body: "IMD: Orange alert for Thane district on 28-Apr. Avoid low-lying areas.", time: "3h ago" },
+  { id: "1", type: "alert", icon: "alert-triangle", color: "#DC2626", bg: "#FEE2E2", title: "Water Supply Restricted", body: "Camp 4 area: Supply from 8AM–2PM only today. Store water in advance.", detail: "Due to maintenance work on the main pipeline near Camp 4, water supply will be restricted from 8AM to 2PM today (27-Apr-2025). Residents are advised to store water in advance. The Ulhasnagar Municipal Corporation (ULMC) Water Department is working to restore full supply by evening. For complaints, contact the ULMC helpline at 0251-2721100.", source: "ULMC Water Dept.", date: "27 Apr 2025", time: "2h ago" },
+  { id: "2", type: "news", icon: "info", color: "#2563EB", bg: "#DBEAFE", title: "Road Repair Notice", body: "Station Road, Camp 4 repair from 26-Apr to 30-Apr. Expect delays.", detail: "The ULMC Road Division has started repair and resurfacing work on Station Road, Camp 4 (from Ambernath Junction to Camp 4 Market). Work will continue from 26-Apr to 30-Apr 2025. Heavy vehicles are restricted during 9AM-6PM. Commuters are advised to use alternate routes via Manpada Road. The estimated cost of repair is Rs 45 Lakhs under the Smart City Mission.", source: "ULMC Road Division", date: "25 Apr 2025", time: "5h ago" },
+  { id: "3", type: "alert", icon: "zap", color: "#D97706", bg: "#FEF3C7", title: "Planned Power Cut", body: "Camp 2 & Camp 3: 10AM–4PM on 27-Apr for transformer upgrade.", detail: "MSEDCL has scheduled a planned power outage in Camp 2 and Camp 3 areas on 27-Apr-2025 from 10AM to 4PM for upgrading the 132KV transformer at Camp 2 substation. This upgrade will improve power supply reliability for over 15,000 households. Hospitals and emergency services will have backup generator arrangements. For updates, call MSEDCL helpline 1912.", source: "MSEDCL Ulhasnagar", date: "26 Apr 2025", time: "Yesterday" },
+  { id: "4", type: "news", icon: "calendar", color: "#059669", bg: "#D1FAE5", title: "Cleanliness Drive", body: "ULMC Swachh Ulhasnagar drive this Sunday 7AM — Camp 4 Municipal Ground.", detail: "ULMC is organizing a Swachh Ulhasnagar Cleanliness Drive this Sunday (28-Apr-2025) starting at 7AM from Camp 4 Municipal Ground. All citizens are invited to participate. Free gloves, masks, and cleaning equipment will be provided. Nagarsevaks from all 14 wards will lead teams. Refreshments will be served. Special awards for the cleanest ward will be announced. Register at the ULMC office or call 0251-2721100.", source: "ULMC Swachh Bharat Cell", date: "25 Apr 2025", time: "1d ago" },
+  { id: "5", type: "alert", icon: "cloud-drizzle", color: "#7C3AED", bg: "#EDE9FE", title: "Heavy Rain Warning", body: "IMD: Orange alert for Thane district on 28-Apr. Avoid low-lying areas.", detail: "The India Meteorological Department (IMD) has issued an Orange Alert for Thane district including Ulhasnagar on 28-Apr-2025. Heavy to very heavy rainfall (115-204 mm) is expected. Citizens in low-lying areas near Ulhas River and Waldhuni River are advised to stay alert. NDRF teams are on standby. Avoid waterlogged roads. Emergency helplines: ULMC Control Room 0251-2721100, Fire Brigade 101, Police 100.", source: "IMD Mumbai & ULMC Disaster Cell", date: "27 Apr 2025", time: "3h ago" },
 ];
 
 const quickServices = [
@@ -72,6 +73,8 @@ export default function HomeScreen() {
   const bottomPad = Platform.OS === "web" ? 34 : 0;
   const { complaints } = useComplaints();
   const { user } = useAuth();
+  const { t } = useLanguage();
+  const [selectedAlert, setSelectedAlert] = useState<typeof alertsAndNews[0] | null>(null);
 
   const recentComplaints = complaints.slice(0, 3);
   const pendingCount = complaints.filter((c) => ["submitted", "assigned", "in_progress"].includes(c.status)).length;
@@ -208,7 +211,7 @@ export default function HomeScreen() {
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10, paddingHorizontal: 2, paddingBottom: 2 }}>
             {alertsAndNews.map((item) => (
-              <TouchableOpacity key={item.id} style={styles.alertCard} activeOpacity={0.88}>
+              <TouchableOpacity key={item.id} style={styles.alertCard} activeOpacity={0.88} onPress={() => setSelectedAlert(item)}>
                 <View style={[styles.alertCardIcon, { backgroundColor: item.bg }]}>
                   <Feather name={item.icon as any} size={16} color={item.color} />
                 </View>
@@ -216,7 +219,7 @@ export default function HomeScreen() {
                   <View style={styles.alertCardRow}>
                     <View style={[styles.alertTypePill, { backgroundColor: item.bg }]}>
                       <Text style={[styles.alertTypeText, { color: item.color }]}>
-                        {item.type === "alert" ? "⚠ Alert" : "📢 News"}
+                        {item.type === "alert" ? `⚠ ${t("alert")}` : `📢 ${t("news")}`}
                       </Text>
                     </View>
                     <Text style={styles.alertCardTime}>{item.time}</Text>
@@ -306,6 +309,45 @@ export default function HomeScreen() {
           ))}
         </View>
       </ScrollView>
+
+      {/* Alert Detail Modal */}
+      <Modal visible={!!selectedAlert} transparent animationType="fade" onRequestClose={() => setSelectedAlert(null)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalSheet}>
+            <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 500 }}>
+              {selectedAlert && (
+                <>
+                  <View style={[styles.modalIconWrap, { backgroundColor: selectedAlert.bg }]}>
+                    <Feather name={selectedAlert.icon as any} size={28} color={selectedAlert.color} />
+                  </View>
+                  <View style={[styles.modalTypePill, { backgroundColor: selectedAlert.bg }]}>
+                    <Text style={[styles.modalTypeText, { color: selectedAlert.color }]}>
+                      {selectedAlert.type === "alert" ? `⚠ ${t("alert")}` : `📢 ${t("news")}`}
+                    </Text>
+                  </View>
+                  <Text style={styles.modalTitle}>{selectedAlert.title}</Text>
+                  <View style={styles.modalMetaRow}>
+                    <Feather name="calendar" size={12} color="#94A3B8" />
+                    <Text style={styles.modalMetaText}>{selectedAlert.date}</Text>
+                    <View style={styles.modalMetaDot} />
+                    <Feather name="clock" size={12} color="#94A3B8" />
+                    <Text style={styles.modalMetaText}>{selectedAlert.time}</Text>
+                  </View>
+                  <View style={styles.modalDivider} />
+                  <Text style={styles.modalBody}>{selectedAlert.detail}</Text>
+                  <View style={styles.modalSourceRow}>
+                    <Feather name="info" size={12} color="#64748B" />
+                    <Text style={styles.modalSourceText}>Source: {selectedAlert.source}</Text>
+                  </View>
+                </>
+              )}
+            </ScrollView>
+            <TouchableOpacity style={styles.modalCloseBtn} onPress={() => setSelectedAlert(null)} activeOpacity={0.85}>
+              <Text style={styles.modalCloseBtnText}>{t("cancel")}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -402,4 +444,47 @@ const styles = StyleSheet.create({
   alertCardTime: { fontSize: 10, color: "#94A3B8", fontFamily: "Inter_400Regular" },
   alertCardTitle: { fontSize: 13, fontWeight: "700", color: "#0F172A", fontFamily: "Inter_700Bold", marginBottom: 4 },
   alertCardDesc: { fontSize: 11, color: "#64748B", fontFamily: "Inter_400Regular", lineHeight: 16 },
+  modalOverlay: {
+    flex: 1, backgroundColor: "rgba(0,0,0,0.5)",
+    alignItems: "center", justifyContent: "center", padding: 24,
+  },
+  modalSheet: {
+    backgroundColor: "white", borderRadius: 24, padding: 24, width: "100%",
+    maxWidth: 420, alignItems: "center",
+    shadowColor: "#000", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.2, shadowRadius: 24, elevation: 12,
+  },
+  modalIconWrap: {
+    width: 64, height: 64, borderRadius: 32,
+    alignItems: "center", justifyContent: "center", marginBottom: 12, alignSelf: "center",
+  },
+  modalTypePill: {
+    paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20,
+    alignSelf: "center", marginBottom: 10,
+  },
+  modalTypeText: { fontSize: 11, fontWeight: "700", fontFamily: "Inter_600SemiBold" },
+  modalTitle: {
+    fontSize: 18, fontWeight: "800", color: "#0F172A", fontFamily: "Inter_700Bold",
+    textAlign: "center", marginBottom: 8,
+  },
+  modalMetaRow: {
+    flexDirection: "row", alignItems: "center", gap: 5,
+    justifyContent: "center", marginBottom: 12,
+  },
+  modalMetaText: { fontSize: 11, color: "#94A3B8", fontFamily: "Inter_400Regular" },
+  modalMetaDot: { width: 3, height: 3, borderRadius: 2, backgroundColor: "#CBD5E1" },
+  modalDivider: { height: 1, backgroundColor: "#F1F5F9", width: "100%", marginBottom: 14 },
+  modalBody: {
+    fontSize: 13, color: "#374151", fontFamily: "Inter_400Regular",
+    lineHeight: 20, textAlign: "left", width: "100%",
+  },
+  modalSourceRow: {
+    flexDirection: "row", alignItems: "center", gap: 6,
+    marginTop: 14, paddingTop: 12, borderTopWidth: 1, borderTopColor: "#F1F5F9", width: "100%",
+  },
+  modalSourceText: { fontSize: 11, color: "#64748B", fontFamily: "Inter_400Regular", flex: 1 },
+  modalCloseBtn: {
+    width: "100%", paddingVertical: 14, borderRadius: 14, marginTop: 16,
+    alignItems: "center", backgroundColor: "#F1F5F9", borderWidth: 1, borderColor: "#E2E8F0",
+  },
+  modalCloseBtnText: { fontSize: 14, fontWeight: "700", color: "#64748B", fontFamily: "Inter_700Bold" },
 });

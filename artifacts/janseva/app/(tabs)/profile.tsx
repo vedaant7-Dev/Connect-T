@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 import { useComplaints } from "@/context/ComplaintContext";
+import { useLanguage, languageOptions, Language } from "@/context/LanguageContext";
 
 const roleConfig = {
   citizen: {
@@ -57,7 +58,9 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { user, logout } = useAuth();
   const { complaints } = useComplaints();
+  const { language, setLanguage, t } = useLanguage();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showLangModal, setShowLangModal] = useState(false);
 
   if (!user) {
     return (
@@ -244,9 +247,32 @@ export default function ProfileScreen() {
           </View>
         </View>
 
+        {/* Language */}
+        <View style={styles.section}>
+          <Text style={styles.sectionLabel}>{t("language").toUpperCase()}</Text>
+          <View style={styles.card}>
+            <TouchableOpacity
+              style={styles.actionRow}
+              onPress={() => setShowLangModal(true)}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.actionIcon, { backgroundColor: "#EFF6FF" }]}>
+                <Feather name="globe" size={16} color="#2563EB" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.actionLabel}>{t("changeLanguage")}</Text>
+                <Text style={styles.actionSub}>
+                  {languageOptions.find((l) => l.code === language)?.nativeLabel} ({languageOptions.find((l) => l.code === language)?.label})
+                </Text>
+              </View>
+              <Feather name="chevron-right" size={16} color="#CBD5E1" />
+            </TouchableOpacity>
+          </View>
+        </View>
+
         {/* Useful Links */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>USEFUL LINKS</Text>
+          <Text style={styles.sectionLabel}>{t("usefulLinks").toUpperCase()}</Text>
           <View style={styles.card}>
             {usefulLinks.map((link, idx, arr) => (
               <TouchableOpacity
@@ -280,6 +306,48 @@ export default function ProfileScreen() {
           </View>
         </TouchableOpacity>
       </ScrollView>
+
+      {/* Language Selection Modal */}
+      <Modal visible={showLangModal} transparent animationType="fade" onRequestClose={() => setShowLangModal(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalSheet}>
+            <View style={styles.modalIconWrap}>
+              <Feather name="globe" size={28} color="#2563EB" />
+            </View>
+            <Text style={styles.modalTitle}>{t("selectLanguage")}</Text>
+            <View style={{ width: "100%", gap: 8, marginTop: 8 }}>
+              {languageOptions.map((opt) => (
+                <TouchableOpacity
+                  key={opt.code}
+                  style={[
+                    styles.langOption,
+                    language === opt.code && styles.langOptionActive,
+                  ]}
+                  onPress={() => { setLanguage(opt.code); setShowLangModal(false); }}
+                  activeOpacity={0.8}
+                >
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.langOptionLabel, language === opt.code && { color: "#2563EB" }]}>
+                      {opt.nativeLabel}
+                    </Text>
+                    <Text style={styles.langOptionSub}>{opt.label}</Text>
+                  </View>
+                  {language === opt.code && (
+                    <Feather name="check-circle" size={20} color="#2563EB" />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+            <TouchableOpacity
+              style={styles.modalCancelBtn}
+              onPress={() => setShowLangModal(false)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.modalCancelText}>{t("cancel")}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       {/* Custom Logout Confirmation Modal */}
       <Modal visible={showLogoutModal} transparent animationType="fade" onRequestClose={() => setShowLogoutModal(false)}>
@@ -388,4 +456,18 @@ const styles = StyleSheet.create({
     paddingVertical: 14, borderRadius: 14, backgroundColor: "#DC2626",
   },
   modalLogoutText: { fontSize: 14, fontWeight: "700", color: "white", fontFamily: "Inter_700Bold" },
+  langOption: {
+    flexDirection: "row", alignItems: "center", gap: 12,
+    paddingHorizontal: 16, paddingVertical: 14, borderRadius: 14,
+    backgroundColor: "#F8FAFC", borderWidth: 1.5, borderColor: "#F1F5F9",
+  },
+  langOptionActive: {
+    backgroundColor: "#EFF6FF", borderColor: "#BFDBFE",
+  },
+  langOptionLabel: {
+    fontSize: 15, fontWeight: "700", color: "#0F172A", fontFamily: "Inter_700Bold",
+  },
+  langOptionSub: {
+    fontSize: 11, color: "#94A3B8", fontFamily: "Inter_400Regular", marginTop: 1,
+  },
 });

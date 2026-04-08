@@ -59,9 +59,22 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - `artifacts/janseva/components/AppSplash.tsx` — Animated splash (LinearGradient + multi-phase)
 
 ### Splash Screen
-- True `LinearGradient` background: `#060F24 → #0C1A3A → #1E3A8A → #1E40AF → #2563EB`
-- Phase sequence: logo spring → text slide → dots stagger → ripple burst → fade out
+- True `LinearGradient` background: `#0F1D42 → #1E3A8A → #2563EB → #3B82F6 → #60A5FA`
+- "Powered by Vanchit Bahujan Aaghadi" shown below taglines
 - `useNativeDriver: Platform.OS !== "web"` — no warnings on web
+
+### Language System
+- `LanguageContext` — supports English, Hindi (हिन्दी), Marathi (मराठी)
+- Language selector pills on login screen (top)
+- Language change option in Profile → Language section (opens modal)
+- Saved to AsyncStorage (`janseva_language` key)
+- All UI strings available via `t("key")` from `useLanguage()` hook
+- Translations file: `context/LanguageContext.tsx` (includes all translations inline)
+
+### Alerts Detail
+- Home screen alerts are clickable → opens modal with full details
+- Each alert has: title, body, detail (full text), source, date
+- Modal shows icon, type badge, title, date/time meta, full detail text, source
 
 ### Roles
 - `citizen` — submit/track complaints, view feed
