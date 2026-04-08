@@ -28,19 +28,18 @@ function AnimatedTabBar(props: any) {
           left: 0,
           right: 0,
           height: TAB_HEIGHT,
-          borderTopWidth: 1,
-          borderTopColor: "#E2E8F0",
-          overflow: "hidden",
         },
         tabBarAnimatedStyle,
       ]}
     >
-      {isIOS ? (
-        <BlurView intensity={100} tint={isDark ? "dark" : "light"} style={StyleSheet.absoluteFill} />
-      ) : (
-        <View style={[StyleSheet.absoluteFill, { backgroundColor: "#FFFFFF" }]} />
-      )}
-      <View style={{ flex: 1, flexDirection: "row", paddingTop: 8, paddingBottom: BOTTOM_PAD }}>
+      <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, overflow: "hidden", borderTopWidth: 1, borderTopColor: "#E2E8F0" }}>
+        {isIOS ? (
+          <BlurView intensity={100} tint={isDark ? "dark" : "light"} style={StyleSheet.absoluteFill} />
+        ) : (
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: "#FFFFFF" }]} />
+        )}
+      </View>
+      <View style={{ flex: 1, flexDirection: "row", alignItems: "center", paddingBottom: BOTTOM_PAD }}>
         {state.routes.map((route: any, index: number) => {
           const { options } = descriptors[route.key];
 
@@ -74,31 +73,30 @@ function AnimatedTabBar(props: any) {
                 onPress={onPress}
                 onLongPress={onLongPress}
                 activeOpacity={0.8}
-                style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+                style={{ flex: 1, alignItems: "center", justifyContent: "center", marginTop: -28 }}
                 accessibilityRole="button"
                 accessibilityState={isFocused ? { selected: true } : {}}
                 accessibilityLabel="SOS"
               >
                 <View
                   style={{
-                    width: 58,
-                    height: 58,
-                    borderRadius: 29,
+                    width: 60,
+                    height: 60,
+                    borderRadius: 30,
                     backgroundColor: isFocused ? "#B91C1C" : "#DC2626",
                     alignItems: "center",
                     justifyContent: "center",
-                    marginTop: -22,
-                    borderWidth: 3.5,
+                    borderWidth: 4,
                     borderColor: "white",
                     shadowColor: "#DC2626",
-                    shadowOffset: { width: 0, height: 6 },
-                    shadowOpacity: 0.45,
-                    shadowRadius: 12,
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.4,
+                    shadowRadius: 10,
                     elevation: 10,
-                    gap: 2,
+                    gap: 1,
                   }}
                 >
-                  <Feather name="phone-call" size={17} color="white" />
+                  <Feather name="phone-call" size={18} color="white" />
                   <Text
                     style={{
                       fontSize: 8,
@@ -131,7 +129,7 @@ function AnimatedTabBar(props: any) {
               onPress={onPress}
               onLongPress={onLongPress}
               activeOpacity={0.8}
-              style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
+              style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingTop: 6 }}
               accessibilityRole="button"
               accessibilityState={isFocused ? { selected: true } : {}}
               accessibilityLabel={label}
