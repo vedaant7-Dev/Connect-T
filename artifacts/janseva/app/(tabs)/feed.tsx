@@ -11,39 +11,55 @@ import { useFeed, FeedPost, PostType } from "@/context/FeedContext";
 import { useAuth } from "@/context/AuthContext";
 import { useComplaints, Complaint, ComplaintStatus } from "@/context/ComplaintContext";
 import { useRouter } from "expo-router";
+import { useLanguage } from "@/context/LanguageContext";
 
 type FeedTab = "posts" | "active" | "resolved";
 
-const postTypeConfig: Record<PostType, { label: string; color: string; bg: string; icon: string }> = {
-  announcement: { label: "Announcement", color: "#DC2626", bg: "#FEE2E2", icon: "alert-circle" },
-  update: { label: "Update", color: "#059669", bg: "#D1FAE5", icon: "check-circle" },
-  complaint: { label: "Issue", color: "#D97706", bg: "#FEF3C7", icon: "alert-triangle" },
-  general: { label: "General", color: "#2563EB", bg: "#DBEAFE", icon: "message-circle" },
+const postTypeLabelKeys: Record<PostType, string> = {
+  announcement: "announcement",
+  update: "update",
+  complaint: "issue",
+  general: "general",
 };
 
-const statusConfig: Record<ComplaintStatus, { label: string; color: string; bg: string; icon: string }> = {
-  submitted: { label: "Submitted", color: "#D97706", bg: "#FEF3C7", icon: "clock" },
-  assigned: { label: "Assigned", color: "#2563EB", bg: "#DBEAFE", icon: "user-check" },
-  in_progress: { label: "In Progress", color: "#7C3AED", bg: "#EDE9FE", icon: "tool" },
-  resolved: { label: "Resolved", color: "#059669", bg: "#D1FAE5", icon: "check-circle" },
-  rejected: { label: "Rejected", color: "#DC2626", bg: "#FEE2E2", icon: "x-circle" },
+const postTypeConfig: Record<PostType, { color: string; bg: string; icon: string }> = {
+  announcement: { color: "#DC2626", bg: "#FEE2E2", icon: "alert-circle" },
+  update: { color: "#059669", bg: "#D1FAE5", icon: "check-circle" },
+  complaint: { color: "#D97706", bg: "#FEF3C7", icon: "alert-triangle" },
+  general: { color: "#2563EB", bg: "#DBEAFE", icon: "message-circle" },
 };
 
-const categoryConfig: Record<string, { label: string; icon: string; color: string; bg: string }> = {
-  roads: { label: "Roads", icon: "truck", color: "#92400E", bg: "#FEF3C7" },
-  water: { label: "Water", icon: "droplet", color: "#0369A1", bg: "#BAE6FD" },
-  electricity: { label: "Electricity", icon: "zap", color: "#D97706", bg: "#FEF3C7" },
-  garbage: { label: "Garbage", icon: "trash-2", color: "#059669", bg: "#D1FAE5" },
-  drainage: { label: "Drainage", icon: "git-merge", color: "#0EA5E9", bg: "#EFF6FF" },
-  streetlight: { label: "Street Light", icon: "sun", color: "#7C3AED", bg: "#EDE9FE" },
-  encroachment: { label: "Encroachment", icon: "alert-triangle", color: "#DC2626", bg: "#FEE2E2" },
-  other: { label: "Other", icon: "more-horizontal", color: "#475569", bg: "#F1F5F9" },
+const statusLabelKeys: Record<ComplaintStatus, string> = {
+  submitted: "submitted",
+  assigned: "assigned",
+  in_progress: "inProgress",
+  resolved: "resolved",
+  rejected: "rejected",
 };
 
-const roleLabel: Record<string, string> = {
-  citizen: "Citizen",
-  nagarsevak: "Nagarsevak",
-  head_admin: "Head Admin",
+const statusConfig: Record<ComplaintStatus, { color: string; bg: string; icon: string }> = {
+  submitted: { color: "#D97706", bg: "#FEF3C7", icon: "clock" },
+  assigned: { color: "#2563EB", bg: "#DBEAFE", icon: "user-check" },
+  in_progress: { color: "#7C3AED", bg: "#EDE9FE", icon: "tool" },
+  resolved: { color: "#059669", bg: "#D1FAE5", icon: "check-circle" },
+  rejected: { color: "#DC2626", bg: "#FEE2E2", icon: "x-circle" },
+};
+
+const categoryConfig: Record<string, { icon: string; color: string; bg: string }> = {
+  roads: { icon: "truck", color: "#92400E", bg: "#FEF3C7" },
+  water: { icon: "droplet", color: "#0369A1", bg: "#BAE6FD" },
+  electricity: { icon: "zap", color: "#D97706", bg: "#FEF3C7" },
+  garbage: { icon: "trash-2", color: "#059669", bg: "#D1FAE5" },
+  drainage: { icon: "git-merge", color: "#0EA5E9", bg: "#EFF6FF" },
+  streetlight: { icon: "sun", color: "#7C3AED", bg: "#EDE9FE" },
+  encroachment: { icon: "alert-triangle", color: "#DC2626", bg: "#FEE2E2" },
+  other: { icon: "more-horizontal", color: "#475569", bg: "#F1F5F9" },
+};
+
+const roleLabelKeys: Record<string, string> = {
+  citizen: "citizen",
+  nagarsevak: "nagarsevak",
+  head_admin: "headAdmin",
 };
 
 const roleBadgeColor: Record<string, { bg: string; text: string }> = {
@@ -80,6 +96,7 @@ function Avatar({ name, color, size = 40 }: { name: string; color: string; size?
 // ─── POST CARD (Twitter style) ────────────────────────────────────────────────
 function PostCard({ post, userId }: { post: FeedPost; userId: string }) {
   const { toggleLike } = useFeed();
+  const { t } = useLanguage();
   const tc = postTypeConfig[post.type];
   const liked = post.likes.includes(userId);
   const roleInfo = roleBadgeColor[post.authorRole] || roleBadgeColor.citizen;
@@ -89,7 +106,7 @@ function PostCard({ post, userId }: { post: FeedPost; userId: string }) {
       {post.pinned && (
         <View style={styles.pinnedBar}>
           <Feather name="pin" size={10} color="#7C3AED" />
-          <Text style={styles.pinnedText}>Pinned Post</Text>
+          <Text style={styles.pinnedText}>{t("pinnedPost")}</Text>
         </View>
       )}
       <View style={styles.tweetBody}>
@@ -104,7 +121,7 @@ function PostCard({ post, userId }: { post: FeedPost; userId: string }) {
           </View>
           <View style={[styles.typePill, { backgroundColor: tc.bg }]}>
             <Feather name={tc.icon as any} size={9} color={tc.color} />
-            <Text style={[styles.typePillText, { color: tc.color }]}>{tc.label}</Text>
+            <Text style={[styles.typePillText, { color: tc.color }]}>{t(postTypeLabelKeys[post.type])}</Text>
           </View>
           <Text style={styles.tweetContent}>{post.content}</Text>
           <View style={styles.tweetActions}>
@@ -133,6 +150,7 @@ function PostCard({ post, userId }: { post: FeedPost; userId: string }) {
 
 // ─── COMPLAINT CARD (Twitter style with photo) ────────────────────────────────
 function ComplaintCard({ complaint, onPress }: { complaint: Complaint; onPress: () => void }) {
+  const { t } = useLanguage();
   const st = statusConfig[complaint.status];
   const cat = categoryConfig[complaint.category] || categoryConfig.other;
 
@@ -149,7 +167,7 @@ function ComplaintCard({ complaint, onPress }: { complaint: Complaint; onPress: 
           </View>
           <View style={[styles.typePill, { backgroundColor: st.bg, alignSelf: "flex-start", marginBottom: 6 }]}>
             <Feather name={st.icon as any} size={9} color={st.color} />
-            <Text style={[styles.typePillText, { color: st.color }]}>{st.label}</Text>
+            <Text style={[styles.typePillText, { color: st.color }]}>{t(statusLabelKeys[complaint.status])}</Text>
           </View>
 
           {complaint.photoUri ? (
@@ -192,7 +210,7 @@ function ComplaintCard({ complaint, onPress }: { complaint: Complaint; onPress: 
             </TouchableOpacity>
             <TouchableOpacity style={styles.tweetAction} onPress={onPress} activeOpacity={0.8}>
               <Feather name="arrow-right" size={15} color="#2563EB" />
-              <Text style={[styles.tweetActionText, { color: "#2563EB", fontSize: 11 }]}>Details</Text>
+              <Text style={[styles.tweetActionText, { color: "#2563EB", fontSize: 11 }]}>{t("details")}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -205,6 +223,7 @@ function ComplaintCard({ complaint, onPress }: { complaint: Complaint; onPress: 
 function NewPostModal({ visible, onClose, onSubmit, canPostAnnouncement }: { visible: boolean; onClose: () => void; onSubmit: (content: string, type: PostType) => void; canPostAnnouncement: boolean }) {
   const [content, setContent] = useState("");
   const [type, setType] = useState<PostType>("general");
+  const { t } = useLanguage();
   const types: PostType[] = canPostAnnouncement ? ["announcement", "update", "general"] : ["general", "complaint"];
 
   return (
@@ -212,31 +231,31 @@ function NewPostModal({ visible, onClose, onSubmit, canPostAnnouncement }: { vis
       <View style={modalStyles.overlay}>
         <View style={modalStyles.sheet}>
           <View style={modalStyles.handle} />
-          <Text style={modalStyles.title}>New Post</Text>
-          <Text style={modalStyles.label}>POST TYPE</Text>
+          <Text style={modalStyles.title}>{t("newPost")}</Text>
+          <Text style={modalStyles.label}>{t("postType")}</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, marginBottom: 16 }}>
-            {types.map((t) => {
-              const tc = postTypeConfig[t];
-              const sel = type === t;
+            {types.map((pt) => {
+              const tc = postTypeConfig[pt];
+              const sel = type === pt;
               return (
-                <TouchableOpacity key={t} style={[modalStyles.typeBtn, { borderColor: tc.color + "40", backgroundColor: sel ? tc.color : tc.bg }]} onPress={() => setType(t)} activeOpacity={0.8}>
+                <TouchableOpacity key={pt} style={[modalStyles.typeBtn, { borderColor: tc.color + "40", backgroundColor: sel ? tc.color : tc.bg }]} onPress={() => setType(pt)} activeOpacity={0.8}>
                   <Feather name={tc.icon as any} size={13} color={sel ? "white" : tc.color} />
-                  <Text style={[modalStyles.typeBtnText, { color: sel ? "white" : tc.color }]}>{tc.label}</Text>
+                  <Text style={[modalStyles.typeBtnText, { color: sel ? "white" : tc.color }]}>{t(postTypeLabelKeys[pt])}</Text>
                 </TouchableOpacity>
               );
             })}
           </ScrollView>
-          <Text style={modalStyles.label}>CONTENT</Text>
-          <TextInput style={modalStyles.textInput} value={content} onChangeText={setContent} placeholder="Share with the community..." placeholderTextColor="#CBD5E1" multiline numberOfLines={5} textAlignVertical="top" maxLength={500} />
+          <Text style={modalStyles.label}>{t("content")}</Text>
+          <TextInput style={modalStyles.textInput} value={content} onChangeText={setContent} placeholder={t("shareWithCommunity")} placeholderTextColor="#CBD5E1" multiline numberOfLines={5} textAlignVertical="top" maxLength={500} />
           <Text style={modalStyles.charCount}>{content.length}/500</Text>
           <View style={modalStyles.btnRow}>
             <TouchableOpacity style={modalStyles.cancelBtn} onPress={onClose} activeOpacity={0.8}>
-              <Text style={modalStyles.cancelBtnText}>Cancel</Text>
+              <Text style={modalStyles.cancelBtnText}>{t("cancel")}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[modalStyles.postBtn, !content.trim() && { opacity: 0.5 }]} onPress={() => { if (content.trim()) { onSubmit(content.trim(), type); onClose(); setContent(""); } }} disabled={!content.trim()} activeOpacity={0.85}>
               <LinearGradient colors={["#1E40AF", "#2563EB"]} style={modalStyles.postBtnGrad}>
                 <Feather name="send" size={14} color="white" />
-                <Text style={modalStyles.postBtnText}>Post</Text>
+                <Text style={modalStyles.postBtnText}>{t("post")}</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -255,6 +274,7 @@ export default function FeedScreen() {
   const { posts, addPost, loading } = useFeed();
   const { user } = useAuth();
   const { complaints } = useComplaints();
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<FeedTab>("posts");
   const [showNewPost, setShowNewPost] = useState(false);
 
@@ -265,13 +285,13 @@ export default function FeedScreen() {
   const resolvedComplaints = complaints.filter((c) => c.status === "resolved" || c.status === "rejected");
 
   const handlePost = (content: string, type: PostType) => {
-    addPost(content, type, user?.name || "Anonymous", roleLabel[user?.role || "citizen"], user?.avatarColor || "#2563EB");
+    addPost(content, type, user?.name || "Anonymous", t(roleLabelKeys[user?.role || "citizen"]), user?.avatarColor || "#2563EB");
   };
 
   const tabs: { id: FeedTab; label: string; count?: number }[] = [
-    { id: "posts", label: "Updates" },
-    { id: "active", label: "Active", count: activeComplaints.length },
-    { id: "resolved", label: "Resolved", count: resolvedComplaints.length },
+    { id: "posts", label: t("updates") },
+    { id: "active", label: t("active"), count: activeComplaints.length },
+    { id: "resolved", label: t("resolved"), count: resolvedComplaints.length },
   ];
 
   return (
@@ -282,12 +302,12 @@ export default function FeedScreen() {
         </TouchableOpacity>
         <View style={styles.headerRow}>
           <View>
-            <Text style={styles.headerTitle}>Community Feed</Text>
-            <Text style={styles.headerSub}>Ward updates, alerts & complaints</Text>
+            <Text style={styles.headerTitle}>{t("communityFeed")}</Text>
+            <Text style={styles.headerSub}>{t("wardUpdatesAlerts")}</Text>
           </View>
           <TouchableOpacity style={styles.newPostBtn} onPress={() => setShowNewPost(true)} activeOpacity={0.85}>
             <Feather name="edit-2" size={14} color="white" />
-            <Text style={styles.newPostBtnText}>Post</Text>
+            <Text style={styles.newPostBtnText}>{t("post")}</Text>
           </TouchableOpacity>
         </View>
 
@@ -322,7 +342,7 @@ export default function FeedScreen() {
           ListHeaderComponent={
             <TouchableOpacity style={styles.quickPostBar} onPress={() => setShowNewPost(true)} activeOpacity={0.85}>
               {user && <Avatar name={user.name} color={user.avatarColor || "#2563EB"} size={36} />}
-              <Text style={styles.quickPostPlaceholder}>Share something with your ward...</Text>
+              <Text style={styles.quickPostPlaceholder}>{t("shareWithWard")}</Text>
               <View style={styles.quickPostSend}>
                 <Feather name="feather" size={14} color="#2563EB" />
               </View>
@@ -346,8 +366,8 @@ export default function FeedScreen() {
           ListEmptyComponent={
             <View style={styles.emptyState}>
               <Feather name="check-circle" size={40} color="#CBD5E1" />
-              <Text style={styles.emptyTitle}>No Active Complaints</Text>
-              <Text style={styles.emptySub}>All complaints have been resolved!</Text>
+              <Text style={styles.emptyTitle}>{t("noActiveComplaints")}</Text>
+              <Text style={styles.emptySub}>{t("allResolved")}</Text>
             </View>
           }
         />
@@ -367,8 +387,8 @@ export default function FeedScreen() {
           ListEmptyComponent={
             <View style={styles.emptyState}>
               <Feather name="inbox" size={40} color="#CBD5E1" />
-              <Text style={styles.emptyTitle}>No Resolved Complaints</Text>
-              <Text style={styles.emptySub}>Resolved complaints will appear here</Text>
+              <Text style={styles.emptyTitle}>{t("noResolvedComplaints")}</Text>
+              <Text style={styles.emptySub}>{t("resolvedAppearHere")}</Text>
             </View>
           }
         />
@@ -381,7 +401,7 @@ export default function FeedScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: "#F1F5F9" },
-  header: { paddingHorizontal: 16, paddingBottom: 0 },
+  header: { paddingHorizontal: 16, paddingBottom: 0, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
   backBtn: { width: 38, height: 38, borderRadius: 12, backgroundColor: "rgba(255,255,255,0.18)", alignItems: "center", justifyContent: "center", marginBottom: 8 },
   headerRow: { flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 14 },
   headerTitle: { fontSize: 22, fontWeight: "800", color: "white", fontFamily: "Inter_700Bold", letterSpacing: -0.3 },

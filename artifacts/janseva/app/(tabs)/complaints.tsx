@@ -13,24 +13,44 @@ import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useComplaints, Complaint, ComplaintStatus } from "@/context/ComplaintContext";
+import { useLanguage } from "@/context/LanguageContext";
 
-const statusConfig: Record<ComplaintStatus, { label: string; color: string; bg: string; icon: string }> = {
-  submitted: { label: "Submitted", color: "#D97706", bg: "#FEF3C7", icon: "clock" },
-  assigned: { label: "Assigned", color: "#2563EB", bg: "#DBEAFE", icon: "user-check" },
-  in_progress: { label: "In Progress", color: "#7C3AED", bg: "#EDE9FE", icon: "tool" },
-  resolved: { label: "Resolved", color: "#059669", bg: "#D1FAE5", icon: "check-circle" },
-  rejected: { label: "Rejected", color: "#DC2626", bg: "#FEE2E2", icon: "x-circle" },
+const statusLabelKeys: Record<ComplaintStatus, string> = {
+  submitted: "submitted",
+  assigned: "assigned",
+  in_progress: "inProgress",
+  resolved: "resolved",
+  rejected: "rejected",
 };
 
-const categoryConfig: Record<string, { label: string; icon: string; color: string }> = {
-  roads: { label: "Roads", icon: "truck", color: "#92400E" },
-  water: { label: "Water", icon: "droplet", color: "#0369A1" },
-  electricity: { label: "Electricity", icon: "zap", color: "#D97706" },
-  garbage: { label: "Garbage", icon: "trash-2", color: "#059669" },
-  drainage: { label: "Drainage", icon: "git-merge", color: "#0EA5E9" },
-  streetlight: { label: "Street Light", icon: "sun", color: "#7C3AED" },
-  encroachment: { label: "Encroachment", icon: "alert-triangle", color: "#DC2626" },
-  other: { label: "Other", icon: "more-horizontal", color: "#475569" },
+const statusConfig: Record<ComplaintStatus, { color: string; bg: string; icon: string }> = {
+  submitted: { color: "#D97706", bg: "#FEF3C7", icon: "clock" },
+  assigned: { color: "#2563EB", bg: "#DBEAFE", icon: "user-check" },
+  in_progress: { color: "#7C3AED", bg: "#EDE9FE", icon: "tool" },
+  resolved: { color: "#059669", bg: "#D1FAE5", icon: "check-circle" },
+  rejected: { color: "#DC2626", bg: "#FEE2E2", icon: "x-circle" },
+};
+
+const categoryLabelKeys: Record<string, string> = {
+  roads: "roads",
+  water: "water",
+  electricity: "electricity",
+  garbage: "garbage",
+  drainage: "drainage",
+  streetlight: "streetLight",
+  encroachment: "encroachment",
+  other: "other",
+};
+
+const categoryConfig: Record<string, { icon: string; color: string }> = {
+  roads: { icon: "truck", color: "#92400E" },
+  water: { icon: "droplet", color: "#0369A1" },
+  electricity: { icon: "zap", color: "#D97706" },
+  garbage: { icon: "trash-2", color: "#059669" },
+  drainage: { icon: "git-merge", color: "#0EA5E9" },
+  streetlight: { icon: "sun", color: "#7C3AED" },
+  encroachment: { icon: "alert-triangle", color: "#DC2626" },
+  other: { icon: "more-horizontal", color: "#475569" },
 };
 
 function timeAgo(dateStr: string): string {
@@ -44,6 +64,7 @@ function timeAgo(dateStr: string): string {
 }
 
 function ComplaintCard({ complaint, onPress }: { complaint: Complaint; onPress: () => void }) {
+  const { t } = useLanguage();
   const st = statusConfig[complaint.status];
   const cat = categoryConfig[complaint.category] || categoryConfig.other;
 
@@ -58,7 +79,7 @@ function ComplaintCard({ complaint, onPress }: { complaint: Complaint; onPress: 
             <Text style={styles.cardTitle} numberOfLines={1}>{complaint.title}</Text>
             <View style={[styles.statusBadge, { backgroundColor: st.bg }]}>
               <Feather name={st.icon as any} size={9} color={st.color} />
-              <Text style={[styles.statusText, { color: st.color }]}>{st.label}</Text>
+              <Text style={[styles.statusText, { color: st.color }]}>{t(statusLabelKeys[complaint.status])}</Text>
             </View>
           </View>
           <Text style={styles.cardDesc} numberOfLines={2}>{complaint.description}</Text>
@@ -103,20 +124,21 @@ function ComplaintCard({ complaint, onPress }: { complaint: Complaint; onPress: 
   );
 }
 
-const filterTabs = [
-  { id: "all", label: "All" },
-  { id: "submitted", label: "New" },
-  { id: "in_progress", label: "Active" },
-  { id: "resolved", label: "Done" },
-];
-
 export default function ComplaintsScreen() {
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const bottomPad = Platform.OS === "web" ? 34 : 0;
   const router = useRouter();
   const { complaints } = useComplaints();
+  const { t } = useLanguage();
   const [filter, setFilter] = useState("all");
+
+  const filterTabs = [
+    { id: "all", label: t("viewAll") },
+    { id: "submitted", label: t("new") },
+    { id: "in_progress", label: t("active") },
+    { id: "resolved", label: t("done") },
+  ];
 
   const filtered = filter === "all"
     ? complaints
@@ -145,8 +167,8 @@ export default function ComplaintsScreen() {
         </TouchableOpacity>
         <View style={styles.headerRow}>
           <View>
-            <Text style={styles.headerTitle}>My Complaints</Text>
-            <Text style={styles.headerSub}>{complaints.length} total · Ward 14</Text>
+            <Text style={styles.headerTitle}>{t("myComplaints")}</Text>
+            <Text style={styles.headerSub}>{complaints.length} {t("total")}</Text>
           </View>
           <TouchableOpacity
             style={styles.newBtn}
@@ -154,15 +176,15 @@ export default function ComplaintsScreen() {
             activeOpacity={0.85}
           >
             <Feather name="plus" size={16} color="white" />
-            <Text style={styles.newBtnText}>New</Text>
+            <Text style={styles.newBtnText}>{t("new")}</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.statRow}>
           {[
-            { label: "Submitted", count: counts.submitted, color: "#FDE68A" },
-            { label: "Active", count: counts.in_progress, color: "#C4B5FD" },
-            { label: "Resolved", count: counts.resolved, color: "#6EE7B7" },
+            { label: t("submitted"), count: counts.submitted, color: "#FDE68A" },
+            { label: t("active"), count: counts.in_progress, color: "#C4B5FD" },
+            { label: t("resolved"), count: counts.resolved, color: "#6EE7B7" },
           ].map((s, i) => (
             <View key={i} style={styles.statItem}>
               <Text style={[styles.statCount, { color: s.color }]}>{s.count}</Text>
@@ -206,8 +228,8 @@ export default function ComplaintsScreen() {
         ListEmptyComponent={
           <View style={styles.empty}>
             <Feather name="inbox" size={40} color="#CBD5E1" />
-            <Text style={styles.emptyTitle}>No complaints yet</Text>
-            <Text style={styles.emptySub}>Tap "New" to raise your first complaint</Text>
+            <Text style={styles.emptyTitle}>{t("noComplaintsYet")}</Text>
+            <Text style={styles.emptySub}>{t("tapNewToRaise")}</Text>
           </View>
         }
       />
@@ -219,7 +241,7 @@ export default function ComplaintsScreen() {
       >
         <LinearGradient colors={["#1E40AF", "#2563EB"]} style={styles.fabGrad}>
           <Feather name="camera" size={20} color="white" />
-          <Text style={styles.fabText}>Report Problem</Text>
+          <Text style={styles.fabText}>{t("reportProblemAction")}</Text>
         </LinearGradient>
       </TouchableOpacity>
     </View>
@@ -228,7 +250,7 @@ export default function ComplaintsScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: "#F8FAFC" },
-  header: { paddingHorizontal: 20, paddingBottom: 14 },
+  header: { paddingHorizontal: 20, paddingBottom: 14, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
   backBtn: { width: 38, height: 38, borderRadius: 12, backgroundColor: "rgba(255,255,255,0.18)", alignItems: "center", justifyContent: "center", marginBottom: 8 },
   headerRow: {
     flexDirection: "row",

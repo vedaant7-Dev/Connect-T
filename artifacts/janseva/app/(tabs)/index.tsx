@@ -47,11 +47,11 @@ const categoryIcons: Record<string, string> = {
   drainage: "git-merge", streetlight: "sun", encroachment: "alert-triangle", other: "more-horizontal",
 };
 
-function getGreeting(): string {
+function getGreetingKey(): string {
   const hour = new Date().getHours();
-  if (hour < 12) return "Good Morning";
-  if (hour < 17) return "Good Afternoon";
-  return "Good Evening";
+  if (hour < 12) return "goodMorning";
+  if (hour < 17) return "goodAfternoon";
+  return "goodEvening";
 }
 
 function getRoleColor(role?: string) {
@@ -60,10 +60,10 @@ function getRoleColor(role?: string) {
   return { bg: "#EFF6FF", text: "#2563EB", border: "#BFDBFE" };
 }
 
-function getRoleLabel(role?: string) {
-  if (role === "nagarsevak") return "Nagarsevak";
-  if (role === "head_admin") return "Head Admin";
-  return "Citizen";
+function getRoleLabelKey(role?: string) {
+  if (role === "nagarsevak") return "nagarsevak";
+  if (role === "head_admin") return "headAdmin";
+  return "citizen";
 }
 
 export default function HomeScreen() {
@@ -95,7 +95,7 @@ export default function HomeScreen() {
     router.push({ pathname: "/(tabs)/services", params: { category: categoryId } } as any);
   };
 
-  const greeting = `${getGreeting()}, ${user?.name?.split(" ")[0] || "Citizen"} 👋`;
+  const greeting = `${t(getGreetingKey())}, ${user?.name?.split(" ")[0] || t("citizen")} 👋`;
 
   return (
     <View style={styles.root}>
@@ -115,7 +115,7 @@ export default function HomeScreen() {
                   size={9}
                   color="rgba(255,255,255,0.8)"
                 />
-                <Text style={styles.rolePillText}>{getRoleLabel(user?.role)}</Text>
+                <Text style={styles.rolePillText}>{t(getRoleLabelKey(user?.role))}</Text>
               </View>
               <Text style={styles.wardText}>{user?.ward || "Ulhasnagar"}</Text>
             </View>
@@ -137,8 +137,8 @@ export default function HomeScreen() {
             <Feather name="info" size={14} color="#F59E0B" />
           </View>
           <View style={styles.alertText}>
-            <Text style={styles.alertTitle}>ULMC Update</Text>
-            <Text style={styles.alertBody}>Water supply restricted in Camp 4 — 8AM to 2PM today</Text>
+            <Text style={styles.alertTitle}>{t("ulmcUpdate")}</Text>
+            <Text style={styles.alertBody}>{t("waterRestricted")}</Text>
           </View>
           <Feather name="chevron-right" size={14} color="rgba(255,255,255,0.4)" />
         </TouchableOpacity>
@@ -156,8 +156,8 @@ export default function HomeScreen() {
               <Feather name="camera" size={24} color="white" />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.complaintCTATitle}>Report a Problem</Text>
-              <Text style={styles.complaintCTASub}>Click photo → Ward officer resolves it</Text>
+              <Text style={styles.complaintCTATitle}>{t("reportProblem")}</Text>
+              <Text style={styles.complaintCTASub}>{t("reportProblemSub")}</Text>
             </View>
             <View style={styles.complaintCTAArrow}>
               <Feather name="arrow-right" size={18} color="white" />
@@ -172,29 +172,29 @@ export default function HomeScreen() {
               <Feather name="clock" size={16} color="#D97706" />
             </View>
             <Text style={[styles.statNum, { color: "#D97706" }]}>{pendingCount}</Text>
-            <Text style={styles.statLabel}>Active</Text>
+            <Text style={styles.statLabel}>{t("active")}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.statCard} onPress={() => router.push("/(tabs)/complaints")} activeOpacity={0.8}>
             <View style={[styles.statIcon, { backgroundColor: "#D1FAE5" }]}>
               <Feather name="check-circle" size={16} color="#059669" />
             </View>
             <Text style={[styles.statNum, { color: "#059669" }]}>{resolvedCount}</Text>
-            <Text style={styles.statLabel}>Resolved</Text>
+            <Text style={styles.statLabel}>{t("resolved")}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.statCard} onPress={() => router.push("/(tabs)/feed")} activeOpacity={0.8}>
             <View style={[styles.statIcon, { backgroundColor: "#DBEAFE" }]}>
               <Feather name="rss" size={16} color="#2563EB" />
             </View>
-            <Text style={[styles.statNum, { color: "#2563EB" }]}>Feed</Text>
-            <Text style={styles.statLabel}>Community</Text>
+            <Text style={[styles.statNum, { color: "#2563EB" }]}>{t("feed")}</Text>
+            <Text style={styles.statLabel}>{t("community")}</Text>
           </TouchableOpacity>
           {(user?.role === "nagarsevak" || user?.role === "head_admin") && (
             <TouchableOpacity style={[styles.statCard, { backgroundColor: "#F5F3FF" }]} onPress={() => router.push("/(tabs)/admin")} activeOpacity={0.8}>
               <View style={[styles.statIcon, { backgroundColor: "#EDE9FE" }]}>
                 <Feather name={user.role === "head_admin" ? "shield" : "briefcase"} size={16} color="#7C3AED" />
               </View>
-              <Text style={[styles.statNum, { color: "#7C3AED" }]}>Panel</Text>
-              <Text style={styles.statLabel}>{user.role === "head_admin" ? "Admin" : "Officer"}</Text>
+              <Text style={[styles.statNum, { color: "#7C3AED" }]}>{t("panel")}</Text>
+              <Text style={styles.statLabel}>{user.role === "head_admin" ? t("admin") : t("officer")}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -204,11 +204,11 @@ export default function HomeScreen() {
           <View style={styles.alertsSectionHeader}>
             <View style={styles.alertsSectionTitleRow}>
               <View style={styles.alertsDot} />
-              <Text style={styles.alertsSectionTitle}>Alerts & News</Text>
+              <Text style={styles.alertsSectionTitle}>{t("alertsAndNews")}</Text>
             </View>
             <View style={styles.alertsLivePill}>
               <View style={styles.alertsLiveDot} />
-              <Text style={styles.alertsLiveText}>LIVE</Text>
+              <Text style={styles.alertsLiveText}>{t("live")}</Text>
             </View>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10, paddingHorizontal: 2, paddingBottom: 2 }}>
@@ -235,7 +235,7 @@ export default function HomeScreen() {
         </View>
 
         {/* RECENT COMPLAINTS */}
-        <SectionHeader title="Recent Complaints" actionLabel="View All" onAction={() => router.push("/(tabs)/complaints")} />
+        <SectionHeader title={t("recentComplaints")} actionLabel={t("viewAll")} onAction={() => router.push("/(tabs)/complaints")} />
         {recentComplaints.length > 0 ? (
           <View style={styles.complaintsCard}>
             {recentComplaints.map((complaint, idx) => {
@@ -266,19 +266,19 @@ export default function HomeScreen() {
         ) : (
           <TouchableOpacity style={styles.noComplaintsCard} onPress={() => router.push("/complaint/new")} activeOpacity={0.8}>
             <Feather name="camera" size={24} color="#2563EB" />
-            <Text style={styles.noComplaintsText}>Tap to report your first problem</Text>
+            <Text style={styles.noComplaintsText}>{t("tapToReport")}</Text>
           </TouchableOpacity>
         )}
 
         {/* UTILITY STATUS */}
-        <SectionHeader title="Utility Status" />
+        <SectionHeader title={t("utilityStatus")} />
         <View style={styles.utilityRow}>
-          <UtilityCard title="Water Supply" value="14" unit="Hours/day" status="Reduced" statusOk={false} icon="droplet" gradColors={["#0EA5E9", "#2563EB"]} lastUpdated="2 hrs ago" onPress={() => setSelectedUtility("water")} />
-          <UtilityCard title="Electricity" value="24" unit="Hours/day" status="Normal" statusOk={true} icon="zap" gradColors={["#F59E0B", "#D97706"]} lastUpdated="30 min ago" onPress={() => setSelectedUtility("electricity")} />
+          <UtilityCard title={t("waterSupply")} value="14" unit={t("hoursDay")} status={t("reduced")} statusOk={false} icon="droplet" gradColors={["#0EA5E9", "#2563EB"]} lastUpdated="2 hrs ago" onPress={() => setSelectedUtility("water")} />
+          <UtilityCard title={t("electricity")} value="24" unit={t("hoursDay")} status={t("normal")} statusOk={true} icon="zap" gradColors={["#F59E0B", "#D97706"]} lastUpdated="30 min ago" onPress={() => setSelectedUtility("electricity")} />
         </View>
 
         {/* QUICK SERVICES */}
-        <SectionHeader title="Quick Services" actionLabel="All Services" onAction={() => router.push("/(tabs)/services" as any)} />
+        <SectionHeader title={t("quickServices")} actionLabel={t("allServices")} onAction={() => router.push("/(tabs)/services" as any)} />
         <View style={styles.servicesCard}>
           <View style={styles.servicesGrid}>
             {quickServices.map((svc) => (
@@ -298,7 +298,7 @@ export default function HomeScreen() {
         </View>
 
         {/* EMERGENCY */}
-        <SectionHeader title="Emergency Contacts" actionLabel="View All" onAction={() => router.push("/(tabs)/emergency")} />
+        <SectionHeader title={t("emergencyContacts")} actionLabel={t("viewAll")} onAction={() => router.push("/(tabs)/emergency")} />
         <View style={styles.emergencyGrid}>
           {emergencyContacts.slice(0, 4).map((ec, idx) => (
             <TouchableOpacity key={idx} style={styles.emergencyItem} onPress={() => handleCall(ec.number)} activeOpacity={0.8}>
@@ -468,7 +468,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: "#F8FAFC" },
-  header: { paddingHorizontal: 20, paddingBottom: 20 },
+  header: { paddingHorizontal: 20, paddingBottom: 20, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
   headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 },
   greeting: { fontSize: 18, fontWeight: "800", color: "#FFFFFF", fontFamily: "Inter_700Bold", letterSpacing: -0.3, marginBottom: 6 },
   metaRow: { flexDirection: "row", alignItems: "center", gap: 8 },

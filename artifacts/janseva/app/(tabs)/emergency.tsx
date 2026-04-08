@@ -15,19 +15,16 @@ import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { EmergencyButton } from "@/components/EmergencyButton";
 import { emergencyContacts } from "@/data/mumbaiServices";
-
-const tips = [
-  "Stay calm and describe your exact location",
-  "Call 112 for all emergencies in India",
-  "Keep your Aadhaar number ready for hospitals",
-  "Note your area's ward number for ULMC calls",
-];
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function EmergencyScreen() {
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const bottomPad = Platform.OS === "web" ? 34 : 0;
   const router = useRouter();
+  const { t } = useLanguage();
+
+  const tips = [t("tip1"), t("tip2"), t("tip3"), t("tip4")];
 
   const handleCall = (number: string) => {
     if (Platform.OS !== "web") {
@@ -47,8 +44,8 @@ export default function EmergencyScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.8}>
           <Feather name="arrow-left" size={18} color="white" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Emergency</Text>
-        <Text style={styles.headerSub}>One-tap access to all emergency services</Text>
+        <Text style={styles.headerTitle}>{t("emergency")}</Text>
+        <Text style={styles.headerSub}>{t("oneTopAccess")}</Text>
       </LinearGradient>
 
       <ScrollView
@@ -57,14 +54,14 @@ export default function EmergencyScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.sosSection}>
-          <Text style={styles.sosSectionTitle}>Emergency SOS</Text>
-          <Text style={styles.sosSectionSub}>Tap to call National Emergency Number 112</Text>
+          <Text style={styles.sosSectionTitle}>{t("emergencySOS")}</Text>
+          <Text style={styles.sosSectionSub}>{t("tapToCallSOS")}</Text>
           <EmergencyButton />
         </View>
 
         <View style={styles.dividerRow}>
           <View style={styles.divider} />
-          <Text style={styles.dividerText}>ALL EMERGENCY NUMBERS</Text>
+          <Text style={styles.dividerText}>{t("allEmergencyNumbers")}</Text>
           <View style={styles.divider} />
         </View>
 
@@ -91,7 +88,7 @@ export default function EmergencyScreen() {
         <View style={styles.tipsCard}>
           <View style={styles.tipsHeader}>
             <Feather name="info" size={16} color="#2563EB" />
-            <Text style={styles.tipsTitle}>Emergency Tips</Text>
+            <Text style={styles.tipsTitle}>{t("emergencyTips")}</Text>
           </View>
           {tips.map((tip, i) => (
             <View key={i} style={styles.tipRow}>
@@ -113,8 +110,8 @@ export default function EmergencyScreen() {
             <View style={styles.nearestLeft}>
               <Feather name="map-pin" size={18} color="white" />
               <View>
-                <Text style={styles.nearestTitle}>Nearest Hospital</Text>
-                <Text style={styles.nearestName}>Bombay Hospital — 2.1 km</Text>
+                <Text style={styles.nearestTitle}>{t("nearestHospital")}</Text>
+                <Text style={styles.nearestName}>Central Hospital — 2.1 km</Text>
               </View>
             </View>
             <TouchableOpacity
@@ -123,7 +120,7 @@ export default function EmergencyScreen() {
               activeOpacity={0.85}
             >
               <Feather name="phone" size={14} color="#1E40AF" />
-              <Text style={styles.callBtnText}>Call Now</Text>
+              <Text style={styles.callBtnText}>{t("callNow")}</Text>
             </TouchableOpacity>
           </LinearGradient>
         </View>
@@ -137,6 +134,8 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     paddingBottom: 18,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
   },
   backBtn: { width: 38, height: 38, borderRadius: 12, backgroundColor: "rgba(255,255,255,0.18)", alignItems: "center", justifyContent: "center", marginBottom: 8 },
   headerTitle: {

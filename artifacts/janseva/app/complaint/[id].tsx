@@ -14,24 +14,35 @@ import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useComplaints, ComplaintStatus } from "@/context/ComplaintContext";
+import { useLanguage } from "@/context/LanguageContext";
 
-const statusConfig: Record<ComplaintStatus, { label: string; color: string; bg: string; icon: string }> = {
-  submitted: { label: "Submitted", color: "#D97706", bg: "#FEF3C7", icon: "clock" },
-  assigned: { label: "Assigned", color: "#2563EB", bg: "#DBEAFE", icon: "user-check" },
-  in_progress: { label: "In Progress", color: "#7C3AED", bg: "#EDE9FE", icon: "tool" },
-  resolved: { label: "Resolved", color: "#059669", bg: "#D1FAE5", icon: "check-circle" },
-  rejected: { label: "Rejected", color: "#DC2626", bg: "#FEE2E2", icon: "x-circle" },
+const statusLabelKeys: Record<ComplaintStatus, string> = {
+  submitted: "submitted", assigned: "assigned", in_progress: "inProgress",
+  resolved: "resolved", rejected: "rejected",
 };
 
-const categoryConfig: Record<string, { label: string; icon: string; color: string; bg: string }> = {
-  roads: { label: "Roads", icon: "truck", color: "#92400E", bg: "#FEF3C7" },
-  water: { label: "Water Supply", icon: "droplet", color: "#0369A1", bg: "#BAE6FD" },
-  electricity: { label: "Electricity", icon: "zap", color: "#D97706", bg: "#FEF3C7" },
-  garbage: { label: "Garbage", icon: "trash-2", color: "#059669", bg: "#D1FAE5" },
-  drainage: { label: "Drainage", icon: "git-merge", color: "#0EA5E9", bg: "#EFF6FF" },
-  streetlight: { label: "Street Light", icon: "sun", color: "#7C3AED", bg: "#EDE9FE" },
-  encroachment: { label: "Encroachment", icon: "alert-triangle", color: "#DC2626", bg: "#FEE2E2" },
-  other: { label: "Other", icon: "more-horizontal", color: "#475569", bg: "#F1F5F9" },
+const statusConfig: Record<ComplaintStatus, { color: string; bg: string; icon: string }> = {
+  submitted: { color: "#D97706", bg: "#FEF3C7", icon: "clock" },
+  assigned: { color: "#2563EB", bg: "#DBEAFE", icon: "user-check" },
+  in_progress: { color: "#7C3AED", bg: "#EDE9FE", icon: "tool" },
+  resolved: { color: "#059669", bg: "#D1FAE5", icon: "check-circle" },
+  rejected: { color: "#DC2626", bg: "#FEE2E2", icon: "x-circle" },
+};
+
+const categoryLabelKeys: Record<string, string> = {
+  roads: "roads", water: "waterSupply", electricity: "electricity", garbage: "garbage",
+  drainage: "drainage", streetlight: "streetLight", encroachment: "encroachment", other: "other",
+};
+
+const categoryConfig: Record<string, { icon: string; color: string; bg: string }> = {
+  roads: { icon: "truck", color: "#92400E", bg: "#FEF3C7" },
+  water: { icon: "droplet", color: "#0369A1", bg: "#BAE6FD" },
+  electricity: { icon: "zap", color: "#D97706", bg: "#FEF3C7" },
+  garbage: { icon: "trash-2", color: "#059669", bg: "#D1FAE5" },
+  drainage: { icon: "git-merge", color: "#0EA5E9", bg: "#EFF6FF" },
+  streetlight: { icon: "sun", color: "#7C3AED", bg: "#EDE9FE" },
+  encroachment: { icon: "alert-triangle", color: "#DC2626", bg: "#FEE2E2" },
+  other: { icon: "more-horizontal", color: "#475569", bg: "#F1F5F9" },
 };
 
 const timelineSteps: ComplaintStatus[] = ["submitted", "assigned", "in_progress", "resolved"];
@@ -49,6 +60,7 @@ export default function ComplaintDetailScreen() {
   const router = useRouter();
   const { id, fresh } = useLocalSearchParams<{ id: string; fresh?: string }>();
   const { getComplaintById } = useComplaints();
+  const { t } = useLanguage();
 
   const fadeAnim = useRef(new Animated.Value(fresh === "1" ? 0 : 1)).current;
 
@@ -63,7 +75,7 @@ export default function ComplaintDetailScreen() {
   if (!complaint) {
     return (
       <View style={[styles.root, { alignItems: "center", justifyContent: "center" }]}>
-        <Text style={{ color: "#64748B" }}>Complaint not found</Text>
+        <Text style={{ color: "#64748B" }}>{t("complaintNotFound")}</Text>
       </View>
     );
   }
@@ -88,7 +100,7 @@ export default function ComplaintDetailScreen() {
             {fresh === "1" && (
               <View style={styles.successPill}>
                 <Feather name="check-circle" size={12} color="#6EE7B7" />
-                <Text style={styles.successPillText}>Complaint Registered!</Text>
+                <Text style={styles.successPillText}>{t("complaintRegistered")}</Text>
               </View>
             )}
             <Text style={styles.headerTitle} numberOfLines={2}>{complaint.title}</Text>
@@ -96,7 +108,7 @@ export default function ComplaintDetailScreen() {
           </View>
           <View style={[styles.statusBadge, { backgroundColor: "rgba(255,255,255,0.2)" }]}>
             <Feather name={st.icon as any} size={12} color="white" />
-            <Text style={styles.statusBadgeText}>{st.label}</Text>
+            <Text style={styles.statusBadgeText}>{t(statusLabelKeys[complaint.status])}</Text>
           </View>
         </View>
       </LinearGradient>
@@ -112,14 +124,14 @@ export default function ComplaintDetailScreen() {
             <Image source={{ uri: complaint.photoUri }} style={styles.photo} />
             <View style={styles.photoLabel}>
               <Feather name="camera" size={12} color="#64748B" />
-              <Text style={styles.photoLabelText}>Problem Photo</Text>
+              <Text style={styles.photoLabelText}>{t("problemPhoto")}</Text>
             </View>
           </View>
         ) : null}
 
         {/* Status tracker */}
         <View style={styles.trackerCard}>
-          <Text style={styles.trackerTitle}>Complaint Status</Text>
+          <Text style={styles.trackerTitle}>{t("complaintStatus")}</Text>
           <View style={styles.trackerSteps}>
             {timelineSteps.map((step, idx) => {
               const done = idx < currentStepIdx;
@@ -149,7 +161,7 @@ export default function ComplaintDetailScreen() {
                       active && { color: sConfig.color, fontFamily: "Inter_700Bold" },
                       done && { color: "#059669" },
                     ]}>
-                      {sConfig.label}
+                      {t(statusLabelKeys[step])}
                     </Text>
                   </View>
                   {idx < timelineSteps.length - 1 && (
@@ -166,14 +178,14 @@ export default function ComplaintDetailScreen() {
 
         {/* Details */}
         <View style={styles.detailCard}>
-          <Text style={styles.detailSectionTitle}>Complaint Details</Text>
+          <Text style={styles.detailSectionTitle}>{t("complaintDetails")}</Text>
           <View style={styles.detailRow}>
             <View style={[styles.catIconWrap, { backgroundColor: cat.bg }]}>
               <Feather name={cat.icon as any} size={14} color={cat.color} />
             </View>
             <View>
-              <Text style={styles.detailLabel}>Category</Text>
-              <Text style={styles.detailValue}>{cat.label}</Text>
+              <Text style={styles.detailLabel}>{t("category")}</Text>
+              <Text style={styles.detailValue}>{t(categoryLabelKeys[complaint.category] || "other")}</Text>
             </View>
           </View>
           <View style={styles.divider} />
@@ -182,7 +194,7 @@ export default function ComplaintDetailScreen() {
               <Feather name="map-pin" size={14} color="#2563EB" />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.detailLabel}>Location</Text>
+              <Text style={styles.detailLabel}>{t("location")}</Text>
               <Text style={styles.detailValue}>{complaint.location}</Text>
               <Text style={styles.detailSub}>{complaint.ward}</Text>
             </View>
@@ -193,13 +205,13 @@ export default function ComplaintDetailScreen() {
               <Feather name="calendar" size={14} color="#2563EB" />
             </View>
             <View>
-              <Text style={styles.detailLabel}>Submitted On</Text>
+              <Text style={styles.detailLabel}>{t("submittedOn")}</Text>
               <Text style={styles.detailValue}>{formatDate(complaint.createdAt)}</Text>
             </View>
           </View>
           <View style={styles.divider} />
           <View>
-            <Text style={styles.detailLabel}>Description</Text>
+            <Text style={styles.detailLabel}>{t("description")}</Text>
             <Text style={[styles.detailValue, { marginTop: 6, lineHeight: 20 }]}>{complaint.description}</Text>
           </View>
           {complaint.assignedTo && (
@@ -210,7 +222,7 @@ export default function ComplaintDetailScreen() {
                   <Feather name="user-check" size={14} color="#2563EB" />
                 </View>
                 <View>
-                  <Text style={styles.detailLabel}>Assigned To</Text>
+                  <Text style={styles.detailLabel}>{t("assignedTo")}</Text>
                   <Text style={styles.detailValue}>{complaint.assignedTo}</Text>
                 </View>
               </View>
@@ -229,7 +241,7 @@ export default function ComplaintDetailScreen() {
 
         {/* Timeline */}
         <View style={styles.timelineCard}>
-          <Text style={styles.detailSectionTitle}>Activity Timeline</Text>
+          <Text style={styles.detailSectionTitle}>{t("activityTimeline")}</Text>
           {complaint.timeline.slice().reverse().map((entry, idx) => {
             const eSt = statusConfig[entry.status];
             return (
@@ -242,7 +254,7 @@ export default function ComplaintDetailScreen() {
                 </View>
                 <View style={styles.timelineRight}>
                   <View style={styles.tlHeader}>
-                    <Text style={[styles.tlStatus, { color: eSt.color }]}>{eSt.label}</Text>
+                    <Text style={[styles.tlStatus, { color: eSt.color }]}>{t(statusLabelKeys[entry.status])}</Text>
                     <Text style={styles.tlTime}>{formatDate(entry.timestamp)}</Text>
                   </View>
                   {entry.note ? <Text style={styles.tlNote}>{entry.note}</Text> : null}
@@ -261,7 +273,7 @@ export default function ComplaintDetailScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: "#F8FAFC" },
-  header: { paddingHorizontal: 20, paddingBottom: 18 },
+  header: { paddingHorizontal: 20, paddingBottom: 18, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
   headerRow: { flexDirection: "row", alignItems: "flex-start", gap: 10 },
   backBtn: {
     width: 38,

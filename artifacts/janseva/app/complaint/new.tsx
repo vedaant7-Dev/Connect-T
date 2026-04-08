@@ -18,16 +18,22 @@ import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import * as Haptics from "expo-haptics";
 import { useComplaints, ComplaintCategory } from "@/context/ComplaintContext";
+import { useLanguage } from "@/context/LanguageContext";
 
-const categories: { id: ComplaintCategory; label: string; icon: string; color: string; bg: string }[] = [
-  { id: "roads", label: "Roads", icon: "truck", color: "#92400E", bg: "#FEF3C7" },
-  { id: "water", label: "Water Supply", icon: "droplet", color: "#0369A1", bg: "#BAE6FD" },
-  { id: "electricity", label: "Electricity", icon: "zap", color: "#D97706", bg: "#FEF3C7" },
-  { id: "garbage", label: "Garbage", icon: "trash-2", color: "#059669", bg: "#D1FAE5" },
-  { id: "drainage", label: "Drainage", icon: "git-merge", color: "#0EA5E9", bg: "#EFF6FF" },
-  { id: "streetlight", label: "Street Light", icon: "sun", color: "#7C3AED", bg: "#EDE9FE" },
-  { id: "encroachment", label: "Encroachment", icon: "alert-triangle", color: "#DC2626", bg: "#FEE2E2" },
-  { id: "other", label: "Other", icon: "more-horizontal", color: "#475569", bg: "#F1F5F9" },
+const categoryLabelKeys: Record<string, string> = {
+  roads: "roads", water: "waterSupply", electricity: "electricity", garbage: "garbage",
+  drainage: "drainage", streetlight: "streetLight", encroachment: "encroachment", other: "other",
+};
+
+const categories: { id: ComplaintCategory; icon: string; color: string; bg: string }[] = [
+  { id: "roads", icon: "truck", color: "#92400E", bg: "#FEF3C7" },
+  { id: "water", icon: "droplet", color: "#0369A1", bg: "#BAE6FD" },
+  { id: "electricity", icon: "zap", color: "#D97706", bg: "#FEF3C7" },
+  { id: "garbage", icon: "trash-2", color: "#059669", bg: "#D1FAE5" },
+  { id: "drainage", icon: "git-merge", color: "#0EA5E9", bg: "#EFF6FF" },
+  { id: "streetlight", icon: "sun", color: "#7C3AED", bg: "#EDE9FE" },
+  { id: "encroachment", icon: "alert-triangle", color: "#DC2626", bg: "#FEE2E2" },
+  { id: "other", icon: "more-horizontal", color: "#475569", bg: "#F1F5F9" },
 ];
 
 export default function NewComplaintScreen() {
@@ -36,6 +42,7 @@ export default function NewComplaintScreen() {
   const bottomPad = Platform.OS === "web" ? 34 : 0;
   const router = useRouter();
   const { addComplaint } = useComplaints();
+  const { t } = useLanguage();
 
   const [photoUri, setPhotoUri] = useState<string | undefined>();
   const [selectedCategory, setSelectedCategory] = useState<ComplaintCategory | null>(null);
@@ -60,7 +67,7 @@ export default function NewComplaintScreen() {
     }
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Permission needed", "Camera access is required to take a photo of the problem.");
+      Alert.alert(t("permissionNeeded"), t("cameraPermission"));
       return;
     }
     const result = await ImagePicker.launchCameraAsync({
@@ -84,15 +91,15 @@ export default function NewComplaintScreen() {
 
   const handleSubmit = async () => {
     if (!selectedCategory) {
-      Alert.alert("Select Category", "Please select a complaint category.");
+      Alert.alert(t("selectCategoryAlert"), t("selectCategoryMsg"));
       return;
     }
     if (!title.trim()) {
-      Alert.alert("Add Title", "Please add a brief title for your complaint.");
+      Alert.alert(t("addTitleAlert"), t("addTitleMsg"));
       return;
     }
     if (!description.trim()) {
-      Alert.alert("Add Description", "Please describe the problem.");
+      Alert.alert(t("addDescAlert"), t("addDescMsg"));
       return;
     }
 
@@ -129,8 +136,8 @@ export default function NewComplaintScreen() {
             <Feather name="arrow-left" size={20} color="white" />
           </TouchableOpacity>
           <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle}>Report Problem</Text>
-            <Text style={styles.headerSub}>Your complaint goes directly to ward officer</Text>
+            <Text style={styles.headerTitle}>{t("reportProblemTitle")}</Text>
+            <Text style={styles.headerSub}>{t("yourComplaintGoes")}</Text>
           </View>
         </View>
       </LinearGradient>
@@ -143,13 +150,13 @@ export default function NewComplaintScreen() {
       >
         {/* PHOTO */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>PHOTO OF PROBLEM</Text>
+          <Text style={styles.sectionLabel}>{t("photoOfProblem")}</Text>
           {photoUri ? (
             <View style={styles.photoContainer}>
               <Image source={{ uri: photoUri }} style={styles.photo} />
               <TouchableOpacity style={styles.retakeBtn} onPress={handleCamera} activeOpacity={0.8}>
                 <Feather name="refresh-cw" size={14} color="white" />
-                <Text style={styles.retakeBtnText}>Retake</Text>
+                <Text style={styles.retakeBtnText}>{t("retake")}</Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -157,13 +164,13 @@ export default function NewComplaintScreen() {
               <TouchableOpacity style={styles.cameraBtn} onPress={handleCamera} activeOpacity={0.85}>
                 <LinearGradient colors={["#1E40AF", "#2563EB"]} style={styles.cameraBtnGrad}>
                   <Feather name="camera" size={24} color="white" />
-                  <Text style={styles.cameraBtnText}>Take Photo</Text>
-                  <Text style={styles.cameraBtnSub}>Click a photo of the problem</Text>
+                  <Text style={styles.cameraBtnText}>{t("takePhoto")}</Text>
+                  <Text style={styles.cameraBtnSub}>{t("clickPhotoOfProblem")}</Text>
                 </LinearGradient>
               </TouchableOpacity>
               <TouchableOpacity style={styles.galleryBtn} onPress={handleGallery} activeOpacity={0.85}>
                 <Feather name="image" size={18} color="#2563EB" />
-                <Text style={styles.galleryBtnText}>Choose from Gallery</Text>
+                <Text style={styles.galleryBtnText}>{t("chooseFromGallery")}</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -171,7 +178,7 @@ export default function NewComplaintScreen() {
 
         {/* CATEGORY */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>COMPLAINT CATEGORY</Text>
+          <Text style={styles.sectionLabel}>{t("complaintCategory")}</Text>
           <View style={styles.categoryGrid}>
             {categories.map((cat) => (
               <TouchableOpacity
@@ -197,7 +204,7 @@ export default function NewComplaintScreen() {
                   styles.catLabel,
                   selectedCategory === cat.id && { color: cat.color },
                 ]}>
-                  {cat.label}
+                  {t(categoryLabelKeys[cat.id])}
                 </Text>
                 {selectedCategory === cat.id && (
                   <View style={[styles.catCheck, { backgroundColor: cat.color }]}>
@@ -211,12 +218,12 @@ export default function NewComplaintScreen() {
 
         {/* TITLE */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>COMPLAINT TITLE</Text>
+          <Text style={styles.sectionLabel}>{t("complaintTitle")}</Text>
           <TextInput
             style={styles.input}
             value={title}
             onChangeText={setTitle}
-            placeholder="e.g. Large pothole on main road"
+            placeholder={t("titlePlaceholder")}
             placeholderTextColor="#CBD5E1"
             maxLength={80}
           />
@@ -224,12 +231,12 @@ export default function NewComplaintScreen() {
 
         {/* DESCRIPTION */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>DESCRIPTION</Text>
+          <Text style={styles.sectionLabel}>{t("description")}</Text>
           <TextInput
             style={[styles.input, styles.textarea]}
             value={description}
             onChangeText={setDescription}
-            placeholder="Describe the problem in detail — location, severity, how long it has been there..."
+            placeholder={t("descriptionPlaceholder")}
             placeholderTextColor="#CBD5E1"
             multiline
             numberOfLines={4}
@@ -241,7 +248,7 @@ export default function NewComplaintScreen() {
 
         {/* LOCATION */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>LOCATION</Text>
+          <Text style={styles.sectionLabel}>{t("location")}</Text>
           <View style={styles.locationRow}>
             <View style={styles.locationIcon}>
               <Feather name="map-pin" size={16} color="#2563EB" />
@@ -250,13 +257,13 @@ export default function NewComplaintScreen() {
               style={[styles.input, styles.locationInput]}
               value={location}
               onChangeText={setLocation}
-              placeholder="Enter exact location"
+              placeholder={t("enterExactLocation")}
               placeholderTextColor="#CBD5E1"
             />
           </View>
           <View style={styles.wardRow}>
             <Feather name="home" size={12} color="#94A3B8" />
-            <Text style={styles.wardText}>Camp 1 — Ulhasnagar (auto-detected)</Text>
+            <Text style={styles.wardText}>Camp 1 — Ulhasnagar ({t("autoDetected")})</Text>
           </View>
         </View>
 
@@ -264,7 +271,7 @@ export default function NewComplaintScreen() {
         <View style={styles.noticeCard}>
           <Feather name="info" size={14} color="#2563EB" />
           <Text style={styles.noticeText}>
-            Your complaint will be assigned to the ward officer within 24 hours. You will receive status updates here.
+            {t("complaintNotice")}
           </Text>
         </View>
       </ScrollView>
@@ -288,7 +295,7 @@ export default function NewComplaintScreen() {
             ) : (
               <>
                 <Feather name="send" size={18} color="white" />
-                <Text style={styles.submitBtnText}>Submit Complaint</Text>
+                <Text style={styles.submitBtnText}>{t("submitComplaint")}</Text>
               </>
             )}
           </LinearGradient>
@@ -300,7 +307,7 @@ export default function NewComplaintScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: "#F8FAFC" },
-  header: { paddingHorizontal: 20, paddingBottom: 18 },
+  header: { paddingHorizontal: 20, paddingBottom: 18, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
   headerRow: { flexDirection: "row", alignItems: "center", gap: 12 },
   backBtn: {
     width: 38,

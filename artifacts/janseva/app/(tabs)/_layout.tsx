@@ -3,6 +3,7 @@ import { Feather } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import React from "react";
 import { Platform, StyleSheet, View, Text, useColorScheme, TouchableOpacity } from "react-native";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -10,6 +11,7 @@ export default function TabLayout() {
   const isIOS = Platform.OS === "ios";
   const isWeb = Platform.OS === "web";
   const isAndroid = Platform.OS === "android";
+  const { t } = useLanguage();
 
   const TAB_HEIGHT = isWeb ? 72 : isAndroid ? 64 : 80;
   const BOTTOM_PAD = isWeb ? 14 : isAndroid ? 8 : 24;
@@ -47,7 +49,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: t("home"),
           tabBarIcon: ({ color }) => <Feather name="home" size={22} color={color} />,
         }}
       />
@@ -55,7 +57,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="complaints"
         options={{
-          title: "Complaints",
+          title: t("complaints"),
           tabBarIcon: ({ color }) => <Feather name="edit-3" size={22} color={color} />,
         }}
       />
@@ -111,7 +113,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="feed"
         options={{
-          title: "Feed",
+          title: t("feed"),
           tabBarIcon: ({ color }) => <Feather name="rss" size={22} color={color} />,
         }}
       />
@@ -119,7 +121,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profile",
+          title: t("profile"),
           tabBarIcon: ({ color }) => <Feather name="user" size={22} color={color} />,
         }}
       />

@@ -10,30 +10,47 @@ import * as Haptics from "expo-haptics";
 import { useComplaints, Complaint, ComplaintStatus } from "@/context/ComplaintContext";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "expo-router";
+import { useLanguage } from "@/context/LanguageContext";
 
-const statusConfig: Record<ComplaintStatus, { label: string; color: string; bg: string; icon: string }> = {
-  submitted: { label: "Submitted", color: "#D97706", bg: "#FEF3C7", icon: "clock" },
-  assigned: { label: "Assigned", color: "#2563EB", bg: "#DBEAFE", icon: "user-check" },
-  in_progress: { label: "In Progress", color: "#7C3AED", bg: "#EDE9FE", icon: "tool" },
-  resolved: { label: "Resolved", color: "#059669", bg: "#D1FAE5", icon: "check-circle" },
-  rejected: { label: "Rejected", color: "#DC2626", bg: "#FEE2E2", icon: "x-circle" },
+const statusLabelKeys: Record<ComplaintStatus, string> = {
+  submitted: "submitted",
+  assigned: "assigned",
+  in_progress: "inProgress",
+  resolved: "resolved",
+  rejected: "rejected",
 };
 
-const categoryConfig: Record<string, { label: string; icon: string; color: string }> = {
-  roads: { label: "Roads", icon: "truck", color: "#92400E" },
-  water: { label: "Water", icon: "droplet", color: "#0369A1" },
-  electricity: { label: "Electricity", icon: "zap", color: "#D97706" },
-  garbage: { label: "Garbage", icon: "trash-2", color: "#059669" },
-  drainage: { label: "Drainage", icon: "git-merge", color: "#0EA5E9" },
-  streetlight: { label: "Street Light", icon: "sun", color: "#7C3AED" },
-  encroachment: { label: "Encroachment", icon: "alert-triangle", color: "#DC2626" },
-  other: { label: "Other", icon: "more-horizontal", color: "#475569" },
+const statusConfig: Record<ComplaintStatus, { color: string; bg: string; icon: string }> = {
+  submitted: { color: "#D97706", bg: "#FEF3C7", icon: "clock" },
+  assigned: { color: "#2563EB", bg: "#DBEAFE", icon: "user-check" },
+  in_progress: { color: "#7C3AED", bg: "#EDE9FE", icon: "tool" },
+  resolved: { color: "#059669", bg: "#D1FAE5", icon: "check-circle" },
+  rejected: { color: "#DC2626", bg: "#FEE2E2", icon: "x-circle" },
 };
 
-const nextStatusOptions: Record<ComplaintStatus, { status: ComplaintStatus; label: string; color: string }[]> = {
-  submitted: [{ status: "assigned", label: "Assign to Team", color: "#2563EB" }, { status: "rejected", label: "Reject", color: "#DC2626" }],
-  assigned: [{ status: "in_progress", label: "Mark In Progress", color: "#7C3AED" }, { status: "rejected", label: "Reject", color: "#DC2626" }],
-  in_progress: [{ status: "resolved", label: "Mark Resolved", color: "#059669" }, { status: "rejected", label: "Reject", color: "#DC2626" }],
+const categoryConfig: Record<string, { icon: string; color: string }> = {
+  roads: { icon: "truck", color: "#92400E" },
+  water: { icon: "droplet", color: "#0369A1" },
+  electricity: { icon: "zap", color: "#D97706" },
+  garbage: { icon: "trash-2", color: "#059669" },
+  drainage: { icon: "git-merge", color: "#0EA5E9" },
+  streetlight: { icon: "sun", color: "#7C3AED" },
+  encroachment: { icon: "alert-triangle", color: "#DC2626" },
+  other: { icon: "more-horizontal", color: "#475569" },
+};
+
+const nextStatusLabelKeys: Record<ComplaintStatus, string[]> = {
+  submitted: ["assignToTeam", "reject"],
+  assigned: ["markInProgress", "reject"],
+  in_progress: ["markResolved", "reject"],
+  resolved: [],
+  rejected: [],
+};
+
+const nextStatusOptions: Record<ComplaintStatus, { status: ComplaintStatus; color: string }[]> = {
+  submitted: [{ status: "assigned", color: "#2563EB" }, { status: "rejected", color: "#DC2626" }],
+  assigned: [{ status: "in_progress", color: "#7C3AED" }, { status: "rejected", color: "#DC2626" }],
+  in_progress: [{ status: "resolved", color: "#059669" }, { status: "rejected", color: "#DC2626" }],
   resolved: [],
   rejected: [],
 };
@@ -50,23 +67,25 @@ function timeAgo(dateStr: string): string {
 function ActionModal({ complaint, onClose, onUpdate }: { complaint: Complaint; onClose: () => void; onUpdate: (s: ComplaintStatus, note: string) => void }) {
   const [note, setNote] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<ComplaintStatus | null>(null);
+  const { t } = useLanguage();
   const options = nextStatusOptions[complaint.status] || [];
+  const optionLabelKeys = nextStatusLabelKeys[complaint.status] || [];
 
   return (
     <View style={modalStyles.overlay}>
       <View style={modalStyles.sheet}>
         <View style={modalStyles.handle} />
-        <Text style={modalStyles.title}>Update Complaint</Text>
-        <Text style={modalStyles.cmpId}># {complaint.id} · {categoryConfig[complaint.category]?.label}</Text>
+        <Text style={modalStyles.title}>{t("updateComplaint")}</Text>
+        <Text style={modalStyles.cmpId}># {complaint.id}</Text>
         <Text style={modalStyles.cmpName} numberOfLines={2}>{complaint.title}</Text>
         <View style={modalStyles.cmpLocation}>
           <Feather name="map-pin" size={12} color="#94A3B8" />
           <Text style={modalStyles.cmpLocationText}>{complaint.location}</Text>
         </View>
 
-        <Text style={modalStyles.label}>SELECT ACTION</Text>
+        <Text style={modalStyles.label}>{t("selectAction")}</Text>
         <View style={modalStyles.optionRow}>
-          {options.map((opt) => (
+          {options.map((opt, idx) => (
             <TouchableOpacity
               key={opt.status}
               style={[modalStyles.optionBtn, { borderColor: opt.color + "40" }, selectedStatus === opt.status && { backgroundColor: opt.color, borderColor: opt.color }]}
@@ -74,17 +93,17 @@ function ActionModal({ complaint, onClose, onUpdate }: { complaint: Complaint; o
               activeOpacity={0.8}
             >
               <Feather name={statusConfig[opt.status].icon as any} size={14} color={selectedStatus === opt.status ? "white" : opt.color} />
-              <Text style={[modalStyles.optionText, { color: selectedStatus === opt.status ? "white" : opt.color }]}>{opt.label}</Text>
+              <Text style={[modalStyles.optionText, { color: selectedStatus === opt.status ? "white" : opt.color }]}>{t(optionLabelKeys[idx])}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        <Text style={modalStyles.label}>NOTE / RESOLUTION (optional)</Text>
-        <TextInput style={modalStyles.noteInput} value={note} onChangeText={setNote} placeholder="Add a note for the citizen..." placeholderTextColor="#CBD5E1" multiline numberOfLines={3} textAlignVertical="top" />
+        <Text style={modalStyles.label}>{t("noteResolution")}</Text>
+        <TextInput style={modalStyles.noteInput} value={note} onChangeText={setNote} placeholder={t("addNoteForCitizen")} placeholderTextColor="#CBD5E1" multiline numberOfLines={3} textAlignVertical="top" />
 
         <View style={modalStyles.btnRow}>
           <TouchableOpacity style={modalStyles.cancelBtn} onPress={onClose} activeOpacity={0.8}>
-            <Text style={modalStyles.cancelBtnText}>Cancel</Text>
+            <Text style={modalStyles.cancelBtnText}>{t("cancel")}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[modalStyles.confirmBtn, !selectedStatus && { opacity: 0.5 }]}
@@ -93,7 +112,7 @@ function ActionModal({ complaint, onClose, onUpdate }: { complaint: Complaint; o
             activeOpacity={0.85}
           >
             <LinearGradient colors={["#1E40AF", "#2563EB"]} style={modalStyles.confirmBtnGrad}>
-              <Text style={modalStyles.confirmBtnText}>Update Status</Text>
+              <Text style={modalStyles.confirmBtnText}>{t("updateStatus")}</Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -103,6 +122,7 @@ function ActionModal({ complaint, onClose, onUpdate }: { complaint: Complaint; o
 }
 
 function ComplaintCard({ complaint, onAction }: { complaint: Complaint; onAction: () => void }) {
+  const { t } = useLanguage();
   const st = statusConfig[complaint.status];
   const cat = categoryConfig[complaint.category] || categoryConfig.other;
   const hasActions = (nextStatusOptions[complaint.status] || []).length > 0;
@@ -120,11 +140,11 @@ function ComplaintCard({ complaint, onAction }: { complaint: Complaint; onAction
         </View>
         <View style={styles.cardHeaderText}>
           <Text style={styles.cmpTitle} numberOfLines={1}>{complaint.title}</Text>
-          <Text style={styles.cmpMeta}>{cat.label} · {timeAgo(complaint.createdAt)}</Text>
+          <Text style={styles.cmpMeta}>{timeAgo(complaint.createdAt)}</Text>
         </View>
         <View style={[styles.statusPill, { backgroundColor: st.bg }]}>
           <Feather name={st.icon as any} size={9} color={st.color} />
-          <Text style={[styles.statusPillText, { color: st.color }]}>{st.label}</Text>
+          <Text style={[styles.statusPillText, { color: st.color }]}>{t(statusLabelKeys[complaint.status])}</Text>
         </View>
       </View>
       <View style={styles.cardBody}>
@@ -142,14 +162,14 @@ function ComplaintCard({ complaint, onAction }: { complaint: Complaint; onAction
         <TouchableOpacity style={styles.actionBtn} onPress={(e) => { e.stopPropagation?.(); onAction(); }} activeOpacity={0.85}>
           <LinearGradient colors={["#1E40AF", "#2563EB"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.actionBtnGrad}>
             <Feather name="edit-3" size={13} color="white" />
-            <Text style={styles.actionBtnText}>Update Status</Text>
+            <Text style={styles.actionBtnText}>{t("updateStatus")}</Text>
           </LinearGradient>
         </TouchableOpacity>
       )}
       {complaint.status === "resolved" && (
         <View style={styles.resolvedBar}>
           <Feather name="check-circle" size={12} color="#059669" />
-          <Text style={styles.resolvedBarText}>{complaint.resolvedNote || "Issue resolved"}</Text>
+          <Text style={styles.resolvedBarText}>{complaint.resolvedNote || t("issueResolved")}</Text>
         </View>
       )}
     </TouchableOpacity>
@@ -165,6 +185,7 @@ function NagarsevakPanel() {
   const { user, logout } = useAuth();
   const { complaints, updateStatus } = useComplaints();
   const router = useRouter();
+  const { t } = useLanguage();
   const [filter, setFilter] = useState<ComplaintStatus | "all">("all");
   const [active, setActive] = useState<Complaint | null>(null);
 
@@ -193,9 +214,9 @@ function NagarsevakPanel() {
         </View>
         <View style={styles.statPills}>
           {[
-            { label: "Pending", count: pending, color: "#FDE68A" },
-            { label: "Active", count: wardComplaints.filter((c) => c.status === "in_progress").length, color: "#C4B5FD" },
-            { label: "Resolved", count: wardComplaints.filter((c) => c.status === "resolved").length, color: "#6EE7B7" },
+            { label: t("pending"), count: pending, color: "#FDE68A" },
+            { label: t("active"), count: wardComplaints.filter((c) => c.status === "in_progress").length, color: "#C4B5FD" },
+            { label: t("resolved"), count: wardComplaints.filter((c) => c.status === "resolved").length, color: "#6EE7B7" },
           ].map((s) => (
             <View key={s.label} style={styles.statPill}>
               <Text style={[styles.statPillNum, { color: s.color }]}>{s.count}</Text>
@@ -207,7 +228,7 @@ function NagarsevakPanel() {
           {(["all", "submitted", "assigned", "in_progress", "resolved"] as const).map((s) => (
             <TouchableOpacity key={s} style={[styles.filterChip, filter === s && styles.filterChipActive]} onPress={() => setFilter(s)} activeOpacity={0.8}>
               <Text style={[styles.filterText, filter === s && { color: "white" }]}>
-                {s === "all" ? "All" : statusConfig[s]?.label}
+                {s === "all" ? t("viewAll") : t(statusLabelKeys[s])}
               </Text>
             </TouchableOpacity>
           ))}
@@ -217,7 +238,7 @@ function NagarsevakPanel() {
       {pending > 0 && (
         <View style={styles.urgentBanner}>
           <Feather name="alert-circle" size={14} color="#DC2626" />
-          <Text style={styles.urgentText}>{pending} complaint{pending > 1 ? "s" : ""} need your attention</Text>
+          <Text style={styles.urgentText}>{pending} {t("complaints")} — {t("needsAttention")}</Text>
         </View>
       )}
 
@@ -230,7 +251,7 @@ function NagarsevakPanel() {
         ListEmptyComponent={
           <View style={styles.empty}>
             <Feather name="check-circle" size={36} color="#CBD5E1" />
-            <Text style={styles.emptyText}>No complaints in this category</Text>
+            <Text style={styles.emptyText}>{t("noComplaintsInCategory")}</Text>
           </View>
         }
       />
@@ -265,6 +286,7 @@ function HeadAdminPanel() {
   const { user, logout } = useAuth();
   const { complaints, updateStatus } = useComplaints();
   const router = useRouter();
+  const { t } = useLanguage();
   const [tab, setTab] = useState<"complaints" | "officers" | "services">("complaints");
   const [filterWard, setFilterWard] = useState("All Wards");
   const [filterStatus, setFilterStatus] = useState<ComplaintStatus | "all">("all");
@@ -289,7 +311,7 @@ function HeadAdminPanel() {
               <Text style={[styles.adminBadgeText, { color: "#A78BFA" }]}>HEAD ADMIN</Text>
             </View>
             <Text style={styles.headerTitle}>{user?.name}</Text>
-            <Text style={styles.headerSub}>Full Control · All Wards</Text>
+            <Text style={styles.headerSub}>{t("fullControl")}</Text>
           </View>
           <TouchableOpacity onPress={logout} style={styles.logoutBtn} activeOpacity={0.8}>
             <Feather name="log-out" size={16} color="rgba(255,255,255,0.7)" />
@@ -298,10 +320,10 @@ function HeadAdminPanel() {
 
         <View style={styles.bigStatRow}>
           {[
-            { label: "Pending", count: pending, color: "#FDE68A", icon: "clock" },
-            { label: "Active", count: active2, color: "#C4B5FD", icon: "tool" },
-            { label: "Resolved", count: resolved, color: "#6EE7B7", icon: "check-circle" },
-            { label: "Total", count: complaints.length, color: "#93C5FD", icon: "list" },
+            { label: t("pending"), count: pending, color: "#FDE68A", icon: "clock" },
+            { label: t("active"), count: active2, color: "#C4B5FD", icon: "tool" },
+            { label: t("resolved"), count: resolved, color: "#6EE7B7", icon: "check-circle" },
+            { label: t("total"), count: complaints.length, color: "#93C5FD", icon: "list" },
           ].map((s) => (
             <View key={s.label} style={styles.bigStat}>
               <Feather name={s.icon as any} size={16} color={s.color} />
@@ -313,13 +335,13 @@ function HeadAdminPanel() {
 
         <View style={styles.adminTabRow}>
           {([
-            { id: "complaints", label: "Complaints", icon: "file-text" },
-            { id: "officers", label: "Officers", icon: "users" },
-            { id: "services", label: "Services", icon: "map-pin" },
-          ] as const).map((t) => (
-            <TouchableOpacity key={t.id} style={[styles.adminTab, tab === t.id && styles.adminTabActive]} onPress={() => setTab(t.id)} activeOpacity={0.8}>
-              <Feather name={t.icon as any} size={13} color={tab === t.id ? "white" : "rgba(255,255,255,0.5)"} />
-              <Text style={[styles.adminTabText, tab === t.id && { color: "white" }]}>{t.label}</Text>
+            { id: "complaints", label: t("complaintsTab"), icon: "file-text" },
+            { id: "officers", label: t("officersTab"), icon: "users" },
+            { id: "services", label: t("servicesTab"), icon: "map-pin" },
+          ] as const).map((tb) => (
+            <TouchableOpacity key={tb.id} style={[styles.adminTab, tab === tb.id && styles.adminTabActive]} onPress={() => setTab(tb.id)} activeOpacity={0.8}>
+              <Feather name={tb.icon as any} size={13} color={tab === tb.id ? "white" : "rgba(255,255,255,0.5)"} />
+              <Text style={[styles.adminTabText, tab === tb.id && { color: "white" }]}>{tb.label}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -341,7 +363,7 @@ function HeadAdminPanel() {
               {(["all", "submitted", "in_progress", "resolved", "rejected"] as const).map((s) => (
                 <TouchableOpacity key={s} style={[styles.filterChipStatus, filterStatus === s && styles.filterChipStatusActive]} onPress={() => setFilterStatus(s)} activeOpacity={0.8}>
                   <Text style={[styles.filterChipStatusText, filterStatus === s && { color: "white" }]}>
-                    {s === "all" ? "All Status" : statusConfig[s]?.label}
+                    {s === "all" ? t("allStatus") : t(statusLabelKeys[s])}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -353,14 +375,14 @@ function HeadAdminPanel() {
             renderItem={({ item }) => <ComplaintCard complaint={item} onAction={() => setActive(item)} />}
             contentContainerStyle={[{ padding: 14 }, { paddingBottom: bottomPad + 90 }]}
             showsVerticalScrollIndicator={false}
-            ListEmptyComponent={<View style={styles.empty}><Feather name="inbox" size={36} color="#CBD5E1" /><Text style={styles.emptyText}>No complaints found</Text></View>}
+            ListEmptyComponent={<View style={styles.empty}><Feather name="inbox" size={36} color="#CBD5E1" /><Text style={styles.emptyText}>{t("noComplaintsFound")}</Text></View>}
           />
         </>
       )}
 
       {tab === "officers" && (
         <ScrollView contentContainerStyle={[{ padding: 14 }, { paddingBottom: bottomPad + 90 }]}>
-          <Text style={styles.sectionHeading}>Nagarsevak Performance</Text>
+          <Text style={styles.sectionHeading}>{t("nagarsevakPerformance")}</Text>
           {DEMO_OFFICERS.map((o, i) => (
             <View key={i} style={styles.officerCard}>
               <View style={[styles.officerAvatar, { backgroundColor: o.avatar }]}>
@@ -372,11 +394,11 @@ function HeadAdminPanel() {
                 <View style={styles.officerStats}>
                   <View style={styles.officerStat}>
                     <Text style={[styles.officerStatNum, { color: "#059669" }]}>{o.resolved}</Text>
-                    <Text style={styles.officerStatLabel}>Resolved</Text>
+                    <Text style={styles.officerStatLabel}>{t("resolved")}</Text>
                   </View>
                   <View style={styles.officerStat}>
                     <Text style={[styles.officerStatNum, { color: "#7C3AED" }]}>{o.active}</Text>
-                    <Text style={styles.officerStatLabel}>Active</Text>
+                    <Text style={styles.officerStatLabel}>{t("active")}</Text>
                   </View>
                 </View>
               </View>
@@ -391,11 +413,11 @@ function HeadAdminPanel() {
       {tab === "services" && (
         <ScrollView contentContainerStyle={[{ padding: 14 }, { paddingBottom: bottomPad + 90 }]}>
           <View style={styles.servicesAdminHeader}>
-            <Text style={styles.sectionHeading}>Service Management</Text>
+            <Text style={styles.sectionHeading}>{t("serviceManagement")}</Text>
             <TouchableOpacity style={styles.addServiceBtn} activeOpacity={0.8}>
               <LinearGradient colors={["#1E40AF", "#2563EB"]} style={styles.addServiceBtnGrad}>
                 <Feather name="plus" size={14} color="white" />
-                <Text style={styles.addServiceBtnText}>Add Service</Text>
+                <Text style={styles.addServiceBtnText}>{t("addService")}</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -414,7 +436,7 @@ function HeadAdminPanel() {
               </View>
               <View style={styles.serviceCatInfo}>
                 <Text style={styles.serviceCatName}>{svc.category}</Text>
-                <Text style={styles.serviceCatCount}>{svc.count} services listed</Text>
+                <Text style={styles.serviceCatCount}>{svc.count} {t("servicesListed")}</Text>
               </View>
               <View style={styles.serviceCatActions}>
                 <TouchableOpacity style={styles.serviceCatBtn} activeOpacity={0.8}>
@@ -448,23 +470,24 @@ function LoginGate() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
+  const { t } = useLanguage();
 
   return (
     <View style={{ flex: 1, backgroundColor: "#F8FAFC" }}>
-      <LinearGradient colors={["#1E3A8A", "#1E40AF", "#2563EB"]} style={[{ paddingTop: topPad + 20, paddingHorizontal: 20, paddingBottom: 60, alignItems: "center" }]}>
+      <LinearGradient colors={["#1E3A8A", "#1E40AF", "#2563EB"]} style={[{ paddingTop: topPad + 20, paddingHorizontal: 20, paddingBottom: 60, alignItems: "center", borderBottomLeftRadius: 28, borderBottomRightRadius: 28 }]}>
         <TouchableOpacity onPress={() => router.back()} style={[styles.backBtn, { alignSelf: "flex-start" }]} activeOpacity={0.8}>
           <Feather name="arrow-left" size={18} color="white" />
         </TouchableOpacity>
         <Feather name="shield" size={48} color="rgba(255,255,255,0.3)" />
-        <Text style={{ fontSize: 22, fontWeight: "800", color: "white", fontFamily: "Inter_700Bold", marginTop: 12 }}>Admin Panel</Text>
-        <Text style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", fontFamily: "Inter_400Regular", marginTop: 4 }}>Login to access officer controls</Text>
+        <Text style={{ fontSize: 22, fontWeight: "800", color: "white", fontFamily: "Inter_700Bold", marginTop: 12 }}>{t("admin")} {t("panel")}</Text>
+        <Text style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", fontFamily: "Inter_400Regular", marginTop: 4 }}>{t("adminLoginDesc")}</Text>
       </LinearGradient>
       <View style={{ padding: 24, alignItems: "center", gap: 16, marginTop: -20 }}>
         <View style={{ backgroundColor: "white", borderRadius: 20, padding: 24, width: "100%", alignItems: "center", gap: 12, shadowColor: "#1E40AF", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 12, elevation: 4 }}>
-          <Text style={{ fontSize: 16, fontWeight: "700", color: "#0F172A", fontFamily: "Inter_700Bold" }}>Please Login First</Text>
-          <Text style={{ fontSize: 13, color: "#64748B", textAlign: "center", fontFamily: "Inter_400Regular" }}>You need to login as Nagarsevak or Head Admin to access this panel</Text>
+          <Text style={{ fontSize: 16, fontWeight: "700", color: "#0F172A", fontFamily: "Inter_700Bold" }}>{t("adminLoginRequired")}</Text>
+          <Text style={{ fontSize: 13, color: "#64748B", textAlign: "center", fontFamily: "Inter_400Regular" }}>{t("adminLoginDesc")}</Text>
           <TouchableOpacity onPress={() => router.push("/login")} style={{ backgroundColor: "#1E40AF", paddingHorizontal: 32, paddingVertical: 14, borderRadius: 14, width: "100%" }} activeOpacity={0.85}>
-            <Text style={{ fontSize: 15, fontWeight: "700", color: "white", textAlign: "center", fontFamily: "Inter_700Bold" }}>Go to Login</Text>
+            <Text style={{ fontSize: 15, fontWeight: "700", color: "white", textAlign: "center", fontFamily: "Inter_700Bold" }}>{t("loginAsAdmin")}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -481,7 +504,7 @@ export default function AdminScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { paddingHorizontal: 20, paddingBottom: 14 },
+  header: { paddingHorizontal: 20, paddingBottom: 14, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
   backBtn: { width: 38, height: 38, borderRadius: 12, backgroundColor: "rgba(255,255,255,0.18)", alignItems: "center", justifyContent: "center", marginBottom: 8 },
   headerTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 },
   adminBadge: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: "rgba(167,139,250,0.15)", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20, alignSelf: "flex-start", marginBottom: 6 },
