@@ -130,13 +130,15 @@ export default function ProfileScreen() {
               </View>
               <Text style={styles.roleSub}>{rc.subLabel}</Text>
             </View>
-            <View style={styles.infoChipRow}>
-              <Feather name="map-pin" size={10} color="rgba(255,255,255,0.55)" />
-              <Text style={styles.infoChipText}>{user.ward || "Camp 1 — Ulhasnagar"}</Text>
-            </View>
-            <View style={styles.infoChipRow}>
-              <Feather name="phone" size={10} color="rgba(255,255,255,0.55)" />
-              <Text style={styles.infoChipText}>+91 {user.mobile}</Text>
+            <View style={styles.infoRow}>
+              <View style={styles.infoChipRow}>
+                <Feather name="map-pin" size={10} color="rgba(255,255,255,0.55)" />
+                <Text style={styles.infoChipText}>{user.ward || "Camp 1 — Ulhasnagar"}</Text>
+              </View>
+              <View style={styles.infoChipRow}>
+                <Feather name="phone" size={10} color="rgba(255,255,255,0.55)" />
+                <Text style={styles.infoChipText}>+91 {user.mobile}</Text>
+              </View>
             </View>
           </View>
         </View>
@@ -388,15 +390,16 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: "#F8FAFC" },
-  header: { paddingHorizontal: 20, paddingBottom: 20, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
-  backBtn: { width: 38, height: 38, borderRadius: 12, backgroundColor: "rgba(255,255,255,0.18)", alignItems: "center", justifyContent: "center", marginBottom: 8 },
+  header: { paddingHorizontal: 20, paddingBottom: 14, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
+  backBtn: { width: 34, height: 34, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.18)", alignItems: "center", justifyContent: "center", marginBottom: 4 },
   guestIcon: {
     width: 80, height: 80, borderRadius: 40,
     backgroundColor: "rgba(59,130,246,0.15)", alignItems: "center", justifyContent: "center",
     borderWidth: 2, borderColor: "rgba(59,130,246,0.3)",
   },
-  headerContent: { flexDirection: "row", alignItems: "center", gap: 16, marginBottom: 18 },
-  headerText: { flex: 1, gap: 5 },
+  headerContent: { flexDirection: "row", alignItems: "center", gap: 14, marginBottom: 12 },
+  headerText: { flex: 1, gap: 3 },
+  infoRow: { flexDirection: "row", alignItems: "center", gap: 12, flexWrap: "wrap" },
   userName: { fontSize: 20, fontWeight: "800", color: "white", fontFamily: "Inter_700Bold", letterSpacing: -0.3 },
   rolePillRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   rolePill: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: "rgba(255,255,255,0.15)", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 },
@@ -404,7 +407,7 @@ const styles = StyleSheet.create({
   roleSub: { fontSize: 11, color: "rgba(255,255,255,0.5)", fontFamily: "Inter_400Regular" },
   infoChipRow: { flexDirection: "row", alignItems: "center", gap: 5 },
   infoChipText: { fontSize: 11, color: "rgba(255,255,255,0.55)", fontFamily: "Inter_400Regular" },
-  statsRow: { flexDirection: "row", backgroundColor: "rgba(255,255,255,0.12)", borderRadius: 16, padding: 14, alignItems: "center" },
+  statsRow: { flexDirection: "row", backgroundColor: "rgba(255,255,255,0.12)", borderRadius: 14, padding: 10, alignItems: "center" },
   statItem: { flex: 1, alignItems: "center" },
   statNum: { fontSize: 24, fontWeight: "900", color: "white", fontFamily: "Inter_700Bold" },
   statLabel: { fontSize: 10, color: "rgba(255,255,255,0.55)", fontFamily: "Inter_400Regular", marginTop: 2 },
