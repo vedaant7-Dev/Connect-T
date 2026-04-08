@@ -9,6 +9,7 @@ import {
   Platform,
   ActivityIndicator,
   KeyboardAvoidingView,
+  Image,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
@@ -104,9 +105,11 @@ export default function LoginScreen() {
         style={[styles.headerBg, { paddingTop: (Platform.OS === "web" ? 67 : insets.top) + 30 }]}
       >
         <View style={styles.logoRow}>
-          <View style={styles.logoIcon}>
-            <Feather name="shield" size={28} color="#3B82F6" />
-          </View>
+          <Image
+            source={require("../assets/images/logo_transparent.png")}
+            style={styles.logoImg}
+            resizeMode="contain"
+          />
           <View>
             <Text style={styles.logoTitle}>JanSeva</Text>
             <Text style={styles.logoSub}>Citizen Services Platform</Text>
@@ -272,12 +275,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   headerBg: { paddingHorizontal: 24, paddingBottom: 48 },
   logoRow: { flexDirection: "row", alignItems: "center", gap: 14, marginBottom: 16 },
-  logoIcon: {
-    width: 56, height: 56, borderRadius: 18,
-    backgroundColor: "rgba(59,130,246,0.15)",
-    alignItems: "center", justifyContent: "center",
-    borderWidth: 1.5, borderColor: "rgba(59,130,246,0.3)",
-  },
+  logoImg: { width: 72, height: 72 },
   logoTitle: { fontSize: 28, fontWeight: "900", color: "white", fontFamily: "Inter_700Bold", letterSpacing: -0.5 },
   logoSub: { fontSize: 12, color: "rgba(255,255,255,0.55)", fontFamily: "Inter_400Regular", marginTop: 2 },
   headerTagline: { fontSize: 14, color: "rgba(255,255,255,0.4)", fontFamily: "Inter_400Regular", letterSpacing: 0.5 },

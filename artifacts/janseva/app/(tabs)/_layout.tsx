@@ -2,8 +2,7 @@ import { Tabs } from "expo-router";
 import { Feather } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import React from "react";
-import { Platform, StyleSheet, View, useColorScheme } from "react-native";
-import { useAuth } from "@/context/AuthContext";
+import { Platform, StyleSheet, View, Text, useColorScheme } from "react-native";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -33,9 +32,6 @@ export default function TabLayout() {
           fontFamily: "Inter_600SemiBold",
           marginTop: 2,
         },
-        tabBarIconStyle: {
-          marginBottom: 0,
-        },
         tabBarBackground: () =>
           isIOS ? (
             <BlurView intensity={100} tint={isDark ? "dark" : "light"} style={StyleSheet.absoluteFill} />
@@ -51,60 +47,54 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <Feather name="home" size={22} color={color} />,
         }}
       />
+
+      {/* Complaints — simple, no circle */}
       <Tabs.Screen
         name="complaints"
         options={{
           title: "Complaints",
-          tabBarIcon: ({ color, focused }) => (
-            <View style={{
-              width: 44,
-              height: 44,
-              borderRadius: 22,
-              backgroundColor: focused ? "#1E40AF" : "#EFF6FF",
-              alignItems: "center",
-              justifyContent: "center",
-              shadowColor: focused ? "#1E40AF" : "transparent",
-              shadowOffset: { width: 0, height: 3 },
-              shadowOpacity: 0.35,
-              shadowRadius: 6,
-              elevation: focused ? 4 : 0,
-              marginTop: -8,
-            }}>
-              <Feather name="edit-3" size={20} color={focused ? "white" : "#2563EB"} />
-            </View>
-          ),
-          tabBarActiveTintColor: "#1E40AF",
-          tabBarLabel: "Complaints",
+          tabBarIcon: ({ color }) => <Feather name="edit-3" size={22} color={color} />,
+          tabBarActiveTintColor: "#2563EB",
         }}
       />
+
+      {/* SOS — floating red circle with "SOS" text inside, no external label */}
       <Tabs.Screen
         name="emergency"
         options={{
-          title: "SOS",
-          tabBarIcon: ({ color, focused }) => (
+          tabBarLabel: () => null,
+          tabBarIcon: ({ focused }) => (
             <View style={{
-              width: 50,
-              height: 50,
-              borderRadius: 25,
-              backgroundColor: focused ? "#DC2626" : "#FEE2E2",
+              width: 54,
+              height: 54,
+              borderRadius: 27,
+              backgroundColor: focused ? "#B91C1C" : "#DC2626",
               alignItems: "center",
               justifyContent: "center",
-              shadowColor: "#DC2626",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.4,
-              shadowRadius: 8,
-              elevation: 6,
-              marginTop: -16,
+              marginTop: -20,
               borderWidth: 3,
               borderColor: "white",
+              shadowColor: "#DC2626",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.5,
+              shadowRadius: 8,
+              elevation: 8,
+              gap: 1,
             }}>
-              <Feather name="phone-call" size={20} color={focused ? "white" : "#DC2626"} />
+              <Feather name="phone-call" size={16} color="white" />
+              <Text style={{
+                fontSize: 8,
+                fontWeight: "900",
+                color: "white",
+                letterSpacing: 1,
+                fontFamily: "Inter_700Bold",
+              }}>SOS</Text>
             </View>
           ),
           tabBarActiveTintColor: "#DC2626",
-          tabBarLabel: "SOS",
         }}
       />
+
       <Tabs.Screen
         name="feed"
         options={{
