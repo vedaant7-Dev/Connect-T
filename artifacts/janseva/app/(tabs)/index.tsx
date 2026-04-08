@@ -15,9 +15,9 @@ import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 
 import { UtilityCard } from "@/components/UtilityCard";
-import { QuickServiceGrid } from "@/components/QuickServiceGrid";
 import { SectionHeader } from "@/components/SectionHeader";
 import { emergencyContacts } from "@/data/mumbaiServices";
+import { useComplaints, ComplaintStatus } from "@/context/ComplaintContext";
 
 const quickServices = [
   { id: "hospital", label: "Hospitals", icon: "activity", color: "#DC2626", bg: "#FEE2E2" },
@@ -30,21 +30,35 @@ const quickServices = [
   { id: "shamshanbhumi", label: "Crematorium", icon: "wind", color: "#475569", bg: "#F1F5F9" },
 ];
 
+const statusConfig: Record<ComplaintStatus, { label: string; color: string; bg: string; icon: string }> = {
+  submitted: { label: "Submitted", color: "#D97706", bg: "#FEF3C7", icon: "clock" },
+  assigned: { label: "Assigned", color: "#2563EB", bg: "#DBEAFE", icon: "user-check" },
+  in_progress: { label: "In Progress", color: "#7C3AED", bg: "#EDE9FE", icon: "tool" },
+  resolved: { label: "Resolved", color: "#059669", bg: "#D1FAE5", icon: "check-circle" },
+  rejected: { label: "Rejected", color: "#DC2626", bg: "#FEE2E2", icon: "x-circle" },
+};
+
+const categoryIcons: Record<string, string> = {
+  roads: "truck", water: "droplet", electricity: "zap", garbage: "trash-2",
+  drainage: "git-merge", streetlight: "sun", encroachment: "alert-triangle", other: "more-horizontal",
+};
+
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const bottomPad = Platform.OS === "web" ? 34 : 0;
+  const { complaints } = useComplaints();
+
+  const recentComplaints = complaints.slice(0, 3);
+  const pendingCount = complaints.filter((c) => c.status === "submitted" || c.status === "assigned" || c.status === "in_progress").length;
+  const resolvedCount = complaints.filter((c) => c.status === "resolved").length;
 
   const handleSOS = () => {
     if (Platform.OS !== "web") {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
     }
     Linking.openURL("tel:112");
-  };
-
-  const handleServicePress = (id: string) => {
-    router.push({ pathname: "/(tabs)/services", params: { category: id } });
   };
 
   const handleCallEmergency = (number: string) => {
@@ -89,6 +103,126 @@ export default function HomeScreen() {
         contentContainerStyle={[styles.content, { paddingBottom: bottomPad + 100 }]}
         showsVerticalScrollIndicator={false}
       >
+        {/* COMPLAINT CTA — MAIN FEATURE */}
+        <TouchableOpacity
+          style={styles.complaintCTA}
+          onPress={() => router.push("/complaint/new")}
+          activeOpacity={0.88}
+        >
+          <LinearGradient
+            colors={["#1E3A8A", "#2563EB", "#3B82F6"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.complaintCTAGrad}
+          >
+            <View style={styles.complaintCTALeft}>
+              <View style={styles.complaintCTAIcon}>
+                <Feather name="camera" size={22} color="white" />
+              </View>
+              <View>
+                <Text style={styles.complaintCTATitle}>Report a Problem</Text>
+                <Text style={styles.complaintCTASub}>Click photo → Ward officer resolves it</Text>
+              </View>
+            </View>
+            <View style={styles.complaintCTAArrow}>
+              <Feather name="arrow-right" size={18} color="white" />
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        {/* COMPLAINT STATS */}
+        <View style={styles.statsRow}>
+          <TouchableOpacity
+            style={styles.statCard}
+            onPress={() => router.push("/(tabs)/complaints")}
+            activeOpacity={0.8}
+          >
+            <View style={[styles.statIcon, { backgroundColor: "#FEF3C7" }]}>
+              <Feather name="clock" size={16} color="#D97706" />
+            </View>
+            <Text style={[styles.statNum, { color: "#D97706" }]}>{pendingCount}</Text>
+            <Text style={styles.statLabel}>Active</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.statCard}
+            onPress={() => router.push("/(tabs)/complaints")}
+            activeOpacity={0.8}
+          >
+            <View style={[styles.statIcon, { backgroundColor: "#D1FAE5" }]}>
+              <Feather name="check-circle" size={16} color="#059669" />
+            </View>
+            <Text style={[styles.statNum, { color: "#059669" }]}>{resolvedCount}</Text>
+            <Text style={styles.statLabel}>Resolved</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.statCard}
+            onPress={() => router.push("/(tabs)/complaints")}
+            activeOpacity={0.8}
+          >
+            <View style={[styles.statIcon, { backgroundColor: "#DBEAFE" }]}>
+              <Feather name="file-text" size={16} color="#2563EB" />
+            </View>
+            <Text style={[styles.statNum, { color: "#2563EB" }]}>{complaints.length}</Text>
+            <Text style={styles.statLabel}>Total</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.statCard, { backgroundColor: "#EFF6FF" }]}
+            onPress={() => router.push("/(tabs)/admin")}
+            activeOpacity={0.8}
+          >
+            <View style={[styles.statIcon, { backgroundColor: "#DBEAFE" }]}>
+              <Feather name="shield" size={16} color="#1E40AF" />
+            </View>
+            <Text style={[styles.statNum, { color: "#1E40AF" }]}>ADM</Text>
+            <Text style={styles.statLabel}>Admin</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* RECENT COMPLAINTS */}
+        <SectionHeader
+          title="Recent Complaints"
+          actionLabel="View All"
+          onAction={() => router.push("/(tabs)/complaints")}
+        />
+        {recentComplaints.length > 0 ? (
+          <View style={styles.complaintsCard}>
+            {recentComplaints.map((complaint, idx) => {
+              const st = statusConfig[complaint.status];
+              const catIcon = categoryIcons[complaint.category] || "more-horizontal";
+              return (
+                <TouchableOpacity
+                  key={complaint.id}
+                  style={[styles.complaintRow, idx < recentComplaints.length - 1 && styles.complaintRowBorder]}
+                  onPress={() => router.push({ pathname: "/complaint/[id]", params: { id: complaint.id } })}
+                  activeOpacity={0.8}
+                >
+                  <View style={[styles.complaintRowIcon, { backgroundColor: st.bg }]}>
+                    <Feather name={catIcon as any} size={14} color={st.color} />
+                  </View>
+                  <View style={styles.complaintRowText}>
+                    <Text style={styles.complaintRowTitle} numberOfLines={1}>{complaint.title}</Text>
+                    <Text style={styles.complaintRowLocation} numberOfLines={1}>{complaint.location}</Text>
+                  </View>
+                  <View style={[styles.complaintRowStatus, { backgroundColor: st.bg }]}>
+                    <Feather name={st.icon as any} size={9} color={st.color} />
+                    <Text style={[styles.complaintRowStatusText, { color: st.color }]}>{st.label}</Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        ) : (
+          <TouchableOpacity
+            style={styles.noComplaintsCard}
+            onPress={() => router.push("/complaint/new")}
+            activeOpacity={0.8}
+          >
+            <Feather name="camera" size={24} color="#2563EB" />
+            <Text style={styles.noComplaintsText}>Tap to report your first problem</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* UTILITY STATUS */}
         <SectionHeader title="Utility Status" />
         <View style={styles.utilityRow}>
           <UtilityCard
@@ -113,11 +247,27 @@ export default function HomeScreen() {
           />
         </View>
 
+        {/* QUICK SERVICES */}
         <SectionHeader title="Quick Services" actionLabel="All Services" onAction={() => router.push("/(tabs)/services")} />
         <View style={styles.servicesCard}>
-          <QuickServiceGrid services={quickServices} onPress={handleServicePress} />
+          <View style={styles.servicesGrid}>
+            {quickServices.map((svc) => (
+              <TouchableOpacity
+                key={svc.id}
+                style={styles.serviceItem}
+                onPress={() => router.push({ pathname: "/(tabs)/services", params: { category: svc.id } })}
+                activeOpacity={0.8}
+              >
+                <View style={[styles.serviceIcon, { backgroundColor: svc.bg }]}>
+                  <Feather name={svc.icon as any} size={20} color={svc.color} />
+                </View>
+                <Text style={styles.serviceLabel}>{svc.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
 
+        {/* EMERGENCY */}
         <SectionHeader title="Emergency Contacts" actionLabel="View All" onAction={() => router.push("/(tabs)/emergency")} />
         <View style={styles.emergencyGrid}>
           {emergencyContacts.slice(0, 4).map((ec, idx) => (
@@ -135,34 +285,6 @@ export default function HomeScreen() {
             </TouchableOpacity>
           ))}
         </View>
-
-        <SectionHeader title="Nearest Hospitals" actionLabel="All Hospitals" onAction={() => handleServicePress("hospital")} />
-        <View style={styles.hospitalList}>
-          {[
-            { name: "Bombay Hospital", dist: "2.1 km", type: "General" },
-            { name: "KEM Hospital", dist: "3.2 km", type: "Govt. Multi-Specialty" },
-            { name: "Tata Memorial", dist: "3.5 km", type: "Cancer Specialty" },
-          ].map((h, i) => (
-            <TouchableOpacity key={i} style={styles.hospitalRow} onPress={() => handleServicePress("hospital")} activeOpacity={0.8}>
-              <View style={styles.hospitalLeft}>
-                <View style={styles.hospitalIcon}>
-                  <Feather name="activity" size={14} color="#DC2626" />
-                </View>
-                <View>
-                  <Text style={styles.hospitalName}>{h.name}</Text>
-                  <Text style={styles.hospitalType}>{h.type}</Text>
-                </View>
-              </View>
-              <View style={styles.hospitalRight}>
-                <View style={styles.hospitalDistBadge}>
-                  <Feather name="navigation" size={9} color="#2563EB" />
-                  <Text style={styles.hospitalDist}>{h.dist}</Text>
-                </View>
-                <Feather name="chevron-right" size={14} color="#94A3B8" />
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
       </ScrollView>
     </View>
   );
@@ -170,29 +292,10 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: "#F8FAFC" },
-  header: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 14,
-  },
-  greeting: {
-    fontSize: 22,
-    fontWeight: "800",
-    color: "#FFFFFF",
-    fontFamily: "Inter_700Bold",
-    letterSpacing: -0.3,
-  },
-  subGreeting: {
-    fontSize: 12,
-    color: "rgba(255,255,255,0.65)",
-    fontFamily: "Inter_400Regular",
-    marginTop: 2,
-  },
+  header: { paddingHorizontal: 20, paddingBottom: 20 },
+  headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 },
+  greeting: { fontSize: 22, fontWeight: "800", color: "#FFFFFF", fontFamily: "Inter_700Bold", letterSpacing: -0.3 },
+  subGreeting: { fontSize: 12, color: "rgba(255,255,255,0.65)", fontFamily: "Inter_400Regular", marginTop: 2 },
   miniSOS: {
     flexDirection: "row",
     alignItems: "center",
@@ -207,13 +310,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
-  miniSOSText: {
-    fontSize: 12,
-    fontWeight: "900",
-    color: "#FFFFFF",
-    letterSpacing: 1,
-    fontFamily: "Inter_700Bold",
-  },
+  miniSOSText: { fontSize: 12, fontWeight: "900", color: "#FFFFFF", letterSpacing: 1, fontFamily: "Inter_700Bold" },
   alertBanner: {
     flexDirection: "row",
     gap: 10,
@@ -223,35 +320,118 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   alertIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 8,
-    backgroundColor: "rgba(245,158,11,0.2)",
+    width: 28, height: 28, borderRadius: 8,
+    backgroundColor: "rgba(245,158,11,0.2)", alignItems: "center", justifyContent: "center", flexShrink: 0,
+  },
+  alertText: { flex: 1 },
+  alertTitle: { fontSize: 12, fontWeight: "700", color: "#FDE68A", fontFamily: "Inter_700Bold", marginBottom: 2 },
+  alertBody: { fontSize: 11, color: "rgba(255,255,255,0.75)", fontFamily: "Inter_400Regular", lineHeight: 16 },
+  scroll: { flex: 1 },
+  content: { padding: 16 },
+
+  complaintCTA: {
+    borderRadius: 20,
+    overflow: "hidden",
+    marginBottom: 12,
+    shadowColor: "#1E40AF",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 14,
+    elevation: 6,
+  },
+  complaintCTAGrad: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 18,
+  },
+  complaintCTALeft: { flexDirection: "row", alignItems: "center", gap: 14, flex: 1 },
+  complaintCTAIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 16,
+    backgroundColor: "rgba(255,255,255,0.18)",
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
   },
-  alertText: { flex: 1 },
-  alertTitle: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#FDE68A",
-    fontFamily: "Inter_700Bold",
-    marginBottom: 2,
+  complaintCTATitle: { fontSize: 16, fontWeight: "800", color: "white", fontFamily: "Inter_700Bold" },
+  complaintCTASub: { fontSize: 11, color: "rgba(255,255,255,0.7)", fontFamily: "Inter_400Regular", marginTop: 2 },
+  complaintCTAArrow: {
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    backgroundColor: "rgba(255,255,255,0.18)",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  alertBody: {
-    fontSize: 11,
-    color: "rgba(255,255,255,0.75)",
-    fontFamily: "Inter_400Regular",
-    lineHeight: 16,
+
+  statsRow: { flexDirection: "row", gap: 10, marginBottom: 18 },
+  statCard: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    padding: 12,
+    alignItems: "center",
+    gap: 4,
+    shadowColor: "#1E40AF",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 2,
   },
-  scroll: { flex: 1 },
-  content: { padding: 16 },
-  utilityRow: {
-    flexDirection: "row",
-    gap: 10,
+  statIcon: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center", marginBottom: 2 },
+  statNum: { fontSize: 18, fontWeight: "900", fontFamily: "Inter_700Bold" },
+  statLabel: { fontSize: 9, color: "#94A3B8", fontFamily: "Inter_500Medium", fontWeight: "600" },
+
+  complaintsCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    overflow: "hidden",
     marginBottom: 18,
+    shadowColor: "#1E40AF",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
   },
+  complaintRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    gap: 10,
+  },
+  complaintRowBorder: { borderBottomWidth: 1, borderBottomColor: "#F1F5F9" },
+  complaintRowIcon: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center", flexShrink: 0 },
+  complaintRowText: { flex: 1 },
+  complaintRowTitle: { fontSize: 13, fontWeight: "700", color: "#0F172A", fontFamily: "Inter_700Bold" },
+  complaintRowLocation: { fontSize: 11, color: "#94A3B8", fontFamily: "Inter_400Regular", marginTop: 1 },
+  complaintRowStatus: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 20,
+    flexShrink: 0,
+  },
+  complaintRowStatusText: { fontSize: 9, fontWeight: "700", fontFamily: "Inter_600SemiBold" },
+
+  noComplaintsCard: {
+    backgroundColor: "#EFF6FF",
+    borderRadius: 16,
+    padding: 20,
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 18,
+    borderWidth: 1,
+    borderColor: "#DBEAFE",
+    borderStyle: "dashed",
+  },
+  noComplaintsText: { fontSize: 13, color: "#2563EB", fontFamily: "Inter_500Medium", fontWeight: "600" },
+
+  utilityRow: { flexDirection: "row", gap: 10, marginBottom: 18 },
   servicesCard: {
     backgroundColor: "#FFFFFF",
     borderRadius: 18,
@@ -263,11 +443,12 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
   },
-  emergencyGrid: {
-    flexDirection: "row",
-    gap: 10,
-    marginBottom: 18,
-  },
+  servicesGrid: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
+  serviceItem: { width: "21%", alignItems: "center", gap: 6 },
+  serviceIcon: { width: 54, height: 54, borderRadius: 16, alignItems: "center", justifyContent: "center" },
+  serviceLabel: { fontSize: 10, fontWeight: "700", color: "#475569", textAlign: "center", fontFamily: "Inter_600SemiBold" },
+
+  emergencyGrid: { flexDirection: "row", gap: 10, marginBottom: 18 },
   emergencyItem: {
     flex: 1,
     backgroundColor: "#FFFFFF",
@@ -281,91 +462,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 2,
   },
-  emergencyIconBox: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 2,
-  },
-  emergencyName: {
-    fontSize: 9,
-    fontWeight: "700",
-    color: "#475569",
-    textAlign: "center",
-    fontFamily: "Inter_600SemiBold",
-  },
-  emergencyNumber: {
-    fontSize: 14,
-    fontWeight: "900",
-    fontFamily: "Inter_700Bold",
-  },
-  hospitalList: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 18,
-    overflow: "hidden",
-    shadowColor: "#1E40AF",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
-    marginBottom: 18,
-  },
-  hospitalRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 14,
-    paddingVertical: 13,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F1F5F9",
-  },
-  hospitalLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    flex: 1,
-  },
-  hospitalIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: 10,
-    backgroundColor: "#FEE2E2",
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
-  },
-  hospitalName: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#0F172A",
-    fontFamily: "Inter_700Bold",
-  },
-  hospitalType: {
-    fontSize: 11,
-    color: "#94A3B8",
-    fontFamily: "Inter_400Regular",
-    marginTop: 1,
-  },
-  hospitalRight: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  hospitalDistBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 3,
-    backgroundColor: "#EFF6FF",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 20,
-  },
-  hospitalDist: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#2563EB",
-    fontFamily: "Inter_600SemiBold",
-  },
+  emergencyIconBox: { width: 44, height: 44, borderRadius: 14, alignItems: "center", justifyContent: "center", marginBottom: 2 },
+  emergencyName: { fontSize: 9, fontWeight: "700", color: "#475569", textAlign: "center", fontFamily: "Inter_600SemiBold" },
+  emergencyNumber: { fontSize: 14, fontWeight: "900", fontFamily: "Inter_700Bold" },
 });
