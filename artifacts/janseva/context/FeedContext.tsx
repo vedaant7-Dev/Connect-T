@@ -35,8 +35,8 @@ const SEED_POSTS: FeedPost[] = [
   {
     id: "POST001",
     authorName: "ULMC Ulhasnagar",
-    authorRole: "Head Admin",
-    avatarColor: "#1E40AF",
+    authorRole: "Nagarsevak",
+    avatarColor: "#059669",
     type: "announcement",
     content: "🚨 Important: Water supply will be suspended in Camp 4 & Camp 5 on Sunday 6AM-2PM for pipe maintenance. Please store water in advance.",
     likes: [],
@@ -69,8 +69,8 @@ const SEED_POSTS: FeedPost[] = [
   {
     id: "POST004",
     authorName: "ULMC Ulhasnagar",
-    authorRole: "Head Admin",
-    avatarColor: "#1E40AF",
+    authorRole: "Nagarsevak",
+    avatarColor: "#059669",
     type: "announcement",
     content: "📋 PM Awas Yojana applications open until April 30. Eligible citizens can apply at ward offices or online at pmaymis.gov.in. Required documents: Aadhar, PAN, income proof.",
     likes: [],

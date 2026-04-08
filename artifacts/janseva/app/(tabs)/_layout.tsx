@@ -7,6 +7,7 @@ import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTabBarVisibility } from "@/context/TabBarVisibilityContext";
+import { useAuth } from "@/context/AuthContext";
 
 function AnimatedTabBar(props: any) {
   const { state, descriptors, navigation } = props;
@@ -157,10 +158,12 @@ function AnimatedTabBar(props: any) {
 
 export default function TabLayout() {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const isNagarsevak = user?.role === "nagarsevak";
 
   return (
     <Tabs
-      tabBar={(props) => <AnimatedTabBar {...props} />}
+      tabBar={(props) => isNagarsevak ? null : <AnimatedTabBar {...props} />}
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: "#2563EB",
@@ -171,6 +174,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: t("home"),
+          href: isNagarsevak ? null : undefined,
         }}
       />
 
@@ -178,6 +182,7 @@ export default function TabLayout() {
         name="complaints"
         options={{
           title: t("complaints"),
+          href: isNagarsevak ? null : undefined,
         }}
       />
 
@@ -185,6 +190,7 @@ export default function TabLayout() {
         name="emergency"
         options={{
           title: "SOS",
+          href: isNagarsevak ? null : undefined,
         }}
       />
 
@@ -192,6 +198,7 @@ export default function TabLayout() {
         name="feed"
         options={{
           title: t("feed"),
+          href: isNagarsevak ? null : undefined,
         }}
       />
 
@@ -199,6 +206,7 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: t("profile"),
+          href: isNagarsevak ? null : undefined,
         }}
       />
 

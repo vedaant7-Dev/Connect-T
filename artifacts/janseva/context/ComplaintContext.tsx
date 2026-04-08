@@ -34,6 +34,7 @@ export interface Complaint {
   timeline: StatusUpdate[];
   assignedTo?: string;
   resolvedNote?: string;
+  userName?: string;
 }
 
 interface ComplaintContextType {

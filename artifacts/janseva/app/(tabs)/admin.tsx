@@ -161,7 +161,7 @@ function DetailedComplaintCard({ complaint, onAction }: { complaint: Complaint; 
         <View style={styles.citizenInfoRow}>
           <View style={styles.citizenInfoChip}>
             <Feather name="user" size={10} color="#2563EB" />
-            <Text style={styles.citizenInfoText}>{(complaint as any).userName || t("citizen")}</Text>
+            <Text style={styles.citizenInfoText}>{complaint.userName || t("citizen")}</Text>
           </View>
           <View style={styles.citizenInfoChip}>
             <Feather name="calendar" size={10} color="#64748B" />
