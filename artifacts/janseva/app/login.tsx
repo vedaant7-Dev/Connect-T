@@ -166,7 +166,7 @@ export default function LoginScreen() {
               style={styles.logo}
               contentFit="contain"
             />
-            <Text style={styles.brandSub}>Powered by Vikas Bahuddeshiya Aghadi</Text>
+            <Text style={styles.brandSub}>Powered by Vanchit Bahujan Aaghadi</Text>
           </View>
 
           {/* ── STEP: Phone ─────────────────────────────────────────────── */}
