@@ -75,6 +75,8 @@ export default function HomeScreen() {
   const { user } = useAuth();
   const { t } = useLanguage();
   const [selectedAlert, setSelectedAlert] = useState<typeof alertsAndNews[0] | null>(null);
+  const [showNotifPanel, setShowNotifPanel] = useState(false);
+  const [selectedUtility, setSelectedUtility] = useState<string | null>(null);
 
   const recentComplaints = complaints.slice(0, 3);
   const pendingCount = complaints.filter((c) => ["submitted", "assigned", "in_progress"].includes(c.status)).length;
@@ -119,7 +121,7 @@ export default function HomeScreen() {
             </View>
           </View>
           <View style={styles.headerRight}>
-            <TouchableOpacity style={styles.notifBtn} activeOpacity={0.82}>
+            <TouchableOpacity style={styles.notifBtn} activeOpacity={0.82} onPress={() => setShowNotifPanel(true)}>
               <Feather name="bell" size={18} color="white" />
               {notifCount > 0 && (
                 <View style={styles.notifBadge}>
@@ -130,7 +132,7 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <View style={styles.alertBanner}>
+        <TouchableOpacity style={styles.alertBanner} activeOpacity={0.82} onPress={() => setSelectedAlert(alertsAndNews[0])}>
           <View style={styles.alertIconBox}>
             <Feather name="info" size={14} color="#F59E0B" />
           </View>
@@ -139,7 +141,7 @@ export default function HomeScreen() {
             <Text style={styles.alertBody}>Water supply restricted in Camp 4 — 8AM to 2PM today</Text>
           </View>
           <Feather name="chevron-right" size={14} color="rgba(255,255,255,0.4)" />
-        </View>
+        </TouchableOpacity>
       </LinearGradient>
 
       <ScrollView
@@ -271,8 +273,8 @@ export default function HomeScreen() {
         {/* UTILITY STATUS */}
         <SectionHeader title="Utility Status" />
         <View style={styles.utilityRow}>
-          <UtilityCard title="Water Supply" value="14" unit="Hours/day" status="Reduced" statusOk={false} icon="droplet" gradColors={["#0EA5E9", "#2563EB"]} lastUpdated="2 hrs ago" />
-          <UtilityCard title="Electricity" value="24" unit="Hours/day" status="Normal" statusOk={true} icon="zap" gradColors={["#F59E0B", "#D97706"]} lastUpdated="30 min ago" />
+          <UtilityCard title="Water Supply" value="14" unit="Hours/day" status="Reduced" statusOk={false} icon="droplet" gradColors={["#0EA5E9", "#2563EB"]} lastUpdated="2 hrs ago" onPress={() => setSelectedUtility("water")} />
+          <UtilityCard title="Electricity" value="24" unit="Hours/day" status="Normal" statusOk={true} icon="zap" gradColors={["#F59E0B", "#D97706"]} lastUpdated="30 min ago" onPress={() => setSelectedUtility("electricity")} />
         </View>
 
         {/* QUICK SERVICES */}
@@ -309,6 +311,118 @@ export default function HomeScreen() {
           ))}
         </View>
       </ScrollView>
+
+      {/* Notification Panel Modal */}
+      <Modal visible={showNotifPanel} transparent animationType="fade" onRequestClose={() => setShowNotifPanel(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalSheet}>
+            <View style={styles.notifHeader}>
+              <Feather name="bell" size={20} color="#2563EB" />
+              <Text style={styles.modalTitle}>{t("alertsAndNews")}</Text>
+            </View>
+            <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 420, width: "100%" }}>
+              {alertsAndNews.map((item) => (
+                <TouchableOpacity
+                  key={item.id}
+                  style={styles.notifItem}
+                  activeOpacity={0.8}
+                  onPress={() => { setShowNotifPanel(false); setTimeout(() => setSelectedAlert(item), 200); }}
+                >
+                  <View style={[styles.notifItemIcon, { backgroundColor: item.bg }]}>
+                    <Feather name={item.icon as any} size={16} color={item.color} />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 2 }}>
+                      <Text style={styles.notifItemTitle} numberOfLines={1}>{item.title}</Text>
+                      <Text style={styles.notifItemTime}>{item.time}</Text>
+                    </View>
+                    <Text style={styles.notifItemBody} numberOfLines={2}>{item.body}</Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <TouchableOpacity style={styles.modalCloseBtn} onPress={() => setShowNotifPanel(false)} activeOpacity={0.85}>
+              <Text style={styles.modalCloseBtnText}>{t("cancel")}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Utility Detail Modal */}
+      <Modal visible={!!selectedUtility} transparent animationType="fade" onRequestClose={() => setSelectedUtility(null)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalSheet}>
+            <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 500 }}>
+              {selectedUtility === "water" && (
+                <>
+                  <View style={[styles.modalIconWrap, { backgroundColor: "#BAE6FD" }]}>
+                    <Feather name="droplet" size={28} color="#0EA5E9" />
+                  </View>
+                  <Text style={styles.modalTitle}>{t("waterSupply")}</Text>
+                  <View style={styles.utilityStatRow}>
+                    <View style={styles.utilityStat}>
+                      <Text style={[styles.utilityStatNum, { color: "#DC2626" }]}>14</Text>
+                      <Text style={styles.utilityStatLabel}>{t("hoursDay")}</Text>
+                    </View>
+                    <View style={styles.utilityStatDivider} />
+                    <View style={styles.utilityStat}>
+                      <Text style={[styles.utilityStatNum, { color: "#D97706" }]}>{t("reduced")}</Text>
+                      <Text style={styles.utilityStatLabel}>Status</Text>
+                    </View>
+                  </View>
+                  <View style={styles.modalDivider} />
+                  <Text style={styles.modalBody}>
+                    Water supply in Ulhasnagar is currently restricted to 14 hours per day due to maintenance work on the main distribution pipeline. Camp 4 and Camp 5 areas are most affected with supply available from 6AM–8PM only.{"\n\n"}
+                    The ULMC Water Department is conducting repairs on the 900mm main pipeline from Barvi Dam. Normal 24-hour supply is expected to resume by 1st May 2025.{"\n\n"}
+                    For water tanker requests, contact ULMC Water Helpline: 0251-2721100{"\n"}
+                    Tanker booking: 0251-2721155
+                  </Text>
+                  <View style={styles.modalSourceRow}>
+                    <Feather name="info" size={12} color="#64748B" />
+                    <Text style={styles.modalSourceText}>Source: ULMC Water Department · Updated 2 hrs ago</Text>
+                  </View>
+                </>
+              )}
+              {selectedUtility === "electricity" && (
+                <>
+                  <View style={[styles.modalIconWrap, { backgroundColor: "#FEF3C7" }]}>
+                    <Feather name="zap" size={28} color="#D97706" />
+                  </View>
+                  <Text style={styles.modalTitle}>{t("electricity")}</Text>
+                  <View style={styles.utilityStatRow}>
+                    <View style={styles.utilityStat}>
+                      <Text style={[styles.utilityStatNum, { color: "#059669" }]}>24</Text>
+                      <Text style={styles.utilityStatLabel}>{t("hoursDay")}</Text>
+                    </View>
+                    <View style={styles.utilityStatDivider} />
+                    <View style={styles.utilityStat}>
+                      <Text style={[styles.utilityStatNum, { color: "#059669" }]}>{t("normal")}</Text>
+                      <Text style={styles.utilityStatLabel}>Status</Text>
+                    </View>
+                  </View>
+                  <View style={styles.modalDivider} />
+                  <Text style={styles.modalBody}>
+                    Power supply across Ulhasnagar is currently normal with 24-hour availability. MSEDCL has completed the transformer upgrade at Camp 2 substation.{"\n\n"}
+                    Planned maintenance schedule:{"\n"}
+                    • Camp 2 substation — Completed{"\n"}
+                    • Camp 3 feeder line — 28 Apr, 10AM-2PM{"\n"}
+                    • Ambernath East substation — No planned outage{"\n\n"}
+                    For power complaints, call MSEDCL Helpline: 1912{"\n"}
+                    SMS ULHAS to 1912 for outage updates
+                  </Text>
+                  <View style={styles.modalSourceRow}>
+                    <Feather name="info" size={12} color="#64748B" />
+                    <Text style={styles.modalSourceText}>Source: MSEDCL Ulhasnagar Division · Updated 30 min ago</Text>
+                  </View>
+                </>
+              )}
+            </ScrollView>
+            <TouchableOpacity style={styles.modalCloseBtn} onPress={() => setSelectedUtility(null)} activeOpacity={0.85}>
+              <Text style={styles.modalCloseBtnText}>{t("cancel")}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       {/* Alert Detail Modal */}
       <Modal visible={!!selectedAlert} transparent animationType="fade" onRequestClose={() => setSelectedAlert(null)}>
@@ -487,4 +601,38 @@ const styles = StyleSheet.create({
     alignItems: "center", backgroundColor: "#F1F5F9", borderWidth: 1, borderColor: "#E2E8F0",
   },
   modalCloseBtnText: { fontSize: 14, fontWeight: "700", color: "#64748B", fontFamily: "Inter_700Bold" },
+  notifHeader: {
+    flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 14, width: "100%",
+  },
+  notifItem: {
+    flexDirection: "row", alignItems: "flex-start", gap: 10,
+    paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: "#F1F5F9",
+  },
+  notifItemIcon: {
+    width: 36, height: 36, borderRadius: 10,
+    alignItems: "center", justifyContent: "center", flexShrink: 0,
+  },
+  notifItemTitle: {
+    fontSize: 13, fontWeight: "700", color: "#0F172A", fontFamily: "Inter_700Bold", flex: 1,
+  },
+  notifItemTime: {
+    fontSize: 10, color: "#94A3B8", fontFamily: "Inter_400Regular", flexShrink: 0,
+  },
+  notifItemBody: {
+    fontSize: 11, color: "#64748B", fontFamily: "Inter_400Regular", lineHeight: 16,
+  },
+  utilityStatRow: {
+    flexDirection: "row", alignItems: "center", justifyContent: "center",
+    gap: 20, marginTop: 12, marginBottom: 14,
+  },
+  utilityStat: { alignItems: "center", gap: 2 },
+  utilityStatNum: {
+    fontSize: 28, fontWeight: "900", fontFamily: "Inter_700Bold",
+  },
+  utilityStatLabel: {
+    fontSize: 10, color: "#94A3B8", fontFamily: "Inter_400Regular",
+  },
+  utilityStatDivider: {
+    width: 1, height: 40, backgroundColor: "#F1F5F9",
+  },
 });
