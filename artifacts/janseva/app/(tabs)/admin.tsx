@@ -298,84 +298,141 @@ export default function AdminScreen() {
       )}
 
       <Modal visible={showProfile} transparent animationType="slide" onRequestClose={() => setShowProfile(false)}>
-        <View style={styles.profileOverlay}>
-          <View style={styles.profileSheet}>
-            <View style={styles.profileHandle} />
-            <View style={styles.profileAvatarLarge}>
-              <Text style={styles.profileAvatarLargeText}>{user?.name?.charAt(0)?.toUpperCase() || "N"}</Text>
-            </View>
-            <Text style={styles.profileName}>{user?.name}</Text>
-            <View style={styles.profileRoleBadge}>
-              <Feather name="briefcase" size={11} color="#059669" />
-              <Text style={styles.profileRoleText}>Nagarsevak</Text>
-            </View>
-
-            <View style={styles.profileInfoCard}>
-              {user?.mobile ? (
-                <View style={styles.profileInfoRow}>
-                  <View style={styles.profileInfoIcon}><Feather name="phone" size={14} color="#059669" /></View>
-                  <View style={styles.profileInfoContent}>
-                    <Text style={styles.profileInfoLabel}>{t("phone")}</Text>
-                    <Text style={styles.profileInfoValue}>+91 {user.mobile}</Text>
-                  </View>
-                </View>
-              ) : null}
-              {user?.nagarsevakId ? (
-                <View style={styles.profileInfoRow}>
-                  <View style={styles.profileInfoIcon}><Feather name="award" size={14} color="#059669" /></View>
-                  <View style={styles.profileInfoContent}>
-                    <Text style={styles.profileInfoLabel}>Nagarsevak ID</Text>
-                    <Text style={styles.profileInfoValue}>{user.nagarsevakId}</Text>
-                  </View>
-                </View>
-              ) : null}
-              {user?.ward ? (
-                <View style={styles.profileInfoRow}>
-                  <View style={styles.profileInfoIcon}><Feather name="map-pin" size={14} color="#059669" /></View>
-                  <View style={styles.profileInfoContent}>
-                    <Text style={styles.profileInfoLabel}>{t("ward")}</Text>
-                    <Text style={styles.profileInfoValue}>{user.ward}</Text>
-                  </View>
-                </View>
-              ) : null}
-              {user?.email ? (
-                <View style={styles.profileInfoRow}>
-                  <View style={styles.profileInfoIcon}><Feather name="mail" size={14} color="#059669" /></View>
-                  <View style={styles.profileInfoContent}>
-                    <Text style={styles.profileInfoLabel}>{t("email")}</Text>
-                    <Text style={styles.profileInfoValue}>{user.email}</Text>
-                  </View>
-                </View>
-              ) : null}
-              {user?.address ? (
-                <View style={styles.profileInfoRow}>
-                  <View style={styles.profileInfoIcon}><Feather name="home" size={14} color="#059669" /></View>
-                  <View style={styles.profileInfoContent}>
-                    <Text style={styles.profileInfoLabel}>{t("address")}</Text>
-                    <Text style={styles.profileInfoValue}>{user.address}</Text>
-                  </View>
-                </View>
-              ) : null}
-              {user?.createdAt ? (
-                <View style={[styles.profileInfoRow, { borderBottomWidth: 0 }]}>
-                  <View style={styles.profileInfoIcon}><Feather name="calendar" size={14} color="#059669" /></View>
-                  <View style={styles.profileInfoContent}>
-                    <Text style={styles.profileInfoLabel}>{t("memberSince")}</Text>
-                    <Text style={styles.profileInfoValue}>{new Date(user.createdAt).toLocaleDateString()}</Text>
-                  </View>
-                </View>
-              ) : null}
-            </View>
-
-            <TouchableOpacity style={styles.profileLogoutBtn} onPress={() => { setShowProfile(false); setShowLogoutModal(true); }} activeOpacity={0.85}>
-              <Feather name="log-out" size={16} color="#DC2626" />
-              <Text style={styles.profileLogoutText}>{t("logout")}</Text>
+        <View style={pStyles.root}>
+          <LinearGradient colors={["#065F46", "#047857", "#059669"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[pStyles.header, { paddingTop: topPad + 12 }]}>
+            <TouchableOpacity onPress={() => setShowProfile(false)} style={pStyles.closeBtn} activeOpacity={0.8}>
+              <Feather name="x" size={18} color="white" />
             </TouchableOpacity>
+            <View style={pStyles.headerContent}>
+              <View style={pStyles.avatarLarge}>
+                <Text style={pStyles.avatarText}>{user?.name?.charAt(0)?.toUpperCase() || "N"}</Text>
+              </View>
+              <View style={pStyles.headerText}>
+                <Text style={pStyles.userName}>{user?.name}</Text>
+                <View style={pStyles.rolePillRow}>
+                  <View style={pStyles.rolePill}>
+                    <Feather name="briefcase" size={11} color="rgba(255,255,255,0.9)" />
+                    <Text style={pStyles.rolePillText}>Nagarsevak</Text>
+                  </View>
+                  <Text style={pStyles.roleSub}>Ward Officer</Text>
+                </View>
+                <View style={pStyles.infoRow}>
+                  <View style={pStyles.infoChip}>
+                    <Feather name="map-pin" size={10} color="rgba(255,255,255,0.55)" />
+                    <Text style={pStyles.infoChipText}>{user?.ward || "Ulhasnagar"}</Text>
+                  </View>
+                  <View style={pStyles.infoChip}>
+                    <Feather name="phone" size={10} color="rgba(255,255,255,0.55)" />
+                    <Text style={pStyles.infoChipText}>+91 {user?.mobile}</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
 
-            <TouchableOpacity style={styles.profileCloseBtn} onPress={() => setShowProfile(false)} activeOpacity={0.8}>
-              <Text style={styles.profileCloseText}>{t("close")}</Text>
+            <View style={pStyles.statsRow}>
+              <View style={pStyles.statItem}>
+                <Text style={pStyles.statNum}>{wardComplaints.length}</Text>
+                <Text style={pStyles.statLabel}>{t("total")}</Text>
+              </View>
+              <View style={pStyles.statDiv} />
+              <View style={pStyles.statItem}>
+                <Text style={[pStyles.statNum, { color: "#FDE68A" }]}>{pending}</Text>
+                <Text style={pStyles.statLabel}>{t("pending")}</Text>
+              </View>
+              <View style={pStyles.statDiv} />
+              <View style={pStyles.statItem}>
+                <Text style={[pStyles.statNum, { color: "#C4B5FD" }]}>{activeCount}</Text>
+                <Text style={pStyles.statLabel}>{t("active")}</Text>
+              </View>
+              <View style={pStyles.statDiv} />
+              <View style={pStyles.statItem}>
+                <Text style={[pStyles.statNum, { color: "#6EE7B7" }]}>{resolvedCount}</Text>
+                <Text style={pStyles.statLabel}>{t("resolved")}</Text>
+              </View>
+            </View>
+          </LinearGradient>
+
+          <ScrollView style={pStyles.scroll} contentContainerStyle={{ padding: 16, paddingBottom: Math.max(insets.bottom, 8) + 30 }} showsVerticalScrollIndicator={false}>
+            <View style={pStyles.section}>
+              <Text style={pStyles.sectionLabel}>PARTY & DESIGNATION</Text>
+              <View style={pStyles.card}>
+                {[
+                  { icon: "flag" as const, label: "Party", value: "Vanchit Bahujan Aaghadi" },
+                  { icon: "award" as const, label: "Nagarsevak ID", value: user?.nagarsevakId || "—" },
+                  { icon: "briefcase" as const, label: "Designation", value: "Ward Officer / Nagarsevak" },
+                  { icon: "map-pin" as const, label: t("ward"), value: user?.ward || "Ulhasnagar" },
+                ].map((item, idx, arr) => (
+                  <View key={item.label} style={[pStyles.detailRow, idx < arr.length - 1 && pStyles.rowBorder]}>
+                    <View style={[pStyles.detailIcon, { backgroundColor: "#D1FAE5" }]}>
+                      <Feather name={item.icon} size={14} color="#059669" />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={pStyles.detailLabel}>{item.label}</Text>
+                      <Text style={pStyles.detailValue}>{item.value}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            <View style={pStyles.section}>
+              <Text style={pStyles.sectionLabel}>ACCOUNT DETAILS</Text>
+              <View style={pStyles.card}>
+                {[
+                  { icon: "user" as const, label: t("fullName") || "Full Name", value: user?.name || "—" },
+                  { icon: "phone" as const, label: t("phone"), value: "+91 " + (user?.mobile || "—") },
+                  ...(user?.email ? [{ icon: "mail" as const, label: t("email"), value: user.email }] : []),
+                  ...(user?.address ? [{ icon: "home" as const, label: t("address"), value: user.address }] : []),
+                  ...(user?.age ? [{ icon: "calendar" as const, label: t("age"), value: String(user.age) + " years" }] : []),
+                  { icon: "clock" as const, label: t("memberSince"), value: user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—" },
+                ].map((item, idx, arr) => (
+                  <View key={item.label} style={[pStyles.detailRow, idx < arr.length - 1 && pStyles.rowBorder]}>
+                    <View style={[pStyles.detailIcon, { backgroundColor: "#ECFDF5" }]}>
+                      <Feather name={item.icon} size={14} color="#059669" />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={pStyles.detailLabel}>{item.label}</Text>
+                      <Text style={pStyles.detailValue}>{item.value}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            <View style={pStyles.section}>
+              <Text style={pStyles.sectionLabel}>WARD JURISDICTION</Text>
+              <View style={pStyles.card}>
+                {[
+                  { icon: "home" as const, label: "Corporation", value: "Ulhasnagar Municipal Corporation (ULMC)" },
+                  { icon: "map" as const, label: "City", value: "Ulhasnagar, Maharashtra" },
+                  { icon: "compass" as const, label: "Area", value: user?.ward || "Ulhasnagar" },
+                ].map((item, idx, arr) => (
+                  <View key={item.label} style={[pStyles.detailRow, idx < arr.length - 1 && pStyles.rowBorder]}>
+                    <View style={[pStyles.detailIcon, { backgroundColor: "#DBEAFE" }]}>
+                      <Feather name={item.icon} size={14} color="#2563EB" />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={pStyles.detailLabel}>{item.label}</Text>
+                      <Text style={pStyles.detailValue}>{item.value}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            <View style={pStyles.appInfoCard}>
+              <Text style={pStyles.appInfoBrand}>JanSeva</Text>
+              <Text style={pStyles.appInfoTagline}>नागरिक सेवा · Citizen Services Platform</Text>
+              <Text style={pStyles.appInfoVersion}>v1.0 · ULMC Ulhasnagar · Vanchit Bahujan Aaghadi</Text>
+            </View>
+
+            <TouchableOpacity style={pStyles.logoutBtn} onPress={() => { setShowProfile(false); setShowLogoutModal(true); }} activeOpacity={0.85}>
+              <View style={pStyles.logoutInner}>
+                <Feather name="log-out" size={18} color="#DC2626" />
+                <Text style={pStyles.logoutText}>{t("logout")}</Text>
+              </View>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         </View>
       </Modal>
 
@@ -453,24 +510,6 @@ const styles = StyleSheet.create({
   logoutModalCancelText: { fontSize: 14, fontWeight: "700", color: "#64748B", fontFamily: "Inter_700Bold" },
   logoutModalConfirmBtn: { flex: 2, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, paddingVertical: 14, borderRadius: 14, backgroundColor: "#DC2626" },
   logoutModalConfirmText: { fontSize: 14, fontWeight: "700", color: "white", fontFamily: "Inter_700Bold" },
-  profileOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" },
-  profileSheet: { backgroundColor: "white", borderTopLeftRadius: 28, borderTopRightRadius: 28, padding: 24, paddingBottom: 40, alignItems: "center" },
-  profileHandle: { width: 40, height: 4, backgroundColor: "#E2E8F0", borderRadius: 2, alignSelf: "center", marginBottom: 20 },
-  profileAvatarLarge: { width: 72, height: 72, borderRadius: 36, backgroundColor: "#059669", alignItems: "center", justifyContent: "center", marginBottom: 12 },
-  profileAvatarLargeText: { fontSize: 28, fontWeight: "900", color: "white", fontFamily: "Inter_700Bold" },
-  profileName: { fontSize: 22, fontWeight: "800", color: "#0F172A", fontFamily: "Inter_700Bold", marginBottom: 6 },
-  profileRoleBadge: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "#D1FAE5", paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20, marginBottom: 20 },
-  profileRoleText: { fontSize: 12, fontWeight: "700", color: "#059669", fontFamily: "Inter_600SemiBold" },
-  profileInfoCard: { width: "100%", backgroundColor: "#F8FAFC", borderRadius: 16, borderWidth: 1, borderColor: "#E2E8F0", overflow: "hidden", marginBottom: 16 },
-  profileInfoRow: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: "#E2E8F0" },
-  profileInfoIcon: { width: 36, height: 36, borderRadius: 10, backgroundColor: "#D1FAE5", alignItems: "center", justifyContent: "center", flexShrink: 0 },
-  profileInfoContent: { flex: 1 },
-  profileInfoLabel: { fontSize: 10, fontWeight: "600", color: "#94A3B8", fontFamily: "Inter_600SemiBold", letterSpacing: 0.5, marginBottom: 2 },
-  profileInfoValue: { fontSize: 14, fontWeight: "600", color: "#0F172A", fontFamily: "Inter_600SemiBold" },
-  profileLogoutBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", paddingVertical: 14, borderRadius: 14, backgroundColor: "#FEE2E2", borderWidth: 1, borderColor: "#FECACA", marginBottom: 10 },
-  profileLogoutText: { fontSize: 15, fontWeight: "700", color: "#DC2626", fontFamily: "Inter_700Bold" },
-  profileCloseBtn: { paddingVertical: 10 },
-  profileCloseText: { fontSize: 14, fontWeight: "600", color: "#94A3B8", fontFamily: "Inter_600SemiBold" },
 });
 
 const modalStyles = StyleSheet.create({
@@ -493,4 +532,43 @@ const modalStyles = StyleSheet.create({
   confirmBtn: { flex: 2, borderRadius: 14, overflow: "hidden" },
   confirmBtnGrad: { paddingVertical: 14, alignItems: "center" },
   confirmBtnText: { fontSize: 14, fontWeight: "700", color: "white", fontFamily: "Inter_700Bold" },
+});
+
+const pStyles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: "#ebeffc" },
+  header: { paddingHorizontal: 20, paddingBottom: 16, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
+  closeBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.15)", alignItems: "center", justifyContent: "center", alignSelf: "flex-end", marginBottom: 4 },
+  headerContent: { flexDirection: "row", alignItems: "center", gap: 14, marginBottom: 16 },
+  avatarLarge: { width: 56, height: 56, borderRadius: 28, backgroundColor: "rgba(255,255,255,0.2)", alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: "rgba(255,255,255,0.3)" },
+  avatarText: { fontSize: 22, fontWeight: "900", color: "white", fontFamily: "Inter_700Bold" },
+  headerText: { flex: 1 },
+  userName: { fontSize: 20, fontWeight: "800", color: "white", fontFamily: "Inter_700Bold", letterSpacing: -0.3 },
+  rolePillRow: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 4 },
+  rolePill: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "rgba(255,255,255,0.15)", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 12 },
+  rolePillText: { fontSize: 10, fontWeight: "700", color: "rgba(255,255,255,0.9)", fontFamily: "Inter_600SemiBold" },
+  roleSub: { fontSize: 10, color: "rgba(255,255,255,0.5)", fontFamily: "Inter_400Regular" },
+  infoRow: { flexDirection: "row", gap: 10, marginTop: 6 },
+  infoChip: { flexDirection: "row", alignItems: "center", gap: 4 },
+  infoChipText: { fontSize: 10, color: "rgba(255,255,255,0.55)", fontFamily: "Inter_400Regular" },
+  statsRow: { flexDirection: "row", backgroundColor: "rgba(255,255,255,0.1)", borderRadius: 14, paddingVertical: 12, paddingHorizontal: 6 },
+  statItem: { flex: 1, alignItems: "center" },
+  statNum: { fontSize: 20, fontWeight: "900", color: "white", fontFamily: "Inter_700Bold" },
+  statLabel: { fontSize: 9, color: "rgba(255,255,255,0.5)", fontFamily: "Inter_400Regular", marginTop: 2 },
+  statDiv: { width: 1, backgroundColor: "rgba(255,255,255,0.15)", marginVertical: 4 },
+  scroll: { flex: 1 },
+  section: { marginBottom: 16 },
+  sectionLabel: { fontSize: 10, fontWeight: "700", color: "#94A3B8", letterSpacing: 1.2, fontFamily: "Inter_600SemiBold", marginBottom: 8, paddingLeft: 2 },
+  card: { backgroundColor: "white", borderRadius: 16, overflow: "hidden", shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
+  detailRow: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 16, paddingVertical: 14 },
+  rowBorder: { borderBottomWidth: 1, borderBottomColor: "#F1F5F9" },
+  detailIcon: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center", flexShrink: 0 },
+  detailLabel: { fontSize: 10, color: "#94A3B8", fontFamily: "Inter_400Regular", marginBottom: 2 },
+  detailValue: { fontSize: 14, fontWeight: "600", color: "#0F172A", fontFamily: "Inter_600SemiBold" },
+  appInfoCard: { alignItems: "center", paddingVertical: 20, marginBottom: 12 },
+  appInfoBrand: { fontSize: 18, fontWeight: "900", color: "#1E3A8A", fontFamily: "Inter_700Bold", letterSpacing: -0.3 },
+  appInfoTagline: { fontSize: 11, color: "#94A3B8", fontFamily: "Inter_400Regular", marginTop: 4 },
+  appInfoVersion: { fontSize: 10, color: "#CBD5E1", fontFamily: "Inter_400Regular", marginTop: 2 },
+  logoutBtn: { backgroundColor: "#FEE2E2", borderRadius: 16, borderWidth: 1.5, borderColor: "#FECACA", marginBottom: 8 },
+  logoutInner: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, paddingVertical: 16 },
+  logoutText: { fontSize: 15, fontWeight: "700", color: "#DC2626", fontFamily: "Inter_700Bold" },
 });
