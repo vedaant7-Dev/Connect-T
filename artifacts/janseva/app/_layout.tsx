@@ -6,6 +6,7 @@ import {
   useFonts,
 } from "@expo-google-fonts/inter";
 import { Asset } from "expo-asset";
+import { Image } from "react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -89,7 +90,17 @@ export default function RootLayout() {
   const [splashDone, setSplashDone] = useState(false);
 
   useEffect(() => {
-    Asset.loadAsync([logoImage]).then(() => setAssetsReady(true)).catch(() => setAssetsReady(true));
+    const preload = async () => {
+      try {
+        await Asset.loadAsync([logoImage]);
+        const resolved = Asset.fromModule(logoImage);
+        if (resolved.uri) {
+          await Image.prefetch(resolved.uri);
+        }
+      } catch {}
+      setAssetsReady(true);
+    };
+    preload();
   }, []);
 
   useEffect(() => {
