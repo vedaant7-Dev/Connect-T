@@ -18,6 +18,7 @@ export interface User {
   createdAt?: string;
   notifyEmail?: boolean;
   notifyWhatsapp?: boolean;
+  profilePhoto?: string;
 }
 
 interface AuthContextType {
@@ -30,6 +31,7 @@ interface AuthContextType {
   register: (userData: Omit<User, "id" | "avatarColor" | "createdAt">) => Promise<User>;
   loginWithPhone: (mobile: string) => Promise<User | null>;
   loginWithNagarsevakId: (mobile: string, nagarsevakId: string) => Promise<User | null>;
+  updateUser: (updates: Partial<User>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -137,8 +139,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return newUser;
   };
 
+  const updateUser = async (updates: Partial<User>) => {
+    if (!user) return;
+    const updated = { ...user, ...updates, id: user.id, role: user.role, nagarsevakId: user.nagarsevakId, createdAt: user.createdAt };
+    setUser(updated);
+    await AsyncStorage.setItem(SESSION_KEY, JSON.stringify(updated));
+    const users = await getAllUsers();
+    const idx = users.findIndex((u) => u.id === user.id);
+    if (idx >= 0) {
+      users[idx] = updated;
+      await saveAllUsers(users);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn: !!user, loading, login, logout, checkPhone, register, loginWithPhone, loginWithNagarsevakId }}>
+    <AuthContext.Provider value={{ user, isLoggedIn: !!user, loading, login, logout, checkPhone, register, loginWithPhone, loginWithNagarsevakId, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
