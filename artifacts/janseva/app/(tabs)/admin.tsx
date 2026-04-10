@@ -171,7 +171,7 @@ function DetailedComplaintCard({ complaint, onAction }: { complaint: Complaint; 
       </View>
       {hasActions && (
         <TouchableOpacity style={styles.actionBtn} onPress={(e) => { e.stopPropagation?.(); onAction(); }} activeOpacity={0.85}>
-          <LinearGradient colors={["#065F46", "#059669"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.actionBtnGrad}>
+          <LinearGradient colors={["#023804", "#046307"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.actionBtnGrad}>
             <Feather name="edit-3" size={13} color="white" />
             <Text style={styles.actionBtnText}>{t("updateStatus")}</Text>
           </LinearGradient>
@@ -190,7 +190,7 @@ function DetailedComplaintCard({ complaint, onAction }: { complaint: Complaint; 
 export default function AdminScreen() {
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const { complaints, updateStatus } = useComplaints();
   const router = useRouter();
   const { t } = useLanguage();
@@ -198,6 +198,9 @@ export default function AdminScreen() {
   const [active, setActive] = useState<Complaint | null>(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editWard, setEditWard] = useState("");
 
   if (!user || user.role !== "nagarsevak") {
     return (
@@ -224,13 +227,21 @@ export default function AdminScreen() {
     router.replace("/login");
   };
 
+  const openEditProfile = () => {
+    setEditName(user?.name || "");
+    setEditWard(user?.ward || "");
+    setShowEditProfile(true);
+  };
+
+  const saveEditProfile = async () => {
+    if (!editName.trim()) return;
+    await updateUser({ name: editName.trim(), ward: editWard || user?.ward });
+    setShowEditProfile(false);
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: "#ebeffc" }}>
-      <LinearGradient colors={["#065F46", "#047857", "#059669"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.header, { paddingTop: topPad + 12 }]}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.8}>
-          <Feather name="chevron-left" size={20} color="white" />
-          <Text style={styles.backBtnText}>Back</Text>
-        </TouchableOpacity>
+      <LinearGradient colors={["#023804", "#046307", "#068A0E"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.header, { paddingTop: topPad + 12 }]}>
         <View style={styles.headerTop}>
           <View>
             <View style={styles.adminBadge}>
@@ -303,10 +314,17 @@ export default function AdminScreen() {
 
       <Modal visible={showProfile} transparent animationType="slide" onRequestClose={() => setShowProfile(false)}>
         <View style={pStyles.root}>
-          <LinearGradient colors={["#065F46", "#047857", "#059669"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[pStyles.header, { paddingTop: topPad + 12 }]}>
-            <TouchableOpacity onPress={() => setShowProfile(false)} style={pStyles.closeBtn} activeOpacity={0.8}>
-              <Feather name="x" size={18} color="white" />
-            </TouchableOpacity>
+          <LinearGradient colors={["#023804", "#046307", "#068A0E"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[pStyles.header, { paddingTop: topPad + 12 }]}>
+            <View style={pStyles.profileHeaderRow}>
+              <TouchableOpacity onPress={() => setShowProfile(false)} style={pStyles.profileNavBtn} activeOpacity={0.8}>
+                <Feather name="chevron-left" size={20} color="white" />
+                <Text style={pStyles.profileNavBtnText}>Back</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={openEditProfile} style={pStyles.profileEditBtn} activeOpacity={0.8}>
+                <Feather name="edit-2" size={15} color="white" />
+                <Text style={pStyles.profileNavBtnText}>Edit</Text>
+              </TouchableOpacity>
+            </View>
             <View style={pStyles.headerContent}>
               <View style={pStyles.avatarLarge}>
                 <Text style={pStyles.avatarText}>{user?.name?.charAt(0)?.toUpperCase() || "N"}</Text>
@@ -367,8 +385,8 @@ export default function AdminScreen() {
                   { icon: "map-pin" as const, label: t("ward"), value: user?.ward || "Ambernath" },
                 ].map((item, idx, arr) => (
                   <View key={item.label} style={[pStyles.detailRow, idx < arr.length - 1 && pStyles.rowBorder]}>
-                    <View style={[pStyles.detailIcon, { backgroundColor: "#D1FAE5" }]}>
-                      <Feather name={item.icon} size={14} color="#059669" />
+                    <View style={[pStyles.detailIcon, { backgroundColor: "#DCFCE7" }]}>
+                      <Feather name={item.icon} size={14} color="#046307" />
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={pStyles.detailLabel}>{item.label}</Text>
@@ -391,8 +409,8 @@ export default function AdminScreen() {
                   { icon: "clock" as const, label: t("memberSince"), value: user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—" },
                 ].map((item, idx, arr) => (
                   <View key={item.label} style={[pStyles.detailRow, idx < arr.length - 1 && pStyles.rowBorder]}>
-                    <View style={[pStyles.detailIcon, { backgroundColor: "#ECFDF5" }]}>
-                      <Feather name={item.icon} size={14} color="#059669" />
+                    <View style={[pStyles.detailIcon, { backgroundColor: "#DCFCE7" }]}>
+                      <Feather name={item.icon} size={14} color="#046307" />
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={pStyles.detailLabel}>{item.label}</Text>
@@ -437,6 +455,42 @@ export default function AdminScreen() {
               </View>
             </TouchableOpacity>
           </ScrollView>
+
+          <Modal visible={showEditProfile} transparent animationType="slide" onRequestClose={() => setShowEditProfile(false)}>
+            <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" }}>
+              <View style={{ backgroundColor: "white", borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: 40 }}>
+                <View style={{ width: 36, height: 4, backgroundColor: "#E2E8F0", borderRadius: 2, alignSelf: "center", marginBottom: 16 }} />
+                <Text style={{ fontSize: 18, fontWeight: "800", color: "#0F172A", fontFamily: "Inter_700Bold", marginBottom: 20 }}>Edit Profile</Text>
+                <Text style={{ fontSize: 10, fontWeight: "700", color: "#94A3B8", letterSpacing: 1.2, fontFamily: "Inter_600SemiBold", marginBottom: 6 }}>FULL NAME</Text>
+                <TextInput
+                  style={{ backgroundColor: "#F8FAFC", borderRadius: 14, borderWidth: 1.5, borderColor: "#E2E8F0", paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: "#0F172A", fontFamily: "Inter_400Regular", marginBottom: 16 }}
+                  value={editName}
+                  onChangeText={setEditName}
+                  placeholder="Your name"
+                  placeholderTextColor="#CBD5E1"
+                  autoFocus
+                />
+                <Text style={{ fontSize: 10, fontWeight: "700", color: "#94A3B8", letterSpacing: 1.2, fontFamily: "Inter_600SemiBold", marginBottom: 6 }}>WARD</Text>
+                <TextInput
+                  style={{ backgroundColor: "#F8FAFC", borderRadius: 14, borderWidth: 1.5, borderColor: "#E2E8F0", paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: "#0F172A", fontFamily: "Inter_400Regular", marginBottom: 24 }}
+                  value={editWard}
+                  onChangeText={setEditWard}
+                  placeholder="Your ward"
+                  placeholderTextColor="#CBD5E1"
+                />
+                <View style={{ flexDirection: "row", gap: 10 }}>
+                  <TouchableOpacity style={{ flex: 1, paddingVertical: 14, borderRadius: 14, alignItems: "center", backgroundColor: "#F1F5F9" }} onPress={() => setShowEditProfile(false)} activeOpacity={0.8}>
+                    <Text style={{ fontSize: 14, fontWeight: "700", color: "#64748B", fontFamily: "Inter_700Bold" }}>{t("cancel")}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={{ flex: 2, borderRadius: 14, overflow: "hidden" }} onPress={saveEditProfile} activeOpacity={0.85} disabled={!editName.trim()}>
+                    <LinearGradient colors={["#023804", "#046307"]} style={{ paddingVertical: 14, alignItems: "center" }}>
+                      <Text style={{ fontSize: 14, fontWeight: "700", color: "white", fontFamily: "Inter_700Bold" }}>Save Changes</Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
         </View>
       </Modal>
 
@@ -498,7 +552,7 @@ const styles = StyleSheet.create({
   filterText: { fontSize: 11, fontWeight: "700", color: "rgba(255,255,255,0.6)", fontFamily: "Inter_600SemiBold" },
   urgentBanner: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "#FEE2E2", paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: "#FECACA" },
   urgentText: { fontSize: 12, fontWeight: "700", color: "#DC2626", fontFamily: "Inter_600SemiBold" },
-  card: { backgroundColor: "white", borderRadius: 16, marginBottom: 10, overflow: "hidden", shadowColor: "#065F46", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 2 },
+  card: { backgroundColor: "white", borderRadius: 16, marginBottom: 10, overflow: "hidden", shadowColor: "#023804", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 2 },
   cardHeader: { flexDirection: "row", alignItems: "center", gap: 10, padding: 14, paddingBottom: 10 },
   catDot: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center", flexShrink: 0 },
   cardHeaderText: { flex: 1 },
@@ -517,7 +571,7 @@ const styles = StyleSheet.create({
   actionBtnGrad: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, paddingVertical: 10 },
   actionBtnText: { fontSize: 13, fontWeight: "700", color: "white", fontFamily: "Inter_700Bold" },
   resolvedBar: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "#D1FAE5", paddingHorizontal: 14, paddingVertical: 8 },
-  resolvedBarText: { fontSize: 11, color: "#065F46", fontFamily: "Inter_400Regular", flex: 1 },
+  resolvedBarText: { fontSize: 11, color: "#023804", fontFamily: "Inter_400Regular", flex: 1 },
   empty: { alignItems: "center", paddingTop: 60, gap: 10 },
   emptyText: { fontSize: 14, color: "#94A3B8", fontFamily: "Inter_400Regular" },
   logoutModalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", alignItems: "center", justifyContent: "center", padding: 32 },
@@ -555,9 +609,12 @@ const modalStyles = StyleSheet.create({
 });
 
 const pStyles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#ebeffc" },
+  root: { flex: 1, backgroundColor: "#F0FDF4" },
   header: { paddingHorizontal: 20, paddingBottom: 16, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
-  closeBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.15)", alignItems: "center", justifyContent: "center", alignSelf: "flex-end", marginBottom: 4 },
+  profileHeaderRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 },
+  profileNavBtn: { flexDirection: "row", alignItems: "center", gap: 4, paddingVertical: 6, paddingRight: 10, paddingLeft: 2 },
+  profileEditBtn: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: "rgba(255,255,255,0.18)", paddingVertical: 6, paddingHorizontal: 12, borderRadius: 20 },
+  profileNavBtnText: { fontSize: 14, fontWeight: "600", color: "rgba(255,255,255,0.92)", fontFamily: "Inter_600SemiBold" },
   headerContent: { flexDirection: "row", alignItems: "center", gap: 14, marginBottom: 16 },
   avatarLarge: { width: 56, height: 56, borderRadius: 28, backgroundColor: "rgba(255,255,255,0.2)", alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: "rgba(255,255,255,0.3)" },
   avatarText: { fontSize: 22, fontWeight: "900", color: "white", fontFamily: "Inter_700Bold" },

@@ -23,8 +23,8 @@ const roleConfig = {
   },
   nagarsevak: {
     label: "Nagarsevak", subLabel: "नगरसेवक", icon: "briefcase" as const,
-    color: "#059669", bg: "#ECFDF5",
-    grad: ["#064E3B", "#047857", "#059669"] as [string, string, string],
+    color: "#046307", bg: "#DCFCE7",
+    grad: ["#023804", "#046307", "#068A0E"] as [string, string, string],
   },
 };
 
@@ -227,7 +227,7 @@ export default function ProfileScreen() {
               style={styles.adminCard}
             >
               <LinearGradient
-                colors={["#065F46", "#059669"]}
+                colors={["#023804", "#046307"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.adminCardGrad}
