@@ -288,7 +288,7 @@ function NewPostModal({ visible, onClose, onSubmit, canPostAnnouncement }: {
                   <Text style={modalStyles.cancelBtnText}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[modalStyles.postBtnWrap, !content.trim() && { opacity: 0.5 }]} onPress={handleSubmit} disabled={!content.trim()} activeOpacity={0.85}>
-                  <LinearGradient colors={["#B45309", "#EA580C"]} style={modalStyles.postBtn}>
+                  <LinearGradient colors={["#EA580C", "#FB923C"]} style={modalStyles.postBtn}>
                     <Feather name="send" size={14} color="white" />
                     <Text style={modalStyles.postBtnText}>Post</Text>
                   </LinearGradient>
@@ -341,7 +341,7 @@ function SubscribeModal({ visible, onClose, onSubscribe }: { visible: boolean; o
             ))}
           </View>
           <TouchableOpacity style={subStyles.subscribeWrap} onPress={onSubscribe} activeOpacity={0.85}>
-            <LinearGradient colors={["#B45309", "#EA580C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={subStyles.subscribeBtn}>
+            <LinearGradient colors={["#EA580C", "#FB923C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={subStyles.subscribeBtn}>
               <Feather name="zap" size={18} color="white" />
               <Text style={subStyles.subscribeBtnText}>Subscribe & Pay ₹199</Text>
             </LinearGradient>
@@ -526,7 +526,7 @@ export default function FeedScreen() {
 
   return (
     <View style={styles.root}>
-      <LinearGradient colors={["#7C2D12", "#B45309", "#EA580C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.header, { paddingTop: topPad + 12 }]}>
+      <LinearGradient colors={["#C2410C", "#EA580C", "#FB923C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.header, { paddingTop: topPad + 12 }]}>
         <View style={styles.headerRow}>
           <View>
             <Text style={styles.headerTitle}>Community Feed</Text>
@@ -777,7 +777,7 @@ export default function FeedScreen() {
                 disabled={!editingText.trim()}
                 activeOpacity={0.85}
               >
-                <LinearGradient colors={["#B45309", "#EA580C"]} style={styles.editModalSaveGrad}>
+                <LinearGradient colors={["#EA580C", "#FB923C"]} style={styles.editModalSaveGrad}>
                   <Text style={styles.editModalSaveText}>Save</Text>
                 </LinearGradient>
               </TouchableOpacity>

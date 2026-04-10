@@ -132,7 +132,7 @@ export default function NewComplaintScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={["#7C2D12", "#B45309", "#EA580C"]}
+        colors={["#C2410C", "#EA580C", "#FB923C"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: topPad + 12 }]}
@@ -169,7 +169,7 @@ export default function NewComplaintScreen() {
           ) : (
             <View style={styles.photoButtons}>
               <TouchableOpacity style={styles.cameraBtn} onPress={handleCamera} activeOpacity={0.85}>
-                <LinearGradient colors={["#B45309", "#EA580C"]} style={styles.cameraBtnGrad}>
+                <LinearGradient colors={["#EA580C", "#FB923C"]} style={styles.cameraBtnGrad}>
                   <Feather name="camera" size={24} color="white" />
                   <Text style={styles.cameraBtnText}>{t("takePhoto")}</Text>
                   <Text style={styles.cameraBtnSub}>{t("clickPhotoOfProblem")}</Text>
@@ -292,7 +292,7 @@ export default function NewComplaintScreen() {
           activeOpacity={0.85}
         >
           <LinearGradient
-            colors={["#B45309", "#EA580C"]}
+            colors={["#EA580C", "#FB923C"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.submitBtnGrad}
@@ -476,7 +476,7 @@ const styles = StyleSheet.create({
     borderColor: "#FFEDD5",
     alignItems: "flex-start",
   },
-  noticeText: { flex: 1, fontSize: 12, color: "#B45309", fontFamily: "Inter_400Regular", lineHeight: 18 },
+  noticeText: { flex: 1, fontSize: 12, color: "#EA580C", fontFamily: "Inter_400Regular", lineHeight: 18 },
   submitBar: {
     position: "absolute",
     bottom: 0,

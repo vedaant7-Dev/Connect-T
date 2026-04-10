@@ -118,7 +118,7 @@ export default function EmergencyScreen() {
               onPress={() => handleCall("022-22067676")}
               activeOpacity={0.85}
             >
-              <Feather name="phone" size={14} color="#B45309" />
+              <Feather name="phone" size={14} color="#EA580C" />
               <Text style={styles.callBtnText}>{t("callNow")}</Text>
             </TouchableOpacity>
           </LinearGradient>
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
   tipsTitle: {
     fontSize: 14,
     fontWeight: "800",
-    color: "#B45309",
+    color: "#EA580C",
     fontFamily: "Inter_700Bold",
   },
   tipRow: {
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
   },
   tipText: {
     fontSize: 12,
-    color: "#B45309",
+    color: "#EA580C",
     fontFamily: "Inter_400Regular",
     flex: 1,
     lineHeight: 18,
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
   callBtnText: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#B45309",
+    color: "#EA580C",
     fontFamily: "Inter_700Bold",
   },
 });

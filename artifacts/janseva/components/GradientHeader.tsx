@@ -15,7 +15,7 @@ export function GradientHeader({ title, subtitle, rightComponent }: GradientHead
 
   return (
     <LinearGradient
-      colors={["#7C2D12", "#B45309", "#C2410C", "#EA580C"]}
+      colors={["#C2410C", "#EA580C", "#F97316", "#FB923C"]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={[styles.header, { paddingTop: topPadding + 12 }]}

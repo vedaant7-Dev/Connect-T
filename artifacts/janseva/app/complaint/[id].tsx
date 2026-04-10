@@ -89,7 +89,7 @@ export default function ComplaintDetailScreen() {
   return (
     <Animated.View style={[styles.root, { opacity: fadeAnim }]}>
       <LinearGradient
-        colors={fresh === "1" ? ["#065F46", "#047857", "#059669"] : ["#7C2D12", "#B45309", "#EA580C"]}
+        colors={fresh === "1" ? ["#166534", "#16A34A", "#22C55E"] : ["#C2410C", "#EA580C", "#FB923C"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: topPad + 12 }]}

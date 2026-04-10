@@ -111,7 +111,7 @@ function ActionModal({ complaint, onClose, onUpdate }: { complaint: Complaint; o
             disabled={!selectedStatus}
             activeOpacity={0.85}
           >
-            <LinearGradient colors={["#B45309", "#EA580C"]} style={modalStyles.confirmBtnGrad}>
+            <LinearGradient colors={["#EA580C", "#FB923C"]} style={modalStyles.confirmBtnGrad}>
               <Text style={modalStyles.confirmBtnText}>{t("updateStatus")}</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -171,7 +171,7 @@ function DetailedComplaintCard({ complaint, onAction }: { complaint: Complaint; 
       </View>
       {hasActions && (
         <TouchableOpacity style={styles.actionBtn} onPress={(e) => { e.stopPropagation?.(); onAction(); }} activeOpacity={0.85}>
-          <LinearGradient colors={["#023804", "#046307"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.actionBtnGrad}>
+          <LinearGradient colors={["#166534", "#16A34A"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.actionBtnGrad}>
             <Feather name="edit-3" size={13} color="white" />
             <Text style={styles.actionBtnText}>{t("updateStatus")}</Text>
           </LinearGradient>
@@ -241,7 +241,7 @@ export default function AdminScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ebeffc" }}>
-      <LinearGradient colors={["#023804", "#046307", "#068A0E"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.header, { paddingTop: topPad + 12 }]}>
+      <LinearGradient colors={["#166534", "#16A34A", "#22C55E"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.header, { paddingTop: topPad + 12 }]}>
         <View style={styles.headerTop}>
           <View>
             <View style={styles.adminBadge}>
@@ -314,7 +314,7 @@ export default function AdminScreen() {
 
       <Modal visible={showProfile} transparent animationType="slide" onRequestClose={() => setShowProfile(false)}>
         <View style={pStyles.root}>
-          <LinearGradient colors={["#023804", "#046307", "#068A0E"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[pStyles.header, { paddingTop: topPad + 12 }]}>
+          <LinearGradient colors={["#166534", "#16A34A", "#22C55E"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[pStyles.header, { paddingTop: topPad + 12 }]}>
             <View style={pStyles.profileHeaderRow}>
               <TouchableOpacity onPress={() => setShowProfile(false)} style={pStyles.profileNavBtn} activeOpacity={0.8}>
                 <Feather name="chevron-left" size={20} color="white" />
@@ -386,7 +386,7 @@ export default function AdminScreen() {
                 ].map((item, idx, arr) => (
                   <View key={item.label} style={[pStyles.detailRow, idx < arr.length - 1 && pStyles.rowBorder]}>
                     <View style={[pStyles.detailIcon, { backgroundColor: "#DCFCE7" }]}>
-                      <Feather name={item.icon} size={14} color="#046307" />
+                      <Feather name={item.icon} size={14} color="#16A34A" />
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={pStyles.detailLabel}>{item.label}</Text>
@@ -410,7 +410,7 @@ export default function AdminScreen() {
                 ].map((item, idx, arr) => (
                   <View key={item.label} style={[pStyles.detailRow, idx < arr.length - 1 && pStyles.rowBorder]}>
                     <View style={[pStyles.detailIcon, { backgroundColor: "#DCFCE7" }]}>
-                      <Feather name={item.icon} size={14} color="#046307" />
+                      <Feather name={item.icon} size={14} color="#16A34A" />
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={pStyles.detailLabel}>{item.label}</Text>
@@ -483,7 +483,7 @@ export default function AdminScreen() {
                     <Text style={{ fontSize: 14, fontWeight: "700", color: "#64748B", fontFamily: "Inter_700Bold" }}>{t("cancel")}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={{ flex: 2, borderRadius: 14, overflow: "hidden" }} onPress={saveEditProfile} activeOpacity={0.85} disabled={!editName.trim()}>
-                    <LinearGradient colors={["#023804", "#046307"]} style={{ paddingVertical: 14, alignItems: "center" }}>
+                    <LinearGradient colors={["#166534", "#16A34A"]} style={{ paddingVertical: 14, alignItems: "center" }}>
                       <Text style={{ fontSize: 14, fontWeight: "700", color: "white", fontFamily: "Inter_700Bold" }}>Save Changes</Text>
                     </LinearGradient>
                   </TouchableOpacity>
@@ -552,7 +552,7 @@ const styles = StyleSheet.create({
   filterText: { fontSize: 11, fontWeight: "700", color: "rgba(255,255,255,0.6)", fontFamily: "Inter_600SemiBold" },
   urgentBanner: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "#FEE2E2", paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: "#FECACA" },
   urgentText: { fontSize: 12, fontWeight: "700", color: "#DC2626", fontFamily: "Inter_600SemiBold" },
-  card: { backgroundColor: "white", borderRadius: 16, marginBottom: 10, overflow: "hidden", shadowColor: "#023804", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 2 },
+  card: { backgroundColor: "white", borderRadius: 16, marginBottom: 10, overflow: "hidden", shadowColor: "#166534", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 2 },
   cardHeader: { flexDirection: "row", alignItems: "center", gap: 10, padding: 14, paddingBottom: 10 },
   catDot: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center", flexShrink: 0 },
   cardHeaderText: { flex: 1 },
@@ -571,7 +571,7 @@ const styles = StyleSheet.create({
   actionBtnGrad: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, paddingVertical: 10 },
   actionBtnText: { fontSize: 13, fontWeight: "700", color: "white", fontFamily: "Inter_700Bold" },
   resolvedBar: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "#D1FAE5", paddingHorizontal: 14, paddingVertical: 8 },
-  resolvedBarText: { fontSize: 11, color: "#023804", fontFamily: "Inter_400Regular", flex: 1 },
+  resolvedBarText: { fontSize: 11, color: "#166534", fontFamily: "Inter_400Regular", flex: 1 },
   empty: { alignItems: "center", paddingTop: 60, gap: 10 },
   emptyText: { fontSize: 14, color: "#94A3B8", fontFamily: "Inter_400Regular" },
   logoutModalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", alignItems: "center", justifyContent: "center", padding: 32 },

@@ -99,7 +99,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={["#7C2D12", "#B45309", "#C2410C", "#EA580C"]}
+        colors={["#C2410C", "#EA580C", "#F97316", "#FB923C"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: topPad + 12 }]}
@@ -152,7 +152,7 @@ export default function HomeScreen() {
       >
         {/* REPORT A PROBLEM CTA */}
         <TouchableOpacity style={styles.complaintCTA} onPress={() => router.push("/complaint/new")} activeOpacity={0.88}>
-          <LinearGradient colors={["#7C2D12", "#C2410C", "#EA580C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.complaintCTAGrad}>
+          <LinearGradient colors={["#C2410C", "#EA580C", "#FB923C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.complaintCTAGrad}>
             <View style={styles.complaintCTAIcon}>
               <Feather name="camera" size={24} color="white" />
             </View>

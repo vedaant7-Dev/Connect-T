@@ -19,12 +19,12 @@ const roleConfig = {
   citizen: {
     label: "BJP Member", subLabel: "भाजपा सदस्य", icon: "user" as const,
     color: "#EA580C", bg: "#FFF7ED",
-    grad: ["#7C2D12", "#C2410C", "#EA580C"] as [string, string, string],
+    grad: ["#C2410C", "#EA580C", "#FB923C"] as [string, string, string],
   },
   nagarsevak: {
     label: "Nagarsevak", subLabel: "नगरसेवक", icon: "briefcase" as const,
-    color: "#046307", bg: "#DCFCE7",
-    grad: ["#023804", "#046307", "#068A0E"] as [string, string, string],
+    color: "#16A34A", bg: "#DCFCE7",
+    grad: ["#166534", "#16A34A", "#22C55E"] as [string, string, string],
   },
 };
 
@@ -100,7 +100,7 @@ export default function ProfileScreen() {
         </LinearGradient>
         <View style={{ padding: 20 }}>
           <TouchableOpacity style={styles.loginBtn} onPress={() => router.push("/login")} activeOpacity={0.85}>
-            <LinearGradient colors={["#B45309", "#EA580C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.loginBtnGrad}>
+            <LinearGradient colors={["#EA580C", "#FB923C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.loginBtnGrad}>
               <Feather name="log-in" size={18} color="white" />
               <Text style={styles.loginBtnText}>Login / Sign Up</Text>
             </LinearGradient>
@@ -227,7 +227,7 @@ export default function ProfileScreen() {
               style={styles.adminCard}
             >
               <LinearGradient
-                colors={["#023804", "#046307"]}
+                colors={["#166534", "#16A34A"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.adminCardGrad}
@@ -423,7 +423,7 @@ export default function ProfileScreen() {
                 <Text style={styles.cancelEditText}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={saveProfile} activeOpacity={0.85} style={styles.saveEditBtnWrap}>
-                <LinearGradient colors={["#B45309", "#EA580C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.saveEditBtn}>
+                <LinearGradient colors={["#EA580C", "#FB923C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.saveEditBtn}>
                   <Feather name="check" size={16} color="white" />
                   <Text style={styles.saveEditText}>Save Changes</Text>
                 </LinearGradient>
