@@ -56,17 +56,12 @@ export function AppSplash({ onFinish }: AppSplashProps) {
           onPress={onFinish}
           activeOpacity={0.82}
         >
-          <LinearGradient
-            colors={["rgba(255,255,255,0.18)", "rgba(255,255,255,0.28)"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.continueBtnGrad}
-          >
+          <View style={styles.continueBtnGrad}>
             <Text style={styles.continueBtnText}>Continue</Text>
             <View style={styles.continueBtnIcon}>
-              <Feather name="arrow-right" size={18} color="#C2410C" />
+              <Feather name="arrow-right" size={18} color="#16A34A" />
             </View>
-          </LinearGradient>
+          </View>
         </TouchableOpacity>
 
         <Text style={styles.continueHint}>Tap to continue</Text>
@@ -128,9 +123,6 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_700Bold",
     letterSpacing: -0.5,
     marginBottom: 10,
-    textShadowColor: "rgba(0,0,0,0.3)",
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 6,
   },
   taglineWrap: {
     alignItems: "center",
@@ -177,8 +169,7 @@ const styles = StyleSheet.create({
     width: "100%",
     borderRadius: 18,
     overflow: "hidden",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.3)",
+    backgroundColor: "white",
   },
   continueBtnGrad: {
     flexDirection: "row",
@@ -191,7 +182,7 @@ const styles = StyleSheet.create({
   continueBtnText: {
     fontSize: 17,
     fontWeight: "700",
-    color: "white",
+    color: "#16A34A",
     fontFamily: "Inter_700Bold",
     letterSpacing: 0.3,
   },
@@ -199,7 +190,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "white",
+    backgroundColor: "#DCFCE7",
     alignItems: "center",
     justifyContent: "center",
   },
