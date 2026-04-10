@@ -508,7 +508,7 @@ export default function FeedScreen() {
             data={officialPosts}
             keyExtractor={(p) => p.id}
             renderItem={({ item }) => <PostCard post={item} userId={userId} subscribed={false} />}
-            contentContainerStyle={[styles.list, { paddingBottom: Math.max(insets.bottom, 8) + 160 }]}
+            contentContainerStyle={[styles.list, { paddingBottom: Math.max(insets.bottom, 8) + 70 }]}
             showsVerticalScrollIndicator={false}
             onScroll={handleScroll}
             scrollEventThrottle={16}
@@ -524,7 +524,7 @@ export default function FeedScreen() {
           data={posts}
           keyExtractor={(p) => p.id}
           renderItem={({ item }) => <PostCard post={item} userId={userId} subscribed={subscribed} />}
-          contentContainerStyle={[styles.list, { paddingBottom: Math.max(insets.bottom, 8) + 130 }]}
+          contentContainerStyle={[styles.list, { paddingBottom: Math.max(insets.bottom, 8) + 70 }]}
           showsVerticalScrollIndicator={false}
           onScroll={handleScroll}
           scrollEventThrottle={16}
@@ -547,13 +547,13 @@ export default function FeedScreen() {
               data={chatMessages}
               keyExtractor={(m) => m.id}
               renderItem={({ item }) => <ChatBubble msg={item} isMe={item.authorId === userId} />}
-              contentContainerStyle={[styles.chatList, { paddingBottom: Math.max(insets.bottom, 8) + 80 }]}
+              contentContainerStyle={[styles.chatList, { paddingBottom: Math.max(insets.bottom, 8) + 60 }]}
               showsVerticalScrollIndicator={false}
               onContentSizeChange={() => chatRef.current?.scrollToEnd({ animated: false })}
             />
           )}
           {!userBlocked && (
-            <View style={[styles.chatInputBar, { paddingBottom: Math.max(insets.bottom, 8) + 56 }]}>
+            <View style={[styles.chatInputBar, { paddingBottom: Math.max(insets.bottom, 8) }]}>
               <Avatar name={user?.name || "U"} color={user?.avatarColor || "#EA580C"} size={34} />
               <TextInput
                 style={styles.chatInput}
@@ -580,7 +580,7 @@ export default function FeedScreen() {
           data={activeComplaints}
           keyExtractor={(c) => c.id}
           renderItem={({ item }) => <ComplaintCard complaint={item} onPress={() => router.push({ pathname: "/complaint/[id]", params: { id: item.id } })} />}
-          contentContainerStyle={[styles.list, { paddingBottom: Math.max(insets.bottom, 8) + 100 }]}
+          contentContainerStyle={[styles.list, { paddingBottom: Math.max(insets.bottom, 8) + 20 }]}
           showsVerticalScrollIndicator={false}
           onScroll={handleScroll}
           scrollEventThrottle={16}
@@ -594,7 +594,7 @@ export default function FeedScreen() {
           data={resolvedComplaints}
           keyExtractor={(c) => c.id}
           renderItem={({ item }) => <ComplaintCard complaint={item} onPress={() => router.push({ pathname: "/complaint/[id]", params: { id: item.id } })} />}
-          contentContainerStyle={[styles.list, { paddingBottom: Math.max(insets.bottom, 8) + 100 }]}
+          contentContainerStyle={[styles.list, { paddingBottom: Math.max(insets.bottom, 8) + 20 }]}
           showsVerticalScrollIndicator={false}
           onScroll={handleScroll}
           scrollEventThrottle={16}
@@ -604,7 +604,7 @@ export default function FeedScreen() {
       )}
 
       {subscribed && activeTab === "community" && (
-        <View style={[styles.composeBar, { paddingBottom: Math.max(insets.bottom, 8) + 56 }]}>
+        <View style={[styles.composeBar, { paddingBottom: Math.max(insets.bottom, 8) }]}>
           <TouchableOpacity style={styles.composeInner} onPress={() => userBlocked ? Alert.alert("Blocked", `You are blocked until ${blockedUntil}.`) : setShowNewPost(true)} activeOpacity={0.85}>
             {user && <Avatar name={user.name} color={user.avatarColor || "#EA580C"} size={34} />}
             <Text style={styles.composePlaceholder}>Share with your ward...</Text>
@@ -621,7 +621,7 @@ export default function FeedScreen() {
       )}
 
       {!subscribed && activeTab === "news" && (
-        <View style={[styles.composeBar, { paddingBottom: Math.max(insets.bottom, 8) + 56 }]}>
+        <View style={[styles.composeBar, { paddingBottom: Math.max(insets.bottom, 8) }]}>
           <TouchableOpacity style={[styles.composeInner, { backgroundColor: "#FFF7ED", borderColor: "#FED7AA" }]} onPress={() => setShowSubscribe(true)} activeOpacity={0.85}>
             <Feather name="lock" size={18} color="#EA580C" />
             <Text style={[styles.composePlaceholder, { color: "#C2410C", fontFamily: "Inter_600SemiBold" }]}>Subscribe to post & chat — ₹199</Text>
