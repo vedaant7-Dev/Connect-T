@@ -78,6 +78,10 @@ export default function ServiceDetailScreen() {
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: topPad + 10 }]}
       >
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.8}>
+          <Feather name="chevron-left" size={20} color="white" />
+          <Text style={styles.backBtnText}>Back</Text>
+        </TouchableOpacity>
         <View style={styles.headerContent}>
           <View style={[styles.headerIconCircle, { backgroundColor: "rgba(255,255,255,0.2)" }]}>
             <Feather name={category.icon as any} size={28} color="white" />
@@ -370,5 +374,20 @@ const styles = StyleSheet.create({
   reviewStarRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   reviewDate: { fontSize: 10, color: "#94A3B8", fontFamily: "Inter_400Regular" },
   reviewComment: { fontSize: 12, color: "#475569", fontFamily: "Inter_400Regular", lineHeight: 18 },
-  backBtn: { marginTop: 20, padding: 12 },
+  backBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginBottom: 10,
+    alignSelf: "flex-start",
+    paddingVertical: 4,
+    paddingRight: 8,
+    paddingLeft: 2,
+  },
+  backBtnText: {
+    color: "rgba(255,255,255,0.92)",
+    fontSize: 14,
+    fontWeight: "600",
+    fontFamily: "Inter_600SemiBold",
+  },
 });

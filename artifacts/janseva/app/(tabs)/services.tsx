@@ -157,6 +157,10 @@ export default function ServicesScreen() {
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: topPad + 12 }]}
       >
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.8}>
+          <Feather name="chevron-left" size={20} color="white" />
+          <Text style={styles.backBtnText}>Back</Text>
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>Nearby Services</Text>
         <Text style={styles.headerSub}>Ambernath — Sorted by distance</Text>
 
@@ -223,7 +227,22 @@ export default function ServicesScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: "#ebeffc" },
   header: { paddingHorizontal: 20, paddingBottom: 14, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
-  backBtn: { width: 38, height: 38, borderRadius: 12, backgroundColor: "rgba(255,255,255,0.18)", alignItems: "center", justifyContent: "center", marginBottom: 8 },
+  backBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginBottom: 10,
+    alignSelf: "flex-start",
+    paddingVertical: 4,
+    paddingRight: 8,
+    paddingLeft: 2,
+  },
+  backBtnText: {
+    color: "rgba(255,255,255,0.92)",
+    fontSize: 14,
+    fontWeight: "600",
+    fontFamily: "Inter_600SemiBold",
+  },
   headerTitle: {
     fontSize: 22, fontWeight: "800", color: "#FFFFFF",
     fontFamily: "Inter_700Bold", letterSpacing: -0.3, marginBottom: 2,

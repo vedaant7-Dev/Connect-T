@@ -94,6 +94,10 @@ export default function ComplaintDetailScreen() {
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: topPad + 12 }]}
       >
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.8}>
+          <Feather name="chevron-left" size={20} color="white" />
+          <Text style={styles.backBtnText}>Back</Text>
+        </TouchableOpacity>
         <View style={styles.headerRow}>
           <View style={styles.headerCenter}>
             {fresh === "1" && (
@@ -342,19 +346,25 @@ export default function ComplaintDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  backBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginBottom: 10,
+    alignSelf: "flex-start",
+    paddingVertical: 4,
+    paddingRight: 8,
+    paddingLeft: 2,
+  },
+  backBtnText: {
+    color: "rgba(255,255,255,0.92)",
+    fontSize: 14,
+    fontWeight: "600",
+    fontFamily: "Inter_600SemiBold",
+  },
   root: { flex: 1, backgroundColor: "#ebeffc" },
   header: { paddingHorizontal: 20, paddingBottom: 18, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
   headerRow: { flexDirection: "row", alignItems: "flex-start", gap: 10 },
-  backBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 10,
-    backgroundColor: "rgba(255,255,255,0.18)",
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
-    marginTop: 2,
-  },
   headerCenter: { flex: 1 },
   successPill: {
     flexDirection: "row",

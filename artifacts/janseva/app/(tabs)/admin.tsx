@@ -227,6 +227,10 @@ export default function AdminScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: "#ebeffc" }}>
       <LinearGradient colors={["#065F46", "#047857", "#059669"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.header, { paddingTop: topPad + 12 }]}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.8}>
+          <Feather name="chevron-left" size={20} color="white" />
+          <Text style={styles.backBtnText}>Back</Text>
+        </TouchableOpacity>
         <View style={styles.headerTop}>
           <View>
             <View style={styles.adminBadge}>
@@ -461,6 +465,22 @@ export default function AdminScreen() {
 }
 
 const styles = StyleSheet.create({
+  backBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginBottom: 10,
+    alignSelf: "flex-start",
+    paddingVertical: 4,
+    paddingRight: 8,
+    paddingLeft: 2,
+  },
+  backBtnText: {
+    color: "rgba(255,255,255,0.92)",
+    fontSize: 14,
+    fontWeight: "600",
+    fontFamily: "Inter_600SemiBold",
+  },
   header: { paddingHorizontal: 20, paddingBottom: 14, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
   headerTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 },
   adminBadge: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: "rgba(110,231,183,0.15)", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20, alignSelf: "flex-start", marginBottom: 6 },
