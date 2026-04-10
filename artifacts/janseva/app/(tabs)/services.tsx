@@ -158,7 +158,7 @@ export default function ServicesScreen() {
         style={[styles.header, { paddingTop: topPad + 12 }]}
       >
         <Text style={styles.headerTitle}>Nearby Services</Text>
-        <Text style={styles.headerSub}>Ulhasnagar — Sorted by distance</Text>
+        <Text style={styles.headerSub}>Ambernath — Sorted by distance</Text>
 
         <ScrollView
           horizontal

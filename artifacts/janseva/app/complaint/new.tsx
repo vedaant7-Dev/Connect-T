@@ -49,7 +49,7 @@ export default function NewComplaintScreen() {
   const [selectedCategory, setSelectedCategory] = useState<ComplaintCategory | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [location, setLocation] = useState("Near Camp 1, Ulhasnagar");
+  const [location, setLocation] = useState("Near Old Ambernath, Ambernath");
   const [submitting, setSubmitting] = useState(false);
 
   const handleCamera = async () => {
@@ -116,7 +116,7 @@ export default function NewComplaintScreen() {
         category: selectedCategory,
         photoUri,
         location,
-        ward: user?.ward || "Camp 1 — Ulhasnagar",
+        ward: user?.ward || "Ward 1 — Shivaji Chowk",
         userName: user?.name,
         userMobile: user?.mobile,
         userAddress: user?.address,
@@ -266,7 +266,7 @@ export default function NewComplaintScreen() {
           </View>
           <View style={styles.wardRow}>
             <Feather name="home" size={12} color="#94A3B8" />
-            <Text style={styles.wardText}>Camp 1 — Ulhasnagar ({t("autoDetected")})</Text>
+            <Text style={styles.wardText}>Ward 1 — Shivaji Chowk ({t("autoDetected")})</Text>
           </View>
         </View>
 

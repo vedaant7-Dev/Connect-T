@@ -37,7 +37,7 @@ export const hospitals: ServicePlace[] = [
   {
     id: "h1",
     name: "Central Government Hospital",
-    address: "Camp 4, Near Ramaji Compound, Ulhasnagar – 421004",
+    address: "Station Area, Near Railway Station, Ambernath – 421501",
     distance: "1.2 km",
     distanceKm: 1.2,
     type: "hospital",
@@ -68,8 +68,8 @@ export const hospitals: ServicePlace[] = [
   },
   {
     id: "h2",
-    name: "Indira Gandhi Memorial Hospital (ULMC)",
-    address: "Camp 2, Shivaji Chowk, Ulhasnagar – 421002",
+    name: "Indira Gandhi Memorial Hospital (AMC)",
+    address: "Shivaji Chowk, Ambernath – 421501",
     distance: "2.4 km",
     distanceKm: 2.4,
     type: "hospital",
@@ -100,7 +100,7 @@ export const hospitals: ServicePlace[] = [
   {
     id: "h3",
     name: "Chhabria Multi-Specialty Hospital",
-    address: "Camp 4, Station Road, Ulhasnagar – 421004",
+    address: "Station Area, Station Road, Ambernath – 421501",
     distance: "1.0 km",
     distanceKm: 1.0,
     type: "hospital",
@@ -124,7 +124,7 @@ export const hospitals: ServicePlace[] = [
       { name: "Appointment", phone: "0251-2731303", role: "Appointment" },
     ],
     reviews: [
-      { reviewer: "Deepak Punjabi", rating: 5, comment: "Best private hospital in Ulhasnagar. Excellent doctors.", date: "Apr 2024" },
+      { reviewer: "Deepak Punjabi", rating: 5, comment: "Best private hospital in Ambernath. Excellent doctors.", date: "Apr 2024" },
       { reviewer: "Rekha Keswani", rating: 4, comment: "Modern equipment and good nursing staff.", date: "Mar 2024" },
       { reviewer: "Ashok Lulla", rating: 4, comment: "ICU is well equipped. Quick response in emergencies.", date: "Jan 2024" },
     ],
@@ -132,7 +132,7 @@ export const hospitals: ServicePlace[] = [
   {
     id: "h4",
     name: "Navjivan Hospital",
-    address: "Camp 3, Kala Patthar Road, Ulhasnagar – 421003",
+    address: "MIDC Area, Near MIDC Gate, Ambernath – 421501",
     distance: "2.1 km",
     distanceKm: 2.1,
     type: "hospital",
@@ -163,7 +163,7 @@ export const hospitals: ServicePlace[] = [
   {
     id: "h5",
     name: "Horizon Multi-Specialty Hospital",
-    address: "Camp 5, Millennium Park Road, Ulhasnagar – 421005",
+    address: "Vithalwadi, Near Vithalwadi Station, Ambernath – 421502",
     distance: "3.5 km",
     distanceKm: 3.5,
     type: "hospital",
@@ -195,7 +195,7 @@ export const hospitals: ServicePlace[] = [
   {
     id: "h6",
     name: "Life Care Hospital",
-    address: "Camp 2, Gandhi Chowk, Ulhasnagar – 421002",
+    address: "Shivaji Chowk, Gandhi Chowk, Ambernath – 421501",
     distance: "2.8 km",
     distanceKm: 2.8,
     type: "hospital",
@@ -226,7 +226,7 @@ export const hospitals: ServicePlace[] = [
   {
     id: "h7",
     name: "Sai Multi-Specialty Hospital",
-    address: "Camp 1, Sai Nagar Road, Ulhasnagar – 421001",
+    address: "Old Ambernath, Sahakar Nagar Road, Ambernath – 421502",
     distance: "3.8 km",
     distanceKm: 3.8,
     type: "hospital",
@@ -257,7 +257,7 @@ export const hospitals: ServicePlace[] = [
   {
     id: "h8",
     name: "Vasant General Hospital",
-    address: "Camp 3, Near Bus Stand, Ulhasnagar – 421003",
+    address: "Station Area, Near Bus Stand, Ambernath – 421501",
     distance: "2.0 km",
     distanceKm: 2.0,
     type: "hospital",
@@ -293,7 +293,7 @@ export const childHospitals: ServicePlace[] = [
   {
     id: "ch1",
     name: "Central Hospital — Pediatric Wing",
-    address: "Camp 4, Near Ramaji Compound, Ulhasnagar – 421004",
+    address: "Station Area, Near Railway Station, Ambernath – 421501",
     distance: "1.2 km",
     distanceKm: 1.2,
     type: "childHospital",
@@ -323,7 +323,7 @@ export const childHospitals: ServicePlace[] = [
   {
     id: "ch2",
     name: "Mother & Child Care Centre",
-    address: "Camp 2, Lal Dora, Ulhasnagar – 421002",
+    address: "New Ambernath, Gupte Colony, Ambernath – 421501",
     distance: "2.6 km",
     distanceKm: 2.6,
     type: "childHospital",
@@ -345,7 +345,7 @@ export const childHospitals: ServicePlace[] = [
       { name: "Appointment", phone: "0251-2732103", role: "Appointment" },
     ],
     reviews: [
-      { reviewer: "Deepa Motwani", rating: 5, comment: "Best child care centre in Ulhasnagar. Very dedicated team.", date: "Mar 2024" },
+      { reviewer: "Deepa Motwani", rating: 5, comment: "Best child care centre in Ambernath. Very dedicated team.", date: "Mar 2024" },
       { reviewer: "Sanjay Lulla", rating: 4, comment: "Doctor is very patient with children.", date: "Feb 2024" },
       { reviewer: "Kavita Advani", rating: 4, comment: "Vaccination schedule maintained properly.", date: "Jan 2024" },
     ],
@@ -353,7 +353,7 @@ export const childHospitals: ServicePlace[] = [
   {
     id: "ch3",
     name: "Horizon Hospital — Pediatric Dept",
-    address: "Camp 5, Millennium Park Road, Ulhasnagar – 421005",
+    address: "Vithalwadi, Near Vithalwadi Station, Ambernath – 421502",
     distance: "3.5 km",
     distanceKm: 3.5,
     type: "childHospital",
@@ -383,7 +383,7 @@ export const childHospitals: ServicePlace[] = [
   {
     id: "ch4",
     name: "Navjivan Child Care Centre",
-    address: "Camp 3, Kala Patthar, Ulhasnagar – 421003",
+    address: "MIDC Area, Kala Patthar, Ambernath – 421501",
     distance: "2.1 km",
     distanceKm: 2.1,
     type: "childHospital",
@@ -417,8 +417,8 @@ export const childHospitals: ServicePlace[] = [
 export const clinics: ServicePlace[] = [
   {
     id: "cl1",
-    name: "ULMC Urban Health Centre – Camp 1",
-    address: "Camp 1, Near Sai Mandir, Ulhasnagar – 421001",
+    name: "AMC Urban Health Centre – Old Ambernath",
+    address: "Old Ambernath, Near Gaon Devi Mandir, Ambernath – 421502",
     distance: "3.8 km",
     distanceKm: 3.8,
     type: "clinic",
@@ -435,7 +435,7 @@ export const clinics: ServicePlace[] = [
       { name: "Main", phone: "0251-2733100", role: "Main" },
       { name: "Doctor On Call", phone: "0251-2733101", role: "Doctor" },
       { name: "Vaccination", phone: "0251-2733102", role: "Vaccination" },
-      { name: "ULMC Helpline", phone: "1916", role: "Helpline" },
+      { name: "AMC Helpline", phone: "1916", role: "Helpline" },
     ],
     reviews: [
       { reviewer: "Balu Pawar", rating: 3, comment: "Free treatment available. Waiting time is long.", date: "Mar 2024" },
@@ -446,7 +446,7 @@ export const clinics: ServicePlace[] = [
   {
     id: "cl2",
     name: "Dr. Ramesh Gupta's Clinic",
-    address: "Camp 4, Main Road, Near Vithal Mandir, Ulhasnagar – 421004",
+    address: "Station Area, Main Road, Ambernath – 421501",
     distance: "1.0 km",
     distanceKm: 1.0,
     type: "clinic",
@@ -467,14 +467,14 @@ export const clinics: ServicePlace[] = [
     ],
     reviews: [
       { reviewer: "Kantilal Hiranandani", rating: 5, comment: "Excellent doctor. Very thorough in diagnosis.", date: "Apr 2024" },
-      { reviewer: "Meera Motiramani", rating: 4, comment: "Best GP in Camp 4. Always available.", date: "Mar 2024" },
+      { reviewer: "Meera Motiramani", rating: 4, comment: "Best GP near Station Area. Always available.", date: "Mar 2024" },
       { reviewer: "Govind Chatani", rating: 4, comment: "Diabetes management done very professionally.", date: "Feb 2024" },
     ],
   },
   {
     id: "cl3",
     name: "Nandivali Primary Health Centre",
-    address: "Nandivali Road, Near Talao, Ulhasnagar – 421003",
+    address: "Nandivali Road, Near Talao, Ambernath – 421501",
     distance: "4.5 km",
     distanceKm: 4.5,
     type: "clinic",
@@ -502,7 +502,7 @@ export const clinics: ServicePlace[] = [
   {
     id: "cl4",
     name: "Apollo Pharmacy & Clinic",
-    address: "Camp 4, Station Road, Ulhasnagar – 421004",
+    address: "Station Area, Station Road, Ambernath – 421501",
     distance: "1.3 km",
     distanceKm: 1.3,
     type: "clinic",
@@ -534,8 +534,8 @@ export const clinics: ServicePlace[] = [
 export const policeStations: ServicePlace[] = [
   {
     id: "ps1",
-    name: "Ulhasnagar City Police Station",
-    address: "Camp 4, Near Court, Station Road, Ulhasnagar – 421004",
+    name: "Ambernath City Police Station",
+    address: "Station Area, Near Court, Ambernath – 421501",
     distance: "1.1 km",
     distanceKm: 1.1,
     type: "police",
@@ -562,7 +562,7 @@ export const policeStations: ServicePlace[] = [
   {
     id: "ps2",
     name: "Shanti Nagar Police Station",
-    address: "Camp 1, Shanti Nagar, Ulhasnagar – 421001",
+    address: "Vithalwadi, Near Railway Station, Ambernath – 421502",
     distance: "4.2 km",
     distanceKm: 4.2,
     type: "police",
@@ -581,7 +581,7 @@ export const policeStations: ServicePlace[] = [
       { name: "Women Cell", phone: "1091", role: "Women Cell" },
     ],
     reviews: [
-      { reviewer: "Mahesh Rane", rating: 3, comment: "Responsive to emergencies in Camp 1 area.", date: "Feb 2024" },
+      { reviewer: "Mahesh Rane", rating: 3, comment: "Responsive to emergencies in Old Ambernath area.", date: "Feb 2024" },
       { reviewer: "Geeta Sawant", rating: 4, comment: "Constables helpful for small complaints.", date: "Jan 2024" },
       { reviewer: "Tushar Patil", rating: 3, comment: "Average response time but staff is polite.", date: "Dec 2023" },
     ],
@@ -589,7 +589,7 @@ export const policeStations: ServicePlace[] = [
   {
     id: "ps3",
     name: "Hill Line Police Station",
-    address: "Camp 3, Hill Line Road, Ulhasnagar – 421003",
+    address: "MIDC Area, Hill Line Road, Ambernath – 421501",
     distance: "2.3 km",
     distanceKm: 2.3,
     type: "police",
@@ -608,7 +608,7 @@ export const policeStations: ServicePlace[] = [
       { name: "Helpline", phone: "1091", role: "Helpline" },
     ],
     reviews: [
-      { reviewer: "Vijay Kosambi", rating: 4, comment: "Good night patrolling in Camp 3 area.", date: "Mar 2024" },
+      { reviewer: "Vijay Kosambi", rating: 4, comment: "Good night patrolling in MIDC Area.", date: "Mar 2024" },
       { reviewer: "Anita More", rating: 3, comment: "Helpful but sometimes slow in non-emergency.", date: "Feb 2024" },
       { reviewer: "Pratap Deshpande", rating: 4, comment: "Anti-theft team very active.", date: "Jan 2024" },
     ],
@@ -616,7 +616,7 @@ export const policeStations: ServicePlace[] = [
   {
     id: "ps4",
     name: "Manpada Police Outpost",
-    address: "Manpada Road, Near Ganesh Temple, Ulhasnagar – 421004",
+    address: "Station Road, Near Ganesh Temple, Ambernath – 421501",
     distance: "3.0 km",
     distanceKm: 3.0,
     type: "police",
@@ -647,8 +647,8 @@ export const policeStations: ServicePlace[] = [
 export const banks: ServicePlace[] = [
   {
     id: "b1",
-    name: "State Bank of India — Ulhasnagar Camp 4",
-    address: "Camp 4, Station Road, Ulhasnagar – 421004",
+    name: "State Bank of India — Ambernath Station",
+    address: "Station Area, Station Road, Ambernath – 421501",
     distance: "1.0 km",
     distanceKm: 1.0,
     type: "bank",
@@ -674,8 +674,8 @@ export const banks: ServicePlace[] = [
   },
   {
     id: "b2",
-    name: "Dombivli Nagari Sahakari Bank — Ulhasnagar",
-    address: "Camp 2, Shivaji Chowk, Ulhasnagar – 421002",
+    name: "Dombivli Nagari Sahakari Bank — Ambernath",
+    address: "Shivaji Chowk, Ambernath – 421501",
     distance: "2.5 km",
     distanceKm: 2.5,
     type: "bank",
@@ -701,8 +701,8 @@ export const banks: ServicePlace[] = [
   },
   {
     id: "b3",
-    name: "Bank of Maharashtra — Camp 4",
-    address: "Camp 4, Near Bus Stand, Ulhasnagar – 421004",
+    name: "Bank of Maharashtra — Station Area",
+    address: "Station Area, Near Bus Stand, Ambernath – 421501",
     distance: "1.2 km",
     distanceKm: 1.2,
     type: "bank",
@@ -729,7 +729,7 @@ export const banks: ServicePlace[] = [
   {
     id: "b4",
     name: "Thane Bharat Sahakari Bank",
-    address: "Camp 3, Kala Patthar Market, Ulhasnagar – 421003",
+    address: "MIDC Area, Kala Patthar Market, Ambernath – 421501",
     distance: "2.1 km",
     distanceKm: 2.1,
     type: "bank",
@@ -760,8 +760,8 @@ export const banks: ServicePlace[] = [
 export const postOffices: ServicePlace[] = [
   {
     id: "po1",
-    name: "Ulhasnagar Head Post Office",
-    address: "Camp 4, Near Central School, Ulhasnagar – 421004",
+    name: "Ambernath Head Post Office",
+    address: "Station Area, Near Central School, Ambernath – 421501",
     distance: "1.3 km",
     distanceKm: 1.3,
     type: "postOffice",
@@ -787,8 +787,8 @@ export const postOffices: ServicePlace[] = [
   },
   {
     id: "po2",
-    name: "Ulhasnagar Camp 1 Post Office",
-    address: "Camp 1, Sai Nagar, Ulhasnagar – 421001",
+    name: "Ambernath Old Ambernath Post Office",
+    address: "Old Ambernath, Sahakar Nagar, Ambernath – 421502",
     distance: "3.9 km",
     distanceKm: 3.9,
     type: "postOffice",
@@ -813,8 +813,8 @@ export const postOffices: ServicePlace[] = [
   },
   {
     id: "po3",
-    name: "Ulhasnagar Camp 3 Post Office",
-    address: "Camp 3, Kala Patthar, Ulhasnagar – 421003",
+    name: "Ambernath MIDC Area Post Office",
+    address: "MIDC Area, Kala Patthar, Ambernath – 421501",
     distance: "2.2 km",
     distanceKm: 2.2,
     type: "postOffice",
@@ -844,8 +844,8 @@ export const postOffices: ServicePlace[] = [
 export const schools: ServicePlace[] = [
   {
     id: "sc1",
-    name: "MNCS High School — Ulhasnagar",
-    address: "Camp 4, Near Vithal Mandir, Ulhasnagar – 421004",
+    name: "MNCS High School — Ambernath",
+    address: "Station Area, Near Vithal Mandir, Ambernath – 421501",
     distance: "1.1 km",
     distanceKm: 1.1,
     type: "school",
@@ -861,7 +861,7 @@ export const schools: ServicePlace[] = [
       { name: "Principal", phone: "0251-2736100", role: "Principal" },
       { name: "Office", phone: "0251-2736101", role: "Office" },
       { name: "Admission", phone: "0251-2736102", role: "Admission" },
-      { name: "ULMC Education", phone: "0251-2731000", role: "ULMC" },
+      { name: "AMC Education", phone: "0251-2731000", role: "AMC" },
     ],
     reviews: [
       { reviewer: "Manisha Pawar", rating: 4, comment: "Good SSC results every year. Dedicated teachers.", date: "Apr 2024" },
@@ -872,7 +872,7 @@ export const schools: ServicePlace[] = [
   {
     id: "sc2",
     name: "Balaji International School",
-    address: "Camp 5, Millennium Park, Ulhasnagar – 421005",
+    address: "Vithalwadi, Millennium Park, Ambernath – 421502",
     distance: "3.6 km",
     distanceKm: 3.6,
     type: "school",
@@ -892,7 +892,7 @@ export const schools: ServicePlace[] = [
       { name: "Bus Enquiry", phone: "0251-2736203", role: "Bus" },
     ],
     reviews: [
-      { reviewer: "Reena Khatri", rating: 5, comment: "Best CBSE school in Ulhasnagar. Excellent faculty.", date: "Apr 2024" },
+      { reviewer: "Reena Khatri", rating: 5, comment: "Best CBSE school in Ambernath. Excellent faculty.", date: "Apr 2024" },
       { reviewer: "Suresh Malhotra", rating: 4, comment: "Smart classes and labs are very modern.", date: "Mar 2024" },
       { reviewer: "Kavita Surana", rating: 4, comment: "Good extracurricular programme. My child loves it.", date: "Feb 2024" },
     ],
@@ -900,7 +900,7 @@ export const schools: ServicePlace[] = [
   {
     id: "sc3",
     name: "St. Anne's High School",
-    address: "Camp 2, Bapuji Nagar, Ulhasnagar – 421002",
+    address: "Shivaji Chowk, Bapuji Nagar, Ambernath – 421501",
     distance: "2.7 km",
     distanceKm: 2.7,
     type: "school",
@@ -920,14 +920,14 @@ export const schools: ServicePlace[] = [
     ],
     reviews: [
       { reviewer: "Priya Fernandes", rating: 4, comment: "Great discipline and quality education.", date: "Mar 2024" },
-      { reviewer: "John D'Souza", rating: 5, comment: "Best English medium school in Camp 2.", date: "Feb 2024" },
+      { reviewer: "John D'Souza", rating: 5, comment: "Best English medium school in Shivaji Chowk area.", date: "Feb 2024" },
       { reviewer: "Rita Rodrigues", rating: 4, comment: "Good values and academic excellence.", date: "Jan 2024" },
     ],
   },
   {
     id: "sc4",
     name: "Dr. Ambedkar Municipal School",
-    address: "Camp 1, Ambedkar Nagar, Ulhasnagar – 421001",
+    address: "Old Ambernath, Ambedkar Nagar, Ambernath – 421502",
     distance: "4.0 km",
     distanceKm: 4.0,
     type: "school",
@@ -943,7 +943,7 @@ export const schools: ServicePlace[] = [
       { name: "Principal", phone: "0251-2736400", role: "Principal" },
       { name: "Office", phone: "0251-2736401", role: "Office" },
       { name: "Scholarship", phone: "0251-2736402", role: "Scholarship" },
-      { name: "ULMC Education", phone: "0251-2731000", role: "ULMC" },
+      { name: "AMC Education", phone: "0251-2731000", role: "AMC" },
     ],
     reviews: [
       { reviewer: "Rajesh Kamble", rating: 3, comment: "Free education with meals. Teachers are dedicated.", date: "Mar 2024" },
@@ -958,8 +958,8 @@ export const schools: ServicePlace[] = [
 export const shamshanbhumi: ServicePlace[] = [
   {
     id: "sb1",
-    name: "ULMC Municipal Crematorium — Camp 4",
-    address: "Camp 4, Behind Municipal Ground, Ulhasnagar – 421004",
+    name: "AMC Municipal Crematorium — Station Area",
+    address: "Station Area, Behind Municipal Ground, Ambernath – 421501",
     distance: "1.5 km",
     distanceKm: 1.5,
     type: "shamshanbhumi",
@@ -975,7 +975,7 @@ export const shamshanbhumi: ServicePlace[] = [
       { name: "Office", phone: "0251-2737100", role: "Office" },
       { name: "Manager", phone: "0251-2737101", role: "Manager" },
       { name: "Booking", phone: "0251-2737102", role: "Booking" },
-      { name: "ULMC", phone: "1916", role: "ULMC Helpline" },
+      { name: "AMC", phone: "1916", role: "AMC Helpline" },
     ],
     reviews: [
       { reviewer: "Ramesh Parab", rating: 3, comment: "Municipal facility. Electric cremation available.", date: "Mar 2024" },
@@ -985,8 +985,8 @@ export const shamshanbhumi: ServicePlace[] = [
   },
   {
     id: "sb2",
-    name: "Shiv Smashanbhumi — Camp 2",
-    address: "Camp 2, Near Shiv Mandir, Ulhasnagar – 421002",
+    name: "Shiv Smashanbhumi — Shivaji Chowk",
+    address: "Shivaji Chowk, Near Shiv Mandir, Ambernath – 421501",
     distance: "2.9 km",
     distanceKm: 2.9,
     type: "shamshanbhumi",
@@ -1002,7 +1002,7 @@ export const shamshanbhumi: ServicePlace[] = [
       { name: "Office", phone: "0251-2737200", role: "Office" },
       { name: "Trustee", phone: "0251-2737201", role: "Trustee" },
       { name: "Booking", phone: "0251-2737202", role: "Booking" },
-      { name: "ULMC", phone: "1916", role: "ULMC Helpline" },
+      { name: "AMC", phone: "1916", role: "AMC Helpline" },
     ],
     reviews: [
       { reviewer: "Ashok Bhosale", rating: 4, comment: "Trust managed facility. Clean and well maintained.", date: "Feb 2024" },
@@ -1043,25 +1043,28 @@ export const emergencyContacts = [
   { name: "Disaster Mgmt", number: "1070", icon: "alert-triangle", color: "#D97706", bg: "#FEF3C7" },
   { name: "Women Helpline", number: "1091", icon: "user", color: "#7C3AED", bg: "#EDE9FE" },
   { name: "Child Helpline", number: "1098", icon: "heart", color: "#059669", bg: "#D1FAE5" },
-  { name: "ULMC Helpline", number: "1916", icon: "phone", color: "#0EA5E9", bg: "#BAE6FD" },
+  { name: "AMC Helpline", number: "1916", icon: "phone", color: "#0EA5E9", bg: "#BAE6FD" },
   { name: "Anti-Corruption", number: "1064", icon: "alert-circle", color: "#DC2626", bg: "#FEE2E2" },
 ];
 
 // ─── ULHASNAGAR WARDS (for registration) ─────────────────────────────────────
 
-export const ulhasnagarWards = [
-  "Camp 1 — Sai Nagar",
-  "Camp 2 — Shivaji Chowk",
-  "Camp 3 — Kala Patthar",
-  "Camp 4 — Station Road",
-  "Camp 5 — Millennium Park",
-  "Manpada",
-  "Nandivali",
-  "Shahad",
-  "Ambernath East",
-  "Ambernath West",
-  "Vithalwadi",
-  "Titwala",
-  "Murbad Road",
-  "Ulhasnagar General",
+export const ambernathWards = [
+  "Ward 1 — Shivaji Chowk",
+  "Ward 2 — Station Area East",
+  "Ward 3 — Station Area West",
+  "Ward 4 — MIDC Area",
+  "Ward 5 — Vithalwadi",
+  "Ward 6 — Shelar Colony",
+  "Ward 7 — Old Ambernath",
+  "Ward 8 — New Ambernath",
+  "Ward 9 — Gupte Colony",
+  "Ward 10 — Udayanagar",
+  "Ward 11 — Vallabhwadi",
+  "Ward 12 — Sahakar Nagar",
+  "Ward 13 — Gopini",
+  "Ward 14 — Chikhloli",
+  "Ward 15 — Ambernath General",
 ];
+
+export const ulhasnagarWards = ambernathWards;

@@ -26,23 +26,37 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 
 See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
 
-## JanSeva — Mumbai Citizen Services App
+## Connect T — BJP Member Services Platform (Ambernath)
+
+### Branding
+- App name: **Connect T**
+- Party: **Bharatiya Janata Party (BJP)**
+- City: **Ambernath, Thane District, Maharashtra**
+- Municipal body: **Ambernath Municipal Council (AMC)**, helpline 0251-2604100
+- Tagline: "सबका साथ, सबका विकास"
+- Splash footer: "Powered by BJP · Bharatiya Janata Party · Connect T 2025"
 
 ### Design System
-- Colors: `#0C1A3A` → `#1E3A8A` → `#2563EB` (navy gradient), Gold accent `#F59E0B`, SOS red `#DC2626`
+- Colors: Saffron-orange gradient `#7C2D12 → #C2410C → #EA580C` (BJP saffron), SOS red `#DC2626`
+- Colors defined in `constants/colors.ts` — DO NOT change these values
 - Font: Inter (400/500/600/700 Bold)
-- DO NOT change these values
+
+### City Data (Ambernath-specific)
+- **Wards**: 15 Ambernath wards (Ward 1 Shivaji Chowk → Ward 15 Ambernath General)
+- **PIN codes**: 421501 (East), 421502 (West)
+- **Areas**: Shivaji Chowk, Station Area East/West, MIDC Area, Vithalwadi, Shelar Colony, Old Ambernath, New Ambernath, Gupte Colony, Udayanagar, Vallabhwadi, Sahakar Nagar, Gopini, Chikhloli
+- **Wards export**: `ambernathWards` (primary) + `ulhasnagarWards` alias for backward compat in `mumbaiServices.ts`
 
 ### Architecture
 - **No backend** — all data in AsyncStorage via Context providers
 - `AuthContext` — user session + multi-user registry (janseva_users in AsyncStorage)
-- `ComplaintContext` — grievance data
-- `FeedContext` — community feed posts
+- `ComplaintContext` — grievance data with Ambernath seed complaints
+- `FeedContext` — community feed posts with Ambernath seed posts
 
 ### Auth Flow (tabbed Register/Login)
 - Splash → Login screen with Register/Login tabs
 - **Register**: name(req), age, email(opt), address, phone, ward → mock OTP → notification prefs → success → home
-- **Login**: phone + optional Nagarsevak ID → mock OTP → routes to home (citizen) or admin panel (nagarsevak)
+- **Login**: phone + optional Nagarsevak ID → mock OTP → routes to home (BJP Member) or admin panel (nagarsevak)
 - Valid Nagarsevak IDs (demo): NS001–NS005
 - Methods: `checkPhone(mobile)`, `register(userData)`, `loginWithPhone(mobile)`, `loginWithNagarsevakId(mobile, id)`
 
@@ -53,11 +67,13 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 
 ### Key Files
 - `artifacts/janseva/app/_layout.tsx` — Root layout, AuthGate, AppSplash overlay, Feather font loading
-- `artifacts/janseva/app/login.tsx` — Phone-first auth (register/login)
+- `artifacts/janseva/app/login.tsx` — Phone-first auth (register/login) with ambernathWards picker
 - `artifacts/janseva/app/(tabs)/_layout.tsx` — Custom AnimatedTabBar (hides on scroll, shows on stop)
 - `artifacts/janseva/context/AuthContext.tsx` — Auth + multi-user registry
 - `artifacts/janseva/context/TabBarVisibilityContext.tsx` — Scroll-aware tab bar hide/show with Reanimated
-- `artifacts/janseva/components/AppSplash.tsx` — Animated splash (LinearGradient + multi-phase)
+- `artifacts/janseva/components/AppSplash.tsx` — BJP-branded animated splash (saffron LinearGradient)
+- `artifacts/janseva/data/mumbaiServices.ts` — All Ambernath service data, wards, emergency contacts
+- `artifacts/janseva/constants/colors.ts` — Saffron-orange theme tokens
 
 ### Tab Bar Behavior
 - Custom `AnimatedTabBar` component using `react-native-reanimated`
@@ -70,8 +86,8 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - Tapping opens the NewPostModal for creating posts
 
 ### Splash Screen
-- True `LinearGradient` background: `#0F1D42 → #1E3A8A → #2563EB → #3B82F6 → #60A5FA`
-- "Powered by Vanchit Bahujan Aaghadi" shown below taglines
+- Saffron LinearGradient: `#7C2D12 → #C2410C → #EA580C`
+- "BJP Member Services Platform", "सबका साथ, सबका विकास", "Powered by BJP"
 - `useNativeDriver: Platform.OS !== "web"` — no warnings on web
 
 ### Language System
@@ -88,6 +104,6 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - Modal shows icon, type badge, title, date/time meta, full detail text, source
 
 ### Roles (app only — 2 roles)
-- `citizen` — submit/track complaints, view feed
-- `nagarsevak` — ward officer, resolve complaints, admin panel (green gradient header)
+- `citizen` / BJP Member — submit/track complaints, view feed
+- `nagarsevak` — ward officer, resolve complaints, admin panel (saffron gradient header)
 - `head_admin` — REMOVED from app (future separate website)

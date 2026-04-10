@@ -19,7 +19,7 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 
 import { useAuth } from "@/context/AuthContext";
-import { ulhasnagarWards } from "@/data/mumbaiServices";
+import { ambernathWards } from "@/data/mumbaiServices";
 import { useLanguage, languageOptions } from "@/context/LanguageContext";
 
 type AuthTab = "register" | "login";
@@ -536,7 +536,7 @@ export default function LoginScreen() {
               </TouchableOpacity>
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
-              {ulhasnagarWards.map((ward) => (
+              {ambernathWards.map((ward) => (
                 <TouchableOpacity
                   key={ward}
                   style={[s.wardRow, regWard === ward && s.wardRowActive]}

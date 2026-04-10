@@ -234,7 +234,7 @@ export default function AdminScreen() {
               <Text style={[styles.adminBadgeText, { color: "#6EE7B7" }]}>NAGARSEVAK</Text>
             </View>
             <Text style={styles.headerTitle}>{user?.name}</Text>
-            <Text style={styles.headerSub}>{user?.ward || "Ulhasnagar"}</Text>
+            <Text style={styles.headerSub}>{user?.ward || "Ambernath"}</Text>
           </View>
           <TouchableOpacity onPress={() => setShowProfile(true)} style={styles.profileAvatarBtn} activeOpacity={0.8}>
             <Text style={styles.profileAvatarText}>{user?.name?.charAt(0)?.toUpperCase() || "N"}</Text>
@@ -319,7 +319,7 @@ export default function AdminScreen() {
                 <View style={pStyles.infoRow}>
                   <View style={pStyles.infoChip}>
                     <Feather name="map-pin" size={10} color="rgba(255,255,255,0.55)" />
-                    <Text style={pStyles.infoChipText}>{user?.ward || "Ulhasnagar"}</Text>
+                    <Text style={pStyles.infoChipText}>{user?.ward || "Ambernath"}</Text>
                   </View>
                   <View style={pStyles.infoChip}>
                     <Feather name="phone" size={10} color="rgba(255,255,255,0.55)" />
@@ -357,10 +357,10 @@ export default function AdminScreen() {
               <Text style={pStyles.sectionLabel}>PARTY & DESIGNATION</Text>
               <View style={pStyles.card}>
                 {[
-                  { icon: "flag" as const, label: "Party", value: "Vanchit Bahujan Aaghadi" },
+                  { icon: "flag" as const, label: "Party", value: "Bharatiya Janata Party" },
                   { icon: "award" as const, label: "Nagarsevak ID", value: user?.nagarsevakId || "—" },
                   { icon: "briefcase" as const, label: "Designation", value: "Ward Officer / Nagarsevak" },
-                  { icon: "map-pin" as const, label: t("ward"), value: user?.ward || "Ulhasnagar" },
+                  { icon: "map-pin" as const, label: t("ward"), value: user?.ward || "Ambernath" },
                 ].map((item, idx, arr) => (
                   <View key={item.label} style={[pStyles.detailRow, idx < arr.length - 1 && pStyles.rowBorder]}>
                     <View style={[pStyles.detailIcon, { backgroundColor: "#D1FAE5" }]}>
@@ -403,9 +403,9 @@ export default function AdminScreen() {
               <Text style={pStyles.sectionLabel}>WARD JURISDICTION</Text>
               <View style={pStyles.card}>
                 {[
-                  { icon: "home" as const, label: "Corporation", value: "Ulhasnagar Municipal Corporation (ULMC)" },
-                  { icon: "map" as const, label: "City", value: "Ulhasnagar, Maharashtra" },
-                  { icon: "compass" as const, label: "Area", value: user?.ward || "Ulhasnagar" },
+                  { icon: "home" as const, label: "Corporation", value: "Ambernath Municipal Council (AMC)" },
+                  { icon: "map" as const, label: "City", value: "Ambernath, Maharashtra" },
+                  { icon: "compass" as const, label: "Area", value: user?.ward || "Ambernath" },
                 ].map((item, idx, arr) => (
                   <View key={item.label} style={[pStyles.detailRow, idx < arr.length - 1 && pStyles.rowBorder]}>
                     <View style={[pStyles.detailIcon, { backgroundColor: "#FFEDD5" }]}>
@@ -423,7 +423,7 @@ export default function AdminScreen() {
             <View style={pStyles.appInfoCard}>
               <Text style={pStyles.appInfoBrand}>Connect T</Text>
               <Text style={pStyles.appInfoTagline}>BJP Member Services · सबका साथ, सबका विकास</Text>
-              <Text style={pStyles.appInfoVersion}>v1.0 · ULMC Ulhasnagar · Vanchit Bahujan Aaghadi</Text>
+              <Text style={pStyles.appInfoVersion}>v1.0 · AMC Ambernath · Bharatiya Janata Party</Text>
             </View>
 
             <TouchableOpacity style={pStyles.logoutBtn} onPress={() => { setShowProfile(false); setShowLogoutModal(true); }} activeOpacity={0.85}>
