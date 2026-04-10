@@ -65,11 +65,32 @@ const SUBSCRIPTIONS_KEY = "janseva_subscriptions";
 const BLOCKED_KEY = "janseva_blocked";
 
 const BAD_WORDS = [
-  "fuck", "shit", "ass", "bitch", "bastard", "cunt", "cock", "dick",
-  "pussy", "whore", "slut", "porn", "nude", "naked", "boob", "rape",
-  "chutiya", "madarchod", "bhenchod", "gaandu", "randi", "harami",
-  "bhosdike", "lavda", "lund", "chut", "madarjat", "bhosdi", "gandu",
-  "saala", "haramzada", "kamina", "kutiya", "randwa",
+  "fuck", "f*ck", "fuk", "fucker", "fucking", "fucks",
+  "shit", "sh*t", "bullshit",
+  "ass", "asshole", "arse",
+  "bitch", "b*tch", "bitches",
+  "bastard", "cunt", "c*nt",
+  "cock", "c*ck", "dick", "d*ck",
+  "pussy", "p*ssy",
+  "whore", "slut",
+  "sex", "sexy", "sexual", "sexting", "s3x",
+  "porn", "porno", "p0rn", "pornography",
+  "nude", "nudes", "naked",
+  "boob", "boobs", "breast", "nipple",
+  "rape", "raping", "raped",
+  "masturbate", "masturbation",
+  "penis", "vagina", "condom",
+  "chutiya", "ch*tiya", "chutiye",
+  "madarchod", "madarc**d", "mc",
+  "bhenchod", "bhenc**d", "bc",
+  "gaandu", "gaand", "g**nd",
+  "randi", "r**di",
+  "harami", "haramzada",
+  "bhosdike", "bhosdi",
+  "lavda", "l**da", "lund", "l**d",
+  "chut", "ch*t",
+  "madarjat", "gandu", "kutiya", "randwa",
+  "kamina", "saala", "sala", "sali",
 ];
 
 export function hasBadContent(text: string): boolean {

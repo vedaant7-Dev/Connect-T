@@ -389,6 +389,7 @@ export default function FeedScreen() {
   const [showNewPost, setShowNewPost] = useState(false);
   const [showSubscribe, setShowSubscribe] = useState(false);
   const [chatInput, setChatInput] = useState("");
+  const [chatWarning, setChatWarning] = useState("");
   const chatRef = useRef<FlatList>(null);
 
   const canPostAnnouncement = user?.role === "nagarsevak";
@@ -409,17 +410,31 @@ export default function FeedScreen() {
     }
   };
 
+  const handleChatInputChange = (text: string) => {
+    setChatInput(text);
+    if (hasBadContent(text)) {
+      setChatWarning("⚠️ Inappropriate language detected. Remove it before sending.");
+    } else {
+      setChatWarning("");
+    }
+  };
+
   const handleSendChat = () => {
     if (!chatInput.trim()) return;
     if (userBlocked) {
-      Alert.alert("Blocked", `You are blocked from posting until ${blockedUntil}.`);
+      setChatWarning(`🚫 You are blocked from posting until ${blockedUntil}.`);
+      return;
+    }
+    if (hasBadContent(chatInput)) {
+      setChatWarning("⚠️ Your message contains inappropriate content. Please remove it.");
       return;
     }
     const result = addChatMessage(chatInput.trim(), userId, user?.name || "Anonymous", user?.role || "citizen", user?.avatarColor || "#EA580C");
     if (!result.success && result.reason === "blocked") {
-      Alert.alert("Content Violation", "Your message contains inappropriate content. You have been blocked from the community for 24 hours.");
+      setChatWarning("🚫 Inappropriate content detected. You have been blocked for 24 hours.");
     } else {
       setChatInput("");
+      setChatWarning("");
     }
   };
 
@@ -553,15 +568,21 @@ export default function FeedScreen() {
             />
           )}
           {!userBlocked && (
+            <View style={{ position: "absolute", bottom: 0, left: 0, right: 0 }}>
+              {!!chatWarning && (
+                <View style={styles.chatWarningBanner}>
+                  <Text style={styles.chatWarningText}>{chatWarning}</Text>
+                </View>
+              )}
             <View style={[styles.chatInputBar, { paddingBottom: Math.max(insets.bottom, 8) }]}>
               <TouchableOpacity style={styles.chatAttachBtn} activeOpacity={0.75} onPress={() => setShowNewPost(true)}>
                 <Feather name="image" size={26} color="#EA580C" />
               </TouchableOpacity>
-              <View style={styles.chatInputPill}>
+              <View style={[styles.chatInputPill, !!chatWarning && { borderColor: "#EF4444" }]}>
                 <TextInput
                   style={styles.chatInput}
                   value={chatInput}
-                  onChangeText={setChatInput}
+                  onChangeText={handleChatInputChange}
                   placeholder="Message..."
                   placeholderTextColor="#94A3B8"
                   returnKeyType="send"
@@ -583,6 +604,7 @@ export default function FeedScreen() {
                   </TouchableOpacity>
                 </View>
               )}
+            </View>
             </View>
           )}
         </KeyboardAvoidingView>
@@ -689,7 +711,9 @@ const styles = StyleSheet.create({
   bubbleText: { fontSize: 14, color: "#334155", fontFamily: "Inter_400Regular", lineHeight: 20 },
   bubbleTextMe: { color: "white" },
   bubbleTime: { fontSize: 10, color: "#94A3B8", fontFamily: "Inter_400Regular", marginTop: 4 },
-  chatInputBar: { position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: "white", borderTopWidth: 1, borderTopColor: "#F1F5F9", paddingHorizontal: 10, paddingTop: 8, flexDirection: "row", alignItems: "flex-end", gap: 6 },
+  chatWarningBanner: { backgroundColor: "#FEF2F2", borderTopWidth: 1, borderTopColor: "#FECACA", paddingHorizontal: 14, paddingVertical: 8 },
+  chatWarningText: { fontSize: 12, color: "#DC2626", fontFamily: "Inter_400Regular", lineHeight: 18 },
+  chatInputBar: { backgroundColor: "white", borderTopWidth: 1, borderTopColor: "#F1F5F9", paddingHorizontal: 10, paddingTop: 8, flexDirection: "row", alignItems: "flex-end", gap: 6 },
   chatAttachBtn: { width: 40, height: 40, alignItems: "center", justifyContent: "center", marginBottom: 2 },
   chatInputPill: { flex: 1, backgroundColor: "#F8FAFC", borderRadius: 22, borderWidth: 1, borderColor: "#E2E8F0", paddingHorizontal: 14, paddingVertical: 6, minHeight: 40, maxHeight: 100, justifyContent: "center" },
   chatInput: { fontSize: 15, color: "#0F172A", fontFamily: "Inter_400Regular", padding: 0, margin: 0 },
