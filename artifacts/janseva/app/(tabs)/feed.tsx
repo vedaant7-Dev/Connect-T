@@ -554,22 +554,35 @@ export default function FeedScreen() {
           )}
           {!userBlocked && (
             <View style={[styles.chatInputBar, { paddingBottom: Math.max(insets.bottom, 8) }]}>
-              <Avatar name={user?.name || "U"} color={user?.avatarColor || "#EA580C"} size={34} />
-              <TextInput
-                style={styles.chatInput}
-                value={chatInput}
-                onChangeText={setChatInput}
-                placeholder="Message community..."
-                placeholderTextColor="#94A3B8"
-                returnKeyType="send"
-                onSubmitEditing={handleSendChat}
-                maxLength={300}
-              />
-              <TouchableOpacity onPress={handleSendChat} style={[styles.chatSendBtn, !chatInput.trim() && { opacity: 0.4 }]} disabled={!chatInput.trim()} activeOpacity={0.85}>
-                <LinearGradient colors={["#B45309", "#EA580C"]} style={styles.chatSendGrad}>
-                  <Feather name="send" size={16} color="white" />
-                </LinearGradient>
+              <TouchableOpacity style={styles.chatAttachBtn} activeOpacity={0.75} onPress={() => setShowNewPost(true)}>
+                <Feather name="image" size={26} color="#EA580C" />
               </TouchableOpacity>
+              <View style={styles.chatInputPill}>
+                <TextInput
+                  style={styles.chatInput}
+                  value={chatInput}
+                  onChangeText={setChatInput}
+                  placeholder="Message..."
+                  placeholderTextColor="#94A3B8"
+                  returnKeyType="send"
+                  onSubmitEditing={handleSendChat}
+                  maxLength={300}
+                  multiline
+                />
+              </View>
+              {chatInput.trim() ? (
+                <TouchableOpacity onPress={handleSendChat} style={styles.chatSendBtn} activeOpacity={0.85}>
+                  <LinearGradient colors={["#B45309", "#EA580C"]} style={styles.chatSendGrad}>
+                    <Feather name="send" size={17} color="white" />
+                  </LinearGradient>
+                </TouchableOpacity>
+              ) : (
+                <View style={styles.chatIdleActions}>
+                  <TouchableOpacity style={styles.chatIdleBtn} activeOpacity={0.7}>
+                    <Feather name="heart" size={24} color="#EA580C" />
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           )}
         </KeyboardAvoidingView>
@@ -676,10 +689,14 @@ const styles = StyleSheet.create({
   bubbleText: { fontSize: 14, color: "#334155", fontFamily: "Inter_400Regular", lineHeight: 20 },
   bubbleTextMe: { color: "white" },
   bubbleTime: { fontSize: 10, color: "#94A3B8", fontFamily: "Inter_400Regular", marginTop: 4 },
-  chatInputBar: { position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: "white", borderTopWidth: 1, borderTopColor: "#E2E8F0", paddingHorizontal: 12, paddingTop: 10, flexDirection: "row", alignItems: "center", gap: 8 },
-  chatInput: { flex: 1, backgroundColor: "#F8FAFC", borderRadius: 24, paddingHorizontal: 14, paddingVertical: 10, fontSize: 14, color: "#0F172A", fontFamily: "Inter_400Regular", borderWidth: 1, borderColor: "#E2E8F0", maxHeight: 80 },
-  chatSendBtn: { borderRadius: 20, overflow: "hidden" },
-  chatSendGrad: { width: 40, height: 40, borderRadius: 20, alignItems: "center", justifyContent: "center" },
+  chatInputBar: { position: "absolute", bottom: 0, left: 0, right: 0, backgroundColor: "white", borderTopWidth: 1, borderTopColor: "#F1F5F9", paddingHorizontal: 10, paddingTop: 8, flexDirection: "row", alignItems: "flex-end", gap: 6 },
+  chatAttachBtn: { width: 40, height: 40, alignItems: "center", justifyContent: "center", marginBottom: 2 },
+  chatInputPill: { flex: 1, backgroundColor: "#F8FAFC", borderRadius: 22, borderWidth: 1, borderColor: "#E2E8F0", paddingHorizontal: 14, paddingVertical: 6, minHeight: 40, maxHeight: 100, justifyContent: "center" },
+  chatInput: { fontSize: 15, color: "#0F172A", fontFamily: "Inter_400Regular", padding: 0, margin: 0 },
+  chatSendBtn: { borderRadius: 20, overflow: "hidden", marginBottom: 2 },
+  chatSendGrad: { width: 38, height: 38, borderRadius: 19, alignItems: "center", justifyContent: "center" },
+  chatIdleActions: { flexDirection: "row", alignItems: "center", marginBottom: 2 },
+  chatIdleBtn: { width: 38, height: 38, alignItems: "center", justifyContent: "center" },
 
   blockedScreen: { flex: 1, alignItems: "center", justifyContent: "center", padding: 32, gap: 12 },
   blockedScreenTitle: { fontSize: 20, fontWeight: "700", color: "#DC2626", fontFamily: "Inter_700Bold", textAlign: "center" },
