@@ -16,7 +16,7 @@ import { useRouter } from "expo-router";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTabBarVisibility } from "@/context/TabBarVisibilityContext";
 
-type FeedTab = "news" | "community" | "chat" | "active" | "resolved";
+type FeedTab = "news" | "community" | "chat" | "complaints" | "resolved";
 
 const postTypeConfig: Record<PostType, { color: string; bg: string; icon: string }> = {
   announcement: { color: "#DC2626", bg: "#FEE2E2", icon: "alert-circle" },
@@ -435,13 +435,13 @@ export default function FeedScreen() {
     ? [
         { id: "community", label: "Community" },
         { id: "chat", label: "Chat" },
-        { id: "active", label: "Active", count: activeComplaints.length },
-        { id: "resolved", label: "Done", count: resolvedComplaints.length },
+        { id: "complaints", label: "Complaints", count: complaints.length },
+        { id: "resolved", label: "Resolved", count: resolvedComplaints.length },
       ]
     : [
         { id: "news", label: "News" },
-        { id: "active", label: "Active", count: activeComplaints.length },
-        { id: "resolved", label: "Done", count: resolvedComplaints.length },
+        { id: "complaints", label: "Complaints", count: complaints.length },
+        { id: "resolved", label: "Resolved", count: resolvedComplaints.length },
       ];
 
   const renderEmptyComplaints = (msg: string, icon: string) => (
@@ -575,9 +575,9 @@ export default function FeedScreen() {
         </KeyboardAvoidingView>
       )}
 
-      {activeTab === "active" && (
+      {activeTab === "complaints" && (
         <FlatList
-          data={activeComplaints}
+          data={complaints}
           keyExtractor={(c) => c.id}
           renderItem={({ item }) => <ComplaintCard complaint={item} onPress={() => router.push({ pathname: "/complaint/[id]", params: { id: item.id } })} />}
           contentContainerStyle={[styles.list, { paddingBottom: Math.max(insets.bottom, 8) + 20 }]}
@@ -585,7 +585,7 @@ export default function FeedScreen() {
           onScroll={handleScroll}
           scrollEventThrottle={16}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
-          ListEmptyComponent={renderEmptyComplaints("No active complaints", "check-circle")}
+          ListEmptyComponent={renderEmptyComplaints("No complaints yet", "inbox")}
         />
       )}
 
