@@ -31,7 +31,7 @@ const categories: { id: ComplaintCategory; icon: string; color: string; bg: stri
   { id: "water", icon: "droplet", color: "#0369A1", bg: "#BAE6FD" },
   { id: "electricity", icon: "zap", color: "#D97706", bg: "#FEF3C7" },
   { id: "garbage", icon: "trash-2", color: "#059669", bg: "#D1FAE5" },
-  { id: "drainage", icon: "git-merge", color: "#0EA5E9", bg: "#EFF6FF" },
+  { id: "drainage", icon: "git-merge", color: "#0EA5E9", bg: "#FFF7ED" },
   { id: "streetlight", icon: "sun", color: "#7C3AED", bg: "#EDE9FE" },
   { id: "encroachment", icon: "alert-triangle", color: "#DC2626", bg: "#FEE2E2" },
   { id: "other", icon: "more-horizontal", color: "#475569", bg: "#F1F5F9" },
@@ -132,7 +132,7 @@ export default function NewComplaintScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={["#1E3A8A", "#1E40AF", "#2563EB"]}
+        colors={["#7C2D12", "#B45309", "#EA580C"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: topPad + 12 }]}
@@ -165,14 +165,14 @@ export default function NewComplaintScreen() {
           ) : (
             <View style={styles.photoButtons}>
               <TouchableOpacity style={styles.cameraBtn} onPress={handleCamera} activeOpacity={0.85}>
-                <LinearGradient colors={["#1E40AF", "#2563EB"]} style={styles.cameraBtnGrad}>
+                <LinearGradient colors={["#B45309", "#EA580C"]} style={styles.cameraBtnGrad}>
                   <Feather name="camera" size={24} color="white" />
                   <Text style={styles.cameraBtnText}>{t("takePhoto")}</Text>
                   <Text style={styles.cameraBtnSub}>{t("clickPhotoOfProblem")}</Text>
                 </LinearGradient>
               </TouchableOpacity>
               <TouchableOpacity style={styles.galleryBtn} onPress={handleGallery} activeOpacity={0.85}>
-                <Feather name="image" size={18} color="#2563EB" />
+                <Feather name="image" size={18} color="#EA580C" />
                 <Text style={styles.galleryBtnText}>{t("chooseFromGallery")}</Text>
               </TouchableOpacity>
             </View>
@@ -254,7 +254,7 @@ export default function NewComplaintScreen() {
           <Text style={styles.sectionLabel}>{t("location")}</Text>
           <View style={styles.locationRow}>
             <View style={styles.locationIcon}>
-              <Feather name="map-pin" size={16} color="#2563EB" />
+              <Feather name="map-pin" size={16} color="#EA580C" />
             </View>
             <TextInput
               style={[styles.input, styles.locationInput]}
@@ -272,7 +272,7 @@ export default function NewComplaintScreen() {
 
         {/* NOTICE */}
         <View style={styles.noticeCard}>
-          <Feather name="info" size={14} color="#2563EB" />
+          <Feather name="info" size={14} color="#EA580C" />
           <Text style={styles.noticeText}>
             {t("complaintNotice")}
           </Text>
@@ -288,7 +288,7 @@ export default function NewComplaintScreen() {
           activeOpacity={0.85}
         >
           <LinearGradient
-            colors={["#1E40AF", "#2563EB"]}
+            colors={["#B45309", "#EA580C"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.submitBtnGrad}
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
   cameraBtn: {
     borderRadius: 16,
     overflow: "hidden",
-    shadowColor: "#1E40AF",
+    shadowColor: "#B45309",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 10,
@@ -359,11 +359,11 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 12,
     borderRadius: 12,
-    backgroundColor: "#EFF6FF",
+    backgroundColor: "#FFF7ED",
     borderWidth: 1,
-    borderColor: "#DBEAFE",
+    borderColor: "#FFEDD5",
   },
-  galleryBtnText: { fontSize: 13, fontWeight: "700", color: "#2563EB", fontFamily: "Inter_600SemiBold" },
+  galleryBtnText: { fontSize: 13, fontWeight: "700", color: "#EA580C", fontFamily: "Inter_600SemiBold" },
   photoContainer: { borderRadius: 16, overflow: "hidden", position: "relative" },
   photo: { width: "100%", height: 200, borderRadius: 16 },
   retakeBtn: {
@@ -393,8 +393,8 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   categoryItemSelected: {
-    borderColor: "#2563EB",
-    backgroundColor: "#EFF6FF",
+    borderColor: "#EA580C",
+    backgroundColor: "#FFF7ED",
   },
   catIconWrap: {
     width: 40,
@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: "#EFF6FF",
+    backgroundColor: "#FFF7ED",
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
@@ -458,14 +458,14 @@ const styles = StyleSheet.create({
   noticeCard: {
     flexDirection: "row",
     gap: 10,
-    backgroundColor: "#EFF6FF",
+    backgroundColor: "#FFF7ED",
     borderRadius: 14,
     padding: 14,
     borderWidth: 1,
-    borderColor: "#DBEAFE",
+    borderColor: "#FFEDD5",
     alignItems: "flex-start",
   },
-  noticeText: { flex: 1, fontSize: 12, color: "#1E40AF", fontFamily: "Inter_400Regular", lineHeight: 18 },
+  noticeText: { flex: 1, fontSize: 12, color: "#B45309", fontFamily: "Inter_400Regular", lineHeight: 18 },
   submitBar: {
     position: "absolute",
     bottom: 0,
@@ -480,7 +480,7 @@ const styles = StyleSheet.create({
   submitBtn: {
     borderRadius: 16,
     overflow: "hidden",
-    shadowColor: "#1E40AF",
+    shadowColor: "#B45309",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 10,

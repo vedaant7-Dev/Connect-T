@@ -86,7 +86,7 @@ export default function EmergencyScreen() {
 
         <View style={styles.tipsCard}>
           <View style={styles.tipsHeader}>
-            <Feather name="info" size={16} color="#2563EB" />
+            <Feather name="info" size={16} color="#EA580C" />
             <Text style={styles.tipsTitle}>{t("emergencyTips")}</Text>
           </View>
           {tips.map((tip, i) => (
@@ -101,7 +101,7 @@ export default function EmergencyScreen() {
 
         <View style={styles.nearestCard}>
           <LinearGradient
-            colors={["#1E3A8A", "#2563EB"]}
+            colors={["#7C2D12", "#EA580C"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.nearestGrad}
@@ -118,7 +118,7 @@ export default function EmergencyScreen() {
               onPress={() => handleCall("022-22067676")}
               activeOpacity={0.85}
             >
-              <Feather name="phone" size={14} color="#1E40AF" />
+              <Feather name="phone" size={14} color="#B45309" />
               <Text style={styles.callBtnText}>{t("callNow")}</Text>
             </TouchableOpacity>
           </LinearGradient>
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: "center",
     gap: 6,
-    shadowColor: "#1E40AF",
+    shadowColor: "#B45309",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 8,
@@ -243,12 +243,12 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_700Bold",
   },
   tipsCard: {
-    backgroundColor: "#EFF6FF",
+    backgroundColor: "#FFF7ED",
     borderRadius: 18,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: "#DBEAFE",
+    borderColor: "#FFEDD5",
   },
   tipsHeader: {
     flexDirection: "row",
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
   tipsTitle: {
     fontSize: 14,
     fontWeight: "800",
-    color: "#1E40AF",
+    color: "#B45309",
     fontFamily: "Inter_700Bold",
   },
   tipRow: {
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: "#2563EB",
+    backgroundColor: "#EA580C",
     alignItems: "center",
     justifyContent: "center",
     flexShrink: 0,
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
   },
   tipText: {
     fontSize: 12,
-    color: "#1E40AF",
+    color: "#B45309",
     fontFamily: "Inter_400Regular",
     flex: 1,
     lineHeight: 18,
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
   callBtnText: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#1E40AF",
+    color: "#B45309",
     fontFamily: "Inter_700Bold",
   },
 });

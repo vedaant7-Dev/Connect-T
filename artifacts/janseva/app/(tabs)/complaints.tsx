@@ -26,7 +26,7 @@ const statusLabelKeys: Record<ComplaintStatus, string> = {
 
 const statusConfig: Record<ComplaintStatus, { color: string; bg: string; icon: string }> = {
   submitted: { color: "#D97706", bg: "#FEF3C7", icon: "clock" },
-  assigned: { color: "#2563EB", bg: "#DBEAFE", icon: "user-check" },
+  assigned: { color: "#EA580C", bg: "#FFEDD5", icon: "user-check" },
   in_progress: { color: "#7C3AED", bg: "#EDE9FE", icon: "tool" },
   resolved: { color: "#059669", bg: "#D1FAE5", icon: "check-circle" },
   rejected: { color: "#DC2626", bg: "#FEE2E2", icon: "x-circle" },
@@ -158,7 +158,7 @@ export default function ComplaintsScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={["#1E3A8A", "#1E40AF", "#2563EB", "#3B82F6"]}
+        colors={["#7C2D12", "#B45309", "#EA580C", "#F97316"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: topPad + 12 }]}
@@ -239,7 +239,7 @@ export default function ComplaintsScreen() {
         onPress={() => router.push("/complaint/new")}
         activeOpacity={0.85}
       >
-        <LinearGradient colors={["#1E40AF", "#2563EB"]} style={styles.fabGrad}>
+        <LinearGradient colors={["#B45309", "#EA580C"]} style={styles.fabGrad}>
           <Feather name="camera" size={20} color="white" />
           <Text style={styles.fabText}>{t("reportProblemAction")}</Text>
         </LinearGradient>
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
     marginBottom: 10,
-    shadowColor: "#1E40AF",
+    shadowColor: "#B45309",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.07,
     shadowRadius: 8,
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
     right: 20,
     borderRadius: 16,
     overflow: "hidden",
-    shadowColor: "#1E40AF",
+    shadowColor: "#B45309",
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.3,
     shadowRadius: 12,

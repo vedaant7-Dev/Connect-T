@@ -48,7 +48,7 @@ function AnimatedTabBar(props: any) {
           if (options.href === null || route.name === "services" || route.name === "admin") return null;
 
           const isFocused = state.index === index;
-          const tintColor = isFocused ? "#2563EB" : "#94A3B8";
+          const tintColor = isFocused ? "#EA580C" : "#94A3B8";
 
           const onPress = () => {
             const event = navigation.emit({
@@ -166,7 +166,7 @@ export default function TabLayout() {
       tabBar={(props) => isNagarsevak ? null : <AnimatedTabBar {...props} />}
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#2563EB",
+        tabBarActiveTintColor: "#EA580C",
         tabBarInactiveTintColor: "#94A3B8",
       }}
     >

@@ -22,7 +22,7 @@ const statusLabelKeys: Record<ComplaintStatus, string> = {
 
 const statusConfig: Record<ComplaintStatus, { color: string; bg: string; icon: string }> = {
   submitted: { color: "#D97706", bg: "#FEF3C7", icon: "clock" },
-  assigned: { color: "#2563EB", bg: "#DBEAFE", icon: "user-check" },
+  assigned: { color: "#EA580C", bg: "#FFEDD5", icon: "user-check" },
   in_progress: { color: "#7C3AED", bg: "#EDE9FE", icon: "tool" },
   resolved: { color: "#059669", bg: "#D1FAE5", icon: "check-circle" },
   rejected: { color: "#DC2626", bg: "#FEE2E2", icon: "x-circle" },
@@ -48,7 +48,7 @@ const nextStatusLabelKeys: Record<ComplaintStatus, string[]> = {
 };
 
 const nextStatusOptions: Record<ComplaintStatus, { status: ComplaintStatus; color: string }[]> = {
-  submitted: [{ status: "assigned", color: "#2563EB" }, { status: "rejected", color: "#DC2626" }],
+  submitted: [{ status: "assigned", color: "#EA580C" }, { status: "rejected", color: "#DC2626" }],
   assigned: [{ status: "in_progress", color: "#7C3AED" }, { status: "rejected", color: "#DC2626" }],
   in_progress: [{ status: "resolved", color: "#059669" }, { status: "rejected", color: "#DC2626" }],
   resolved: [],
@@ -111,7 +111,7 @@ function ActionModal({ complaint, onClose, onUpdate }: { complaint: Complaint; o
             disabled={!selectedStatus}
             activeOpacity={0.85}
           >
-            <LinearGradient colors={["#1E40AF", "#2563EB"]} style={modalStyles.confirmBtnGrad}>
+            <LinearGradient colors={["#B45309", "#EA580C"]} style={modalStyles.confirmBtnGrad}>
               <Text style={modalStyles.confirmBtnText}>{t("updateStatus")}</Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -160,7 +160,7 @@ function DetailedComplaintCard({ complaint, onAction }: { complaint: Complaint; 
 
         <View style={styles.citizenInfoRow}>
           <View style={styles.citizenInfoChip}>
-            <Feather name="user" size={10} color="#2563EB" />
+            <Feather name="user" size={10} color="#EA580C" />
             <Text style={styles.citizenInfoText}>{complaint.userName || t("citizen")}</Text>
           </View>
           <View style={styles.citizenInfoChip}>
@@ -205,7 +205,7 @@ export default function AdminScreen() {
         <Feather name="lock" size={48} color="#CBD5E1" />
         <Text style={{ fontSize: 18, fontWeight: "700", color: "#475569", marginTop: 16, fontFamily: "Inter_700Bold" }}>{t("nagarsevakOnly")}</Text>
         <Text style={{ fontSize: 13, color: "#94A3B8", marginTop: 8, textAlign: "center", fontFamily: "Inter_400Regular" }}>{t("nagarsevakOnlyDesc")}</Text>
-        <TouchableOpacity onPress={() => router.push("/login")} style={{ backgroundColor: "#1E40AF", paddingHorizontal: 32, paddingVertical: 14, borderRadius: 14, marginTop: 24 }} activeOpacity={0.85}>
+        <TouchableOpacity onPress={() => router.push("/login")} style={{ backgroundColor: "#C2410C", paddingHorizontal: 32, paddingVertical: 14, borderRadius: 14, marginTop: 24 }} activeOpacity={0.85}>
           <Text style={{ fontSize: 15, fontWeight: "700", color: "white", fontFamily: "Inter_700Bold" }}>{t("loginBtn")}</Text>
         </TouchableOpacity>
       </View>
@@ -408,8 +408,8 @@ export default function AdminScreen() {
                   { icon: "compass" as const, label: "Area", value: user?.ward || "Ulhasnagar" },
                 ].map((item, idx, arr) => (
                   <View key={item.label} style={[pStyles.detailRow, idx < arr.length - 1 && pStyles.rowBorder]}>
-                    <View style={[pStyles.detailIcon, { backgroundColor: "#DBEAFE" }]}>
-                      <Feather name={item.icon} size={14} color="#2563EB" />
+                    <View style={[pStyles.detailIcon, { backgroundColor: "#FFEDD5" }]}>
+                      <Feather name={item.icon} size={14} color="#EA580C" />
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={pStyles.detailLabel}>{item.label}</Text>
@@ -421,8 +421,8 @@ export default function AdminScreen() {
             </View>
 
             <View style={pStyles.appInfoCard}>
-              <Text style={pStyles.appInfoBrand}>JanSeva</Text>
-              <Text style={pStyles.appInfoTagline}>नागरिक सेवा · Citizen Services Platform</Text>
+              <Text style={pStyles.appInfoBrand}>Connect T</Text>
+              <Text style={pStyles.appInfoTagline}>BJP Member Services · सबका साथ, सबका विकास</Text>
               <Text style={pStyles.appInfoVersion}>v1.0 · ULMC Ulhasnagar · Vanchit Bahujan Aaghadi</Text>
             </View>
 
@@ -491,7 +491,7 @@ const styles = StyleSheet.create({
   metaText: { fontSize: 11, color: "#64748B", fontFamily: "Inter_400Regular", flex: 1 },
   descText: { fontSize: 12, color: "#475569", fontFamily: "Inter_400Regular", lineHeight: 17, marginTop: 4 },
   citizenInfoRow: { flexDirection: "row", gap: 8, marginTop: 8 },
-  citizenInfoChip: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "#EFF6FF", paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
+  citizenInfoChip: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "#FFF7ED", paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
   citizenInfoText: { fontSize: 10, color: "#475569", fontFamily: "Inter_400Regular" },
   actionBtn: { marginHorizontal: 14, marginBottom: 14, borderRadius: 12, overflow: "hidden" },
   actionBtnGrad: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, paddingVertical: 10 },
@@ -565,7 +565,7 @@ const pStyles = StyleSheet.create({
   detailLabel: { fontSize: 10, color: "#94A3B8", fontFamily: "Inter_400Regular", marginBottom: 2 },
   detailValue: { fontSize: 14, fontWeight: "600", color: "#0F172A", fontFamily: "Inter_600SemiBold" },
   appInfoCard: { alignItems: "center", paddingVertical: 20, marginBottom: 12 },
-  appInfoBrand: { fontSize: 18, fontWeight: "900", color: "#1E3A8A", fontFamily: "Inter_700Bold", letterSpacing: -0.3 },
+  appInfoBrand: { fontSize: 18, fontWeight: "900", color: "#C2410C", fontFamily: "Inter_700Bold", letterSpacing: -0.3 },
   appInfoTagline: { fontSize: 11, color: "#94A3B8", fontFamily: "Inter_400Regular", marginTop: 4 },
   appInfoVersion: { fontSize: 10, color: "#CBD5E1", fontFamily: "Inter_400Regular", marginTop: 2 },
   logoutBtn: { backgroundColor: "#FEE2E2", borderRadius: 16, borderWidth: 1.5, borderColor: "#FECACA", marginBottom: 8 },

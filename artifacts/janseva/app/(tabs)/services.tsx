@@ -152,7 +152,7 @@ export default function ServicesScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={["#1E3A8A", "#1E40AF", "#2563EB", "#3B82F6"]}
+        colors={["#7C2D12", "#B45309", "#EA580C", "#F97316"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: topPad + 12 }]}
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
   placeCard: {
     backgroundColor: "#FFFFFF", borderRadius: 16, marginBottom: 12,
     overflow: "hidden",
-    shadowColor: "#1E40AF", shadowOffset: { width: 0, height: 2 },
+    shadowColor: "#B45309", shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08, shadowRadius: 8, elevation: 2,
   },
   placeCardTop: {

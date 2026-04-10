@@ -63,7 +63,7 @@ export default function ServiceDetailScreen() {
 
   const govtColors: Record<string, { bg: string; text: string }> = {
     Government: { bg: "#D1FAE5", text: "#059669" },
-    Municipal: { bg: "#DBEAFE", text: "#1E40AF" },
+    Municipal: { bg: "#FFEDD5", text: "#B45309" },
     Private: { bg: "#F5F3FF", text: "#7C3AED" },
     Trust: { bg: "#FEF3C7", text: "#D97706" },
   };
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
   scrollContent: { padding: 16, paddingBottom: 40 },
   section: {
     backgroundColor: "white", borderRadius: 16, padding: 14, marginBottom: 12,
-    shadowColor: "#1E40AF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
+    shadowColor: "#B45309", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
   },
   addressRow: { flexDirection: "row", alignItems: "flex-start", gap: 10 },
   addressIcon: { width: 34, height: 34, borderRadius: 10, alignItems: "center", justifyContent: "center", flexShrink: 0 },
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
   ratingSection: {
     backgroundColor: "white", borderRadius: 16, padding: 16, marginBottom: 12,
     flexDirection: "row", alignItems: "center", gap: 16,
-    shadowColor: "#1E40AF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
+    shadowColor: "#B45309", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
   },
   ratingLeft: { alignItems: "center", gap: 4 },
   ratingBig: { fontSize: 36, fontWeight: "900", fontFamily: "Inter_700Bold", letterSpacing: -1 },
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
   ratingBarFill: { height: "100%", borderRadius: 3 },
   card: {
     backgroundColor: "white", borderRadius: 16, padding: 16, marginBottom: 12,
-    shadowColor: "#1E40AF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
+    shadowColor: "#B45309", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
   },
   cardHeader: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 14 },
   cardHeaderIcon: { width: 34, height: 34, borderRadius: 10, alignItems: "center", justifyContent: "center" },

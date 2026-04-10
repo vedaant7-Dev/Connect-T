@@ -14,9 +14,9 @@ import { useTabBarVisibility } from "@/context/TabBarVisibilityContext";
 
 const roleConfig = {
   citizen: {
-    label: "Citizen", subLabel: "नागरिक", icon: "user" as const,
-    color: "#2563EB", bg: "#EFF6FF",
-    grad: ["#1E3A8A", "#1E40AF", "#2563EB"] as [string, string, string],
+    label: "BJP Member", subLabel: "भाजपा सदस्य", icon: "user" as const,
+    color: "#EA580C", bg: "#FFF7ED",
+    grad: ["#7C2D12", "#C2410C", "#EA580C"] as [string, string, string],
   },
   nagarsevak: {
     label: "Nagarsevak", subLabel: "नगरसेवक", icon: "briefcase" as const,
@@ -62,20 +62,20 @@ export default function ProfileScreen() {
     return (
       <View style={styles.root}>
         <LinearGradient
-          colors={["#1E3A8A", "#1E40AF", "#2563EB"]}
+          colors={["#7C2D12", "#C2410C", "#EA580C"]}
           style={[styles.header, { paddingTop: topPad + 12, alignItems: "center", paddingBottom: 48 }]}
         >
           <View style={styles.guestIcon}>
-            <Feather name="user" size={36} color="#3B82F6" />
+            <Feather name="user" size={36} color="#EA580C" />
           </View>
-          <Text style={[styles.userName, { textAlign: "center", marginTop: 14 }]}>Welcome to JanSeva</Text>
+          <Text style={[styles.userName, { textAlign: "center", marginTop: 14 }]}>Welcome to Connect T</Text>
           <Text style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", fontFamily: "Inter_400Regular", marginTop: 4 }}>
             Login to access your profile
           </Text>
         </LinearGradient>
         <View style={{ padding: 20 }}>
           <TouchableOpacity style={styles.loginBtn} onPress={() => router.push("/login")} activeOpacity={0.85}>
-            <LinearGradient colors={["#1E40AF", "#2563EB"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.loginBtnGrad}>
+            <LinearGradient colors={["#B45309", "#EA580C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.loginBtnGrad}>
               <Feather name="log-in" size={18} color="white" />
               <Text style={styles.loginBtnText}>Login / Sign Up</Text>
             </LinearGradient>
@@ -187,7 +187,7 @@ export default function ProfileScreen() {
           <Text style={styles.sectionLabel}>QUICK ACTIONS</Text>
           <View style={styles.card}>
             {[
-              { icon: "edit-3" as const, label: "My Complaints", sub: "View and track all complaints", color: "#2563EB", bg: "#EFF6FF", onPress: () => router.push("/(tabs)/complaints") },
+              { icon: "edit-3" as const, label: "My Complaints", sub: "View and track all complaints", color: "#EA580C", bg: "#FFF7ED", onPress: () => router.push("/(tabs)/complaints") },
               { icon: "camera" as const, label: "Report Problem", sub: "Click a photo and raise complaint", color: "#059669", bg: "#ECFDF5", onPress: () => router.push("/complaint/new") },
               { icon: "rss" as const, label: "Community Feed", sub: "Ward updates & announcements", color: "#7C3AED", bg: "#F5F3FF", onPress: () => router.push("/(tabs)/feed") },
               { icon: "phone-call" as const, label: "Emergency", sub: "Quick access to help numbers", color: "#DC2626", bg: "#FEE2E2", onPress: () => router.push("/(tabs)/emergency") },
@@ -243,8 +243,8 @@ export default function ProfileScreen() {
               onPress={() => setShowLangModal(true)}
               activeOpacity={0.8}
             >
-              <View style={[styles.actionIcon, { backgroundColor: "#EFF6FF" }]}>
-                <Feather name="globe" size={16} color="#2563EB" />
+              <View style={[styles.actionIcon, { backgroundColor: "#FFF7ED" }]}>
+                <Feather name="globe" size={16} color="#EA580C" />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.actionLabel}>{t("changeLanguage")}</Text>
@@ -268,8 +268,8 @@ export default function ProfileScreen() {
                 onPress={() => Linking.openURL(link.url)}
                 activeOpacity={0.8}
               >
-                <View style={[styles.actionIcon, { backgroundColor: "#EFF6FF" }]}>
-                  <Feather name={link.icon} size={14} color="#2563EB" />
+                <View style={[styles.actionIcon, { backgroundColor: "#FFF7ED" }]}>
+                  <Feather name={link.icon} size={14} color="#EA580C" />
                 </View>
                 <Text style={[styles.actionLabel, { flex: 1 }]}>{link.label}</Text>
                 <Feather name="external-link" size={14} color="#94A3B8" />
@@ -280,9 +280,9 @@ export default function ProfileScreen() {
 
         {/* App Info */}
         <View style={styles.appInfoCard}>
-          <Text style={styles.appInfoBrand}>JanSeva</Text>
-          <Text style={styles.appInfoTagline}>नागरिक सेवा · Citizen Services Platform</Text>
-          <Text style={styles.appInfoVersion}>v1.0 · ULMC Ulhasnagar · 2025</Text>
+          <Text style={styles.appInfoBrand}>Connect T</Text>
+          <Text style={styles.appInfoTagline}>BJP Member Services · सबका साथ, सबका विकास</Text>
+          <Text style={styles.appInfoVersion}>v1.0 · Bharatiya Janata Party · 2025</Text>
         </View>
 
         {/* Logout */}
@@ -299,7 +299,7 @@ export default function ProfileScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalSheet}>
             <View style={styles.modalIconWrap}>
-              <Feather name="globe" size={28} color="#2563EB" />
+              <Feather name="globe" size={28} color="#EA580C" />
             </View>
             <Text style={styles.modalTitle}>{t("selectLanguage")}</Text>
             <View style={{ width: "100%", gap: 8, marginTop: 8 }}>
@@ -314,13 +314,13 @@ export default function ProfileScreen() {
                   activeOpacity={0.8}
                 >
                   <View style={{ flex: 1 }}>
-                    <Text style={[styles.langOptionLabel, language === opt.code && { color: "#2563EB" }]}>
+                    <Text style={[styles.langOptionLabel, language === opt.code && { color: "#EA580C" }]}>
                       {opt.nativeLabel}
                     </Text>
                     <Text style={styles.langOptionSub}>{opt.label}</Text>
                   </View>
                   {language === opt.code && (
-                    <Feather name="check-circle" size={20} color="#2563EB" />
+                    <Feather name="check-circle" size={20} color="#EA580C" />
                   )}
                 </TouchableOpacity>
               ))}
@@ -344,7 +344,7 @@ export default function ProfileScreen() {
               <Feather name="log-out" size={28} color="#DC2626" />
             </View>
             <Text style={styles.modalTitle}>Logout</Text>
-            <Text style={styles.modalBody}>Are you sure you want to logout from JanSeva?</Text>
+            <Text style={styles.modalBody}>Are you sure you want to logout from Connect T?</Text>
             <View style={styles.modalBtnRow}>
               <TouchableOpacity
                 style={styles.modalCancelBtn}
@@ -397,7 +397,7 @@ const styles = StyleSheet.create({
   content: { padding: 16, gap: 0 },
   section: { marginBottom: 20 },
   sectionLabel: { fontSize: 10, fontWeight: "700", color: "#94A3B8", letterSpacing: 1.2, fontFamily: "Inter_600SemiBold", marginBottom: 8, paddingLeft: 2 },
-  card: { backgroundColor: "white", borderRadius: 18, overflow: "hidden", shadowColor: "#1E40AF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
+  card: { backgroundColor: "white", borderRadius: 18, overflow: "hidden", shadowColor: "#B45309", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
   actionRow: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 14, gap: 12 },
   rowBorder: { borderBottomWidth: 1, borderBottomColor: "#F8FAFC" },
   actionIcon: { width: 38, height: 38, borderRadius: 11, alignItems: "center", justifyContent: "center", flexShrink: 0 },
@@ -408,8 +408,8 @@ const styles = StyleSheet.create({
   adminCardIcon: { width: 48, height: 48, borderRadius: 14, backgroundColor: "rgba(255,255,255,0.18)", alignItems: "center", justifyContent: "center", flexShrink: 0 },
   adminCardTitle: { fontSize: 15, fontWeight: "800", color: "white", fontFamily: "Inter_700Bold" },
   adminCardSub: { fontSize: 11, color: "rgba(255,255,255,0.65)", fontFamily: "Inter_400Regular", marginTop: 2 },
-  appInfoCard: { backgroundColor: "white", borderRadius: 18, padding: 20, alignItems: "center", marginBottom: 16, shadowColor: "#1E40AF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 6, elevation: 1 },
-  appInfoBrand: { fontSize: 22, fontWeight: "900", color: "#1E40AF", fontFamily: "Inter_700Bold", letterSpacing: -0.5 },
+  appInfoCard: { backgroundColor: "white", borderRadius: 18, padding: 20, alignItems: "center", marginBottom: 16, shadowColor: "#B45309", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 6, elevation: 1 },
+  appInfoBrand: { fontSize: 22, fontWeight: "900", color: "#C2410C", fontFamily: "Inter_700Bold", letterSpacing: -0.5 },
   appInfoTagline: { fontSize: 12, color: "#64748B", fontFamily: "Inter_400Regular", marginTop: 4, textAlign: "center" },
   appInfoVersion: { fontSize: 10, color: "#94A3B8", fontFamily: "Inter_400Regular", marginTop: 6 },
   logoutBtn: { backgroundColor: "#FEE2E2", borderRadius: 16, borderWidth: 1.5, borderColor: "#FECACA", marginBottom: 8 },
@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8FAFC", borderWidth: 1.5, borderColor: "#F1F5F9",
   },
   langOptionActive: {
-    backgroundColor: "#EFF6FF", borderColor: "#BFDBFE",
+    backgroundColor: "#FFF7ED", borderColor: "#FED7AA",
   },
   langOptionLabel: {
     fontSize: 15, fontWeight: "700", color: "#0F172A", fontFamily: "Inter_700Bold",

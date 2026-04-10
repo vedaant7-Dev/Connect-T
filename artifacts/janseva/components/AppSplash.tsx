@@ -14,20 +14,16 @@ interface AppSplashProps {
 export function AppSplash({ onFinish }: AppSplashProps) {
   return (
     <View style={styles.container}>
-      {/* Smooth gradient background */}
       <LinearGradient
-        colors={["#0F1D42", "#1E3A8A", "#2563EB", "#3B82F6", "#60A5FA"]}
+        colors={["#431407", "#7C2D12", "#C2410C", "#EA580C", "#F97316"]}
         locations={[0, 0.2, 0.5, 0.78, 1]}
         style={StyleSheet.absoluteFill}
       />
 
-      {/* Decorative arc rings */}
       <View style={[styles.ring, styles.ringOuter]} />
       <View style={[styles.ring, styles.ringInner]} />
 
-      {/* ── Centre content ── */}
       <View style={styles.centre}>
-        {/* Logo */}
         <View style={styles.logoWrap}>
           <View style={styles.logoGlow} />
           <Image
@@ -37,41 +33,38 @@ export function AppSplash({ onFinish }: AppSplashProps) {
           />
         </View>
 
-        {/* Taglines */}
+        <Text style={styles.appName}>Connect T</Text>
+
         <View style={styles.taglineWrap}>
-          <Text style={styles.taglineEn}>Citizen Services Platform</Text>
-          <Text style={styles.taglineHi}>नागरिकों की सेवा में</Text>
+          <Text style={styles.taglineEn}>BJP Member Services Platform</Text>
+          <Text style={styles.taglineHi}>सबका साथ, सबका विकास</Text>
         </View>
 
-        {/* Powered by */}
-        <Text style={styles.poweredBy}>Powered by VBA Party</Text>
+        <Text style={styles.poweredBy}>Powered by BJP</Text>
       </View>
 
-      {/* ── Footer: flag + stamp + Continue button ── */}
       <View style={styles.footer}>
-        {/* Indian flag stripes */}
         <View style={styles.flagRow}>
           <View style={[styles.stripe, { backgroundColor: "#F97316" }]} />
-          <View style={[styles.stripe, { backgroundColor: "rgba(255,255,255,0.75)" }]} />
+          <View style={[styles.stripe, { backgroundColor: "rgba(255,255,255,0.85)" }]} />
           <View style={[styles.stripe, { backgroundColor: "#22C55E" }]} />
         </View>
-        <Text style={styles.footerText}>ULMC Ulhasnagar  ·  JanSeva 2025</Text>
+        <Text style={styles.footerText}>Bharatiya Janata Party  ·  Connect T 2025</Text>
 
-        {/* Continue button */}
         <TouchableOpacity
           style={styles.continueBtn}
           onPress={onFinish}
           activeOpacity={0.82}
         >
           <LinearGradient
-            colors={["rgba(255,255,255,0.14)", "rgba(255,255,255,0.22)"]}
+            colors={["rgba(255,255,255,0.18)", "rgba(255,255,255,0.28)"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.continueBtnGrad}
           >
             <Text style={styles.continueBtnText}>Continue</Text>
             <View style={styles.continueBtnIcon}>
-              <Feather name="arrow-right" size={18} color="#1E3A8A" />
+              <Feather name="arrow-right" size={18} color="#C2410C" />
             </View>
           </LinearGradient>
         </TouchableOpacity>
@@ -94,7 +87,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     borderRadius: 9999,
     borderWidth: 1,
-    borderColor: "rgba(99,146,234,0.13)",
+    borderColor: "rgba(251,146,60,0.18)",
   },
   ringOuter: {
     width: width * 1.6,
@@ -121,12 +114,23 @@ const styles = StyleSheet.create({
     width: 220,
     height: 220,
     borderRadius: 110,
-    backgroundColor: "#3B82F6",
-    opacity: 0.13,
+    backgroundColor: "#F97316",
+    opacity: 0.18,
   },
   logoImg: {
     width: 190,
     height: 190,
+  },
+  appName: {
+    fontSize: 32,
+    fontWeight: "900",
+    color: "white",
+    fontFamily: "Inter_700Bold",
+    letterSpacing: -0.5,
+    marginBottom: 10,
+    textShadowColor: "rgba(0,0,0,0.3)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
   },
   taglineWrap: {
     alignItems: "center",
@@ -134,20 +138,20 @@ const styles = StyleSheet.create({
   },
   poweredBy: {
     fontSize: 11,
-    color: "rgba(255,255,255,0.4)",
+    color: "rgba(255,255,255,0.5)",
     fontFamily: "Inter_400Regular",
     letterSpacing: 0.5,
     marginTop: 16,
   },
   taglineEn: {
     fontSize: 15,
-    color: "rgba(255,255,255,0.6)",
+    color: "rgba(255,255,255,0.75)",
     fontFamily: "Inter_400Regular",
     letterSpacing: 0.8,
   },
   taglineHi: {
     fontSize: 13,
-    color: "rgba(255,255,255,0.35)",
+    color: "rgba(255,255,255,0.5)",
     fontFamily: "Inter_400Regular",
     letterSpacing: 1.5,
   },
@@ -163,7 +167,7 @@ const styles = StyleSheet.create({
   stripe: { width: 28, height: 3.5, borderRadius: 2 },
   footerText: {
     fontSize: 11,
-    color: "rgba(255,255,255,0.28)",
+    color: "rgba(255,255,255,0.35)",
     fontFamily: "Inter_400Regular",
     letterSpacing: 1.5,
     marginBottom: 8,
@@ -174,7 +178,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     overflow: "hidden",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.25)",
+    borderColor: "rgba(255,255,255,0.3)",
   },
   continueBtnGrad: {
     flexDirection: "row",

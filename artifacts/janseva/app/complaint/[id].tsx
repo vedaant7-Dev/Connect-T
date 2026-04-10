@@ -24,7 +24,7 @@ const statusLabelKeys: Record<ComplaintStatus, string> = {
 
 const statusConfig: Record<ComplaintStatus, { color: string; bg: string; icon: string }> = {
   submitted: { color: "#D97706", bg: "#FEF3C7", icon: "clock" },
-  assigned: { color: "#2563EB", bg: "#DBEAFE", icon: "user-check" },
+  assigned: { color: "#EA580C", bg: "#FFEDD5", icon: "user-check" },
   in_progress: { color: "#7C3AED", bg: "#EDE9FE", icon: "tool" },
   resolved: { color: "#059669", bg: "#D1FAE5", icon: "check-circle" },
   rejected: { color: "#DC2626", bg: "#FEE2E2", icon: "x-circle" },
@@ -40,7 +40,7 @@ const categoryConfig: Record<string, { icon: string; color: string; bg: string }
   water: { icon: "droplet", color: "#0369A1", bg: "#BAE6FD" },
   electricity: { icon: "zap", color: "#D97706", bg: "#FEF3C7" },
   garbage: { icon: "trash-2", color: "#059669", bg: "#D1FAE5" },
-  drainage: { icon: "git-merge", color: "#0EA5E9", bg: "#EFF6FF" },
+  drainage: { icon: "git-merge", color: "#0EA5E9", bg: "#FFF7ED" },
   streetlight: { icon: "sun", color: "#7C3AED", bg: "#EDE9FE" },
   encroachment: { icon: "alert-triangle", color: "#DC2626", bg: "#FEE2E2" },
   other: { icon: "more-horizontal", color: "#475569", bg: "#F1F5F9" },
@@ -89,7 +89,7 @@ export default function ComplaintDetailScreen() {
   return (
     <Animated.View style={[styles.root, { opacity: fadeAnim }]}>
       <LinearGradient
-        colors={fresh === "1" ? ["#065F46", "#047857", "#059669"] : ["#1E3A8A", "#1E40AF", "#2563EB"]}
+        colors={fresh === "1" ? ["#065F46", "#047857", "#059669"] : ["#7C2D12", "#B45309", "#EA580C"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: topPad + 12 }]}
@@ -144,8 +144,8 @@ export default function ComplaintDetailScreen() {
             <View style={styles.complainantDetails}>
               {complaint.userMobile ? (
                 <View style={styles.complainantRow}>
-                  <View style={[styles.complainantIcon, { backgroundColor: "#DBEAFE" }]}>
-                    <Feather name="phone" size={13} color="#2563EB" />
+                  <View style={[styles.complainantIcon, { backgroundColor: "#FFEDD5" }]}>
+                    <Feather name="phone" size={13} color="#EA580C" />
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.complainantLabel}>{t("phone")}</Text>
@@ -260,8 +260,8 @@ export default function ComplaintDetailScreen() {
           </View>
           <View style={styles.divider} />
           <View style={styles.detailRow}>
-            <View style={[styles.catIconWrap, { backgroundColor: "#EFF6FF" }]}>
-              <Feather name="map-pin" size={14} color="#2563EB" />
+            <View style={[styles.catIconWrap, { backgroundColor: "#FFF7ED" }]}>
+              <Feather name="map-pin" size={14} color="#EA580C" />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.detailLabel}>{t("location")}</Text>
@@ -271,8 +271,8 @@ export default function ComplaintDetailScreen() {
           </View>
           <View style={styles.divider} />
           <View style={styles.detailRow}>
-            <View style={[styles.catIconWrap, { backgroundColor: "#EFF6FF" }]}>
-              <Feather name="calendar" size={14} color="#2563EB" />
+            <View style={[styles.catIconWrap, { backgroundColor: "#FFF7ED" }]}>
+              <Feather name="calendar" size={14} color="#EA580C" />
             </View>
             <View>
               <Text style={styles.detailLabel}>{t("submittedOn")}</Text>
@@ -288,8 +288,8 @@ export default function ComplaintDetailScreen() {
             <>
               <View style={styles.divider} />
               <View style={styles.detailRow}>
-                <View style={[styles.catIconWrap, { backgroundColor: "#DBEAFE" }]}>
-                  <Feather name="user-check" size={14} color="#2563EB" />
+                <View style={[styles.catIconWrap, { backgroundColor: "#FFEDD5" }]}>
+                  <Feather name="user-check" size={14} color="#EA580C" />
                 </View>
                 <View>
                   <Text style={styles.detailLabel}>{t("assignedTo")}</Text>
@@ -387,7 +387,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     marginBottom: 14,
     backgroundColor: "white",
-    shadowColor: "#1E40AF",
+    shadowColor: "#B45309",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.07,
     shadowRadius: 8,
@@ -408,7 +408,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     padding: 16,
     marginBottom: 12,
-    shadowColor: "#1E40AF",
+    shadowColor: "#B45309",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.07,
     shadowRadius: 8,
@@ -439,7 +439,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     padding: 16,
     marginBottom: 12,
-    shadowColor: "#1E40AF",
+    shadowColor: "#B45309",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.07,
     shadowRadius: 8,
@@ -466,7 +466,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     padding: 16,
     marginBottom: 12,
-    shadowColor: "#1E40AF",
+    shadowColor: "#B45309",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.07,
     shadowRadius: 8,
@@ -494,7 +494,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     padding: 16,
     marginBottom: 12,
-    shadowColor: "#1E40AF",
+    shadowColor: "#B45309",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.07,
     shadowRadius: 8,
@@ -505,7 +505,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: "#2563EB",
+    backgroundColor: "#EA580C",
     alignItems: "center",
     justifyContent: "center",
   },

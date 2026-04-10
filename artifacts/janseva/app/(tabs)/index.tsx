@@ -18,7 +18,7 @@ import { useLanguage } from "@/context/LanguageContext";
 
 const alertsAndNews = [
   { id: "1", type: "alert", icon: "alert-triangle", color: "#DC2626", bg: "#FEE2E2", title: "Water Supply Restricted", body: "Camp 4 area: Supply from 8AM–2PM only today. Store water in advance.", detail: "Due to maintenance work on the main pipeline near Camp 4, water supply will be restricted from 8AM to 2PM today (27-Apr-2025). Residents are advised to store water in advance. The Ulhasnagar Municipal Corporation (ULMC) Water Department is working to restore full supply by evening. For complaints, contact the ULMC helpline at 0251-2721100.", source: "ULMC Water Dept.", date: "27 Apr 2025", time: "2h ago" },
-  { id: "2", type: "news", icon: "info", color: "#2563EB", bg: "#DBEAFE", title: "Road Repair Notice", body: "Station Road, Camp 4 repair from 26-Apr to 30-Apr. Expect delays.", detail: "The ULMC Road Division has started repair and resurfacing work on Station Road, Camp 4 (from Ambernath Junction to Camp 4 Market). Work will continue from 26-Apr to 30-Apr 2025. Heavy vehicles are restricted during 9AM-6PM. Commuters are advised to use alternate routes via Manpada Road. The estimated cost of repair is Rs 45 Lakhs under the Smart City Mission.", source: "ULMC Road Division", date: "25 Apr 2025", time: "5h ago" },
+  { id: "2", type: "news", icon: "info", color: "#EA580C", bg: "#FFEDD5", title: "Road Repair Notice", body: "Station Road, Camp 4 repair from 26-Apr to 30-Apr. Expect delays.", detail: "The ULMC Road Division has started repair and resurfacing work on Station Road, Camp 4 (from Ambernath Junction to Camp 4 Market). Work will continue from 26-Apr to 30-Apr 2025. Heavy vehicles are restricted during 9AM-6PM. Commuters are advised to use alternate routes via Manpada Road. The estimated cost of repair is Rs 45 Lakhs under the Smart City Mission.", source: "ULMC Road Division", date: "25 Apr 2025", time: "5h ago" },
   { id: "3", type: "alert", icon: "zap", color: "#D97706", bg: "#FEF3C7", title: "Planned Power Cut", body: "Camp 2 & Camp 3: 10AM–4PM on 27-Apr for transformer upgrade.", detail: "MSEDCL has scheduled a planned power outage in Camp 2 and Camp 3 areas on 27-Apr-2025 from 10AM to 4PM for upgrading the 132KV transformer at Camp 2 substation. This upgrade will improve power supply reliability for over 15,000 households. Hospitals and emergency services will have backup generator arrangements. For updates, call MSEDCL helpline 1912.", source: "MSEDCL Ulhasnagar", date: "26 Apr 2025", time: "Yesterday" },
   { id: "4", type: "news", icon: "calendar", color: "#059669", bg: "#D1FAE5", title: "Cleanliness Drive", body: "ULMC Swachh Ulhasnagar drive this Sunday 7AM — Camp 4 Municipal Ground.", detail: "ULMC is organizing a Swachh Ulhasnagar Cleanliness Drive this Sunday (28-Apr-2025) starting at 7AM from Camp 4 Municipal Ground. All citizens are invited to participate. Free gloves, masks, and cleaning equipment will be provided. Nagarsevaks from all 14 wards will lead teams. Refreshments will be served. Special awards for the cleanest ward will be announced. Register at the ULMC office or call 0251-2721100.", source: "ULMC Swachh Bharat Cell", date: "25 Apr 2025", time: "1d ago" },
   { id: "5", type: "alert", icon: "cloud-drizzle", color: "#7C3AED", bg: "#EDE9FE", title: "Heavy Rain Warning", body: "IMD: Orange alert for Thane district on 28-Apr. Avoid low-lying areas.", detail: "The India Meteorological Department (IMD) has issued an Orange Alert for Thane district including Ulhasnagar on 28-Apr-2025. Heavy to very heavy rainfall (115-204 mm) is expected. Citizens in low-lying areas near Ulhas River and Waldhuni River are advised to stay alert. NDRF teams are on standby. Avoid waterlogged roads. Emergency helplines: ULMC Control Room 0251-2721100, Fire Brigade 101, Police 100.", source: "IMD Mumbai & ULMC Disaster Cell", date: "27 Apr 2025", time: "3h ago" },
@@ -28,7 +28,7 @@ const quickServices = [
   { id: "hospital", label: "Hospitals", icon: "activity", color: "#DC2626", bg: "#FEE2E2" },
   { id: "childHospital", label: "Child Care", icon: "heart", color: "#7C3AED", bg: "#EDE9FE" },
   { id: "clinic", label: "Clinics", icon: "plus-circle", color: "#059669", bg: "#D1FAE5" },
-  { id: "police", label: "Police", icon: "shield", color: "#1E40AF", bg: "#DBEAFE" },
+  { id: "police", label: "Police", icon: "shield", color: "#B45309", bg: "#FFEDD5" },
   { id: "bank", label: "Banks", icon: "credit-card", color: "#D97706", bg: "#FEF3C7" },
   { id: "postOffice", label: "Post Office", icon: "mail", color: "#0EA5E9", bg: "#BAE6FD" },
   { id: "school", label: "Schools", icon: "book-open", color: "#7C3AED", bg: "#EDE9FE" },
@@ -37,7 +37,7 @@ const quickServices = [
 
 const statusConfig: Record<ComplaintStatus, { label: string; color: string; bg: string; icon: string }> = {
   submitted: { label: "Submitted", color: "#D97706", bg: "#FEF3C7", icon: "clock" },
-  assigned: { label: "Assigned", color: "#2563EB", bg: "#DBEAFE", icon: "user-check" },
+  assigned: { label: "Assigned", color: "#EA580C", bg: "#FFEDD5", icon: "user-check" },
   in_progress: { label: "In Progress", color: "#7C3AED", bg: "#EDE9FE", icon: "tool" },
   resolved: { label: "Resolved", color: "#059669", bg: "#D1FAE5", icon: "check-circle" },
   rejected: { label: "Rejected", color: "#DC2626", bg: "#FEE2E2", icon: "x-circle" },
@@ -57,7 +57,7 @@ function getGreetingKey(): string {
 
 function getRoleColor(role?: string) {
   if (role === "nagarsevak") return { bg: "#ECFDF5", text: "#059669", border: "#A7F3D0" };
-  return { bg: "#EFF6FF", text: "#2563EB", border: "#BFDBFE" };
+  return { bg: "#FFF7ED", text: "#EA580C", border: "#FED7AA" };
 }
 
 function getRoleLabelKey(role?: string) {
@@ -99,7 +99,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={["#1E3A8A", "#1E40AF", "#2563EB", "#3B82F6"]}
+        colors={["#7C2D12", "#B45309", "#C2410C", "#EA580C"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: topPad + 12 }]}
@@ -152,7 +152,7 @@ export default function HomeScreen() {
       >
         {/* REPORT A PROBLEM CTA */}
         <TouchableOpacity style={styles.complaintCTA} onPress={() => router.push("/complaint/new")} activeOpacity={0.88}>
-          <LinearGradient colors={["#1E3A8A", "#2563EB", "#3B82F6"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.complaintCTAGrad}>
+          <LinearGradient colors={["#7C2D12", "#C2410C", "#EA580C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.complaintCTAGrad}>
             <View style={styles.complaintCTAIcon}>
               <Feather name="camera" size={24} color="white" />
             </View>
@@ -183,10 +183,10 @@ export default function HomeScreen() {
             <Text style={styles.statLabel}>{t("resolved")}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.statCard} onPress={() => router.push("/(tabs)/feed")} activeOpacity={0.8}>
-            <View style={[styles.statIcon, { backgroundColor: "#DBEAFE" }]}>
-              <Feather name="rss" size={16} color="#2563EB" />
+            <View style={[styles.statIcon, { backgroundColor: "#FFEDD5" }]}>
+              <Feather name="rss" size={16} color="#EA580C" />
             </View>
-            <Text style={[styles.statNum, { color: "#2563EB" }]}>{t("feed")}</Text>
+            <Text style={[styles.statNum, { color: "#EA580C" }]}>{t("feed")}</Text>
             <Text style={styles.statLabel}>{t("community")}</Text>
           </TouchableOpacity>
           {user?.role === "nagarsevak" && (
@@ -266,7 +266,7 @@ export default function HomeScreen() {
           </View>
         ) : (
           <TouchableOpacity style={styles.noComplaintsCard} onPress={() => router.push("/complaint/new")} activeOpacity={0.8}>
-            <Feather name="camera" size={24} color="#2563EB" />
+            <Feather name="camera" size={24} color="#EA580C" />
             <Text style={styles.noComplaintsText}>{t("tapToReport")}</Text>
           </TouchableOpacity>
         )}
@@ -274,7 +274,7 @@ export default function HomeScreen() {
         {/* UTILITY STATUS */}
         <SectionHeader title={t("utilityStatus")} />
         <View style={styles.utilityRow}>
-          <UtilityCard title={t("waterSupply")} value="14" unit={t("hoursDay")} status={t("reduced")} statusOk={false} icon="droplet" gradColors={["#0EA5E9", "#2563EB"]} lastUpdated="2 hrs ago" onPress={() => setSelectedUtility("water")} />
+          <UtilityCard title={t("waterSupply")} value="14" unit={t("hoursDay")} status={t("reduced")} statusOk={false} icon="droplet" gradColors={["#0EA5E9", "#EA580C"]} lastUpdated="2 hrs ago" onPress={() => setSelectedUtility("water")} />
           <UtilityCard title={t("electricity")} value="24" unit={t("hoursDay")} status={t("normal")} statusOk={true} icon="zap" gradColors={["#F59E0B", "#D97706"]} lastUpdated="30 min ago" onPress={() => setSelectedUtility("electricity")} />
         </View>
 
@@ -318,7 +318,7 @@ export default function HomeScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalSheet}>
             <View style={styles.notifHeader}>
-              <Feather name="bell" size={20} color="#2563EB" />
+              <Feather name="bell" size={20} color="#EA580C" />
               <Text style={styles.modalTitle}>{t("alertsAndNews")}</Text>
             </View>
             <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 420, width: "100%" }}>
@@ -487,18 +487,18 @@ const styles = StyleSheet.create({
   alertBody: { fontSize: 11, color: "rgba(255,255,255,0.7)", fontFamily: "Inter_400Regular", lineHeight: 15 },
   scroll: { flex: 1 },
   content: { padding: 16 },
-  complaintCTA: { borderRadius: 20, overflow: "hidden", marginBottom: 12, shadowColor: "#1E40AF", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.25, shadowRadius: 14, elevation: 6 },
+  complaintCTA: { borderRadius: 20, overflow: "hidden", marginBottom: 12, shadowColor: "#B45309", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.25, shadowRadius: 14, elevation: 6 },
   complaintCTAGrad: { flexDirection: "row", alignItems: "center", padding: 18, gap: 14 },
   complaintCTAIcon: { width: 52, height: 52, borderRadius: 16, backgroundColor: "rgba(255,255,255,0.18)", alignItems: "center", justifyContent: "center", flexShrink: 0 },
   complaintCTATitle: { fontSize: 16, fontWeight: "800", color: "white", fontFamily: "Inter_700Bold" },
   complaintCTASub: { fontSize: 11, color: "rgba(255,255,255,0.7)", fontFamily: "Inter_400Regular", marginTop: 2 },
   complaintCTAArrow: { width: 34, height: 34, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.18)", alignItems: "center", justifyContent: "center" },
   statsRow: { flexDirection: "row", gap: 10, marginBottom: 18 },
-  statCard: { flex: 1, backgroundColor: "#FFFFFF", borderRadius: 16, padding: 12, alignItems: "center", gap: 4, shadowColor: "#1E40AF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
+  statCard: { flex: 1, backgroundColor: "#FFFFFF", borderRadius: 16, padding: 12, alignItems: "center", gap: 4, shadowColor: "#B45309", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
   statIcon: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center", marginBottom: 2 },
   statNum: { fontSize: 16, fontWeight: "900", fontFamily: "Inter_700Bold" },
   statLabel: { fontSize: 8, color: "#94A3B8", fontFamily: "Inter_500Medium", fontWeight: "600", textAlign: "center" },
-  complaintsCard: { backgroundColor: "#FFFFFF", borderRadius: 18, overflow: "hidden", marginBottom: 18, shadowColor: "#1E40AF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
+  complaintsCard: { backgroundColor: "#FFFFFF", borderRadius: 18, overflow: "hidden", marginBottom: 18, shadowColor: "#B45309", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
   complaintRow: { flexDirection: "row", alignItems: "center", paddingHorizontal: 14, paddingVertical: 12, gap: 10 },
   complaintRowBorder: { borderBottomWidth: 1, borderBottomColor: "#F1F5F9" },
   complaintRowIcon: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center", flexShrink: 0 },
@@ -507,10 +507,10 @@ const styles = StyleSheet.create({
   complaintRowLocation: { fontSize: 11, color: "#94A3B8", fontFamily: "Inter_400Regular", marginTop: 1 },
   complaintRowStatus: { flexDirection: "row", alignItems: "center", gap: 3, paddingHorizontal: 7, paddingVertical: 3, borderRadius: 20, flexShrink: 0 },
   complaintRowStatusText: { fontSize: 9, fontWeight: "700", fontFamily: "Inter_600SemiBold" },
-  noComplaintsCard: { backgroundColor: "#EFF6FF", borderRadius: 16, padding: 20, alignItems: "center", gap: 8, marginBottom: 18, borderWidth: 1, borderColor: "#DBEAFE", borderStyle: "dashed" },
-  noComplaintsText: { fontSize: 13, color: "#2563EB", fontFamily: "Inter_500Medium", fontWeight: "600" },
+  noComplaintsCard: { backgroundColor: "#FFF7ED", borderRadius: 16, padding: 20, alignItems: "center", gap: 8, marginBottom: 18, borderWidth: 1, borderColor: "#FFEDD5", borderStyle: "dashed" },
+  noComplaintsText: { fontSize: 13, color: "#EA580C", fontFamily: "Inter_500Medium", fontWeight: "600" },
   utilityRow: { flexDirection: "row", gap: 10, marginBottom: 18 },
-  servicesCard: { backgroundColor: "#FFFFFF", borderRadius: 18, padding: 16, marginBottom: 18, shadowColor: "#1E40AF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
+  servicesCard: { backgroundColor: "#FFFFFF", borderRadius: 18, padding: 16, marginBottom: 18, shadowColor: "#B45309", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
   servicesGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -538,7 +538,7 @@ const styles = StyleSheet.create({
     lineHeight: 13,
   },
   emergencyGrid: { flexDirection: "row", gap: 10, marginBottom: 10 },
-  emergencyItem: { flex: 1, backgroundColor: "#FFFFFF", borderRadius: 16, padding: 12, alignItems: "center", gap: 4, shadowColor: "#1E40AF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
+  emergencyItem: { flex: 1, backgroundColor: "#FFFFFF", borderRadius: 16, padding: 12, alignItems: "center", gap: 4, shadowColor: "#B45309", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6, elevation: 2 },
   emergencyIconBox: { width: 44, height: 44, borderRadius: 14, alignItems: "center", justifyContent: "center", marginBottom: 2 },
   emergencyName: { fontSize: 9, fontWeight: "700", color: "#475569", textAlign: "center", fontFamily: "Inter_600SemiBold" },
   emergencyNumber: { fontSize: 14, fontWeight: "900", fontFamily: "Inter_700Bold" },
@@ -550,7 +550,7 @@ const styles = StyleSheet.create({
   alertsLivePill: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: "#FEE2E2", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 },
   alertsLiveDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: "#DC2626" },
   alertsLiveText: { fontSize: 9, fontWeight: "900", color: "#DC2626", fontFamily: "Inter_700Bold", letterSpacing: 1 },
-  alertCard: { width: 230, backgroundColor: "white", borderRadius: 16, overflow: "hidden", shadowColor: "#1E40AF", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3, borderWidth: 1, borderColor: "#F1F5F9" },
+  alertCard: { width: 230, backgroundColor: "white", borderRadius: 16, overflow: "hidden", shadowColor: "#B45309", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3, borderWidth: 1, borderColor: "#F1F5F9" },
   alertCardIcon: { padding: 14, paddingBottom: 0, alignSelf: "flex-start" },
   alertCardBody: { padding: 12 },
   alertCardRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 6 },

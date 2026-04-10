@@ -206,7 +206,7 @@ export default function LoginScreen() {
   const renderOtpInput = () => (
     <View style={s.otpSection}>
       <View style={s.otpIconWrap}>
-        <Feather name="smartphone" size={28} color="#2563EB" />
+        <Feather name="smartphone" size={28} color="#EA580C" />
       </View>
       <Text style={s.otpTitle}>{t("otpVerification")}</Text>
       <Text style={s.otpSub}>{t("otpSent")} +91 {activeTab === "register" ? regPhone : loginPhone}</Text>
@@ -240,7 +240,7 @@ export default function LoginScreen() {
         {loading ? (
           <ActivityIndicator color="white" />
         ) : (
-          <LinearGradient colors={["#1E40AF", "#2563EB"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.primaryBtnGrad}>
+          <LinearGradient colors={["#B45309", "#EA580C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.primaryBtnGrad}>
             <Text style={s.primaryBtnText}>{t("verifyOtp")}</Text>
             <Feather name="check" size={18} color="white" />
           </LinearGradient>
@@ -326,7 +326,7 @@ export default function LoginScreen() {
         onPress={() => setWardModal(true)}
         activeOpacity={0.8}
       >
-        <Feather name="map-pin" size={14} color={regWard ? "#2563EB" : "#94A3B8"} />
+        <Feather name="map-pin" size={14} color={regWard ? "#EA580C" : "#94A3B8"} />
         <Text style={[s.pickerText, !regWard && { color: "#94A3B8" }]}>
           {regWard || t("selectWard")}
         </Text>
@@ -340,7 +340,7 @@ export default function LoginScreen() {
         onPress={handleRegisterSubmit}
         activeOpacity={0.85}
       >
-        <LinearGradient colors={["#1E40AF", "#2563EB"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.primaryBtnGrad}>
+        <LinearGradient colors={["#B45309", "#EA580C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.primaryBtnGrad}>
           <Text style={s.primaryBtnText}>{t("continue")}</Text>
           <Feather name="arrow-right" size={18} color="white" />
         </LinearGradient>
@@ -404,7 +404,7 @@ export default function LoginScreen() {
       </View>
       <Text style={s.successTitle}>{t("registrationSuccess")}</Text>
       <Text style={s.successSub}>{t("redirectingHome")}</Text>
-      <ActivityIndicator color="#2563EB" style={{ marginTop: 16 }} />
+      <ActivityIndicator color="#EA580C" style={{ marginTop: 16 }} />
     </Animated.View>
   );
 
@@ -446,7 +446,7 @@ export default function LoginScreen() {
         onPress={handleLoginSubmit}
         activeOpacity={0.85}
       >
-        <LinearGradient colors={["#1E40AF", "#2563EB"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.primaryBtnGrad}>
+        <LinearGradient colors={["#B45309", "#EA580C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.primaryBtnGrad}>
           <Text style={s.primaryBtnText}>{t("continue")}</Text>
           <Feather name="arrow-right" size={18} color="white" />
         </LinearGradient>
@@ -456,7 +456,7 @@ export default function LoginScreen() {
 
   return (
     <LinearGradient
-      colors={["#0F1D42", "#1E3A8A", "#2563EB", "#3B82F6"]}
+      colors={["#431407", "#7C2D12", "#C2410C", "#EA580C"]}
       locations={[0, 0.25, 0.65, 1]}
       style={[s.root, { paddingTop: topPad }]}
     >
@@ -498,7 +498,7 @@ export default function LoginScreen() {
               onPress={() => switchTab("register")}
               activeOpacity={0.8}
             >
-              <Feather name="user-plus" size={14} color={activeTab === "register" ? "#2563EB" : "#94A3B8"} />
+              <Feather name="user-plus" size={14} color={activeTab === "register" ? "#EA580C" : "#94A3B8"} />
               <Text style={[s.tabText, activeTab === "register" && s.tabTextActive]}>{t("registerBtn")}</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -506,7 +506,7 @@ export default function LoginScreen() {
               onPress={() => switchTab("login")}
               activeOpacity={0.8}
             >
-              <Feather name="log-in" size={14} color={activeTab === "login" ? "#2563EB" : "#94A3B8"} />
+              <Feather name="log-in" size={14} color={activeTab === "login" ? "#EA580C" : "#94A3B8"} />
               <Text style={[s.tabText, activeTab === "login" && s.tabTextActive]}>{t("loginBtn")}</Text>
             </TouchableOpacity>
           </View>
@@ -549,12 +549,12 @@ export default function LoginScreen() {
                   <Feather
                     name="map-pin"
                     size={14}
-                    color={regWard === ward ? "#2563EB" : "#94A3B8"}
+                    color={regWard === ward ? "#EA580C" : "#94A3B8"}
                   />
-                  <Text style={[s.wardRowText, regWard === ward && { color: "#2563EB", fontWeight: "700" }]}>
+                  <Text style={[s.wardRowText, regWard === ward && { color: "#EA580C", fontWeight: "700" }]}>
                     {ward}
                   </Text>
-                  {regWard === ward && <Feather name="check" size={14} color="#2563EB" />}
+                  {regWard === ward && <Feather name="check" size={14} color="#EA580C" />}
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -591,7 +591,7 @@ const s = StyleSheet.create({
   },
   tabActive: { backgroundColor: "white" },
   tabText: { fontSize: 14, fontWeight: "700", color: "rgba(255,255,255,0.6)", fontFamily: "Inter_700Bold" },
-  tabTextActive: { color: "#2563EB" },
+  tabTextActive: { color: "#EA580C" },
 
   formCard: {
     width: "100%", backgroundColor: "white", borderRadius: 20,
@@ -643,7 +643,7 @@ const s = StyleSheet.create({
     shadowOpacity: 0.15, shadowRadius: 24, elevation: 8,
   },
   otpIconWrap: {
-    width: 64, height: 64, borderRadius: 32, backgroundColor: "#EFF6FF",
+    width: 64, height: 64, borderRadius: 32, backgroundColor: "#FFF7ED",
     alignItems: "center", justifyContent: "center", marginBottom: 12,
   },
   otpTitle: {
@@ -663,7 +663,7 @@ const s = StyleSheet.create({
     textAlign: "center",
     textAlignVertical: "center",
   },
-  otpBoxFilled: { borderColor: "#2563EB", backgroundColor: "#EFF6FF" },
+  otpBoxFilled: { borderColor: "#EA580C", backgroundColor: "#FFF7ED" },
   otpHint: {
     fontSize: 11, color: "#94A3B8", fontFamily: "Inter_400Regular",
     marginBottom: 4,
@@ -680,7 +680,7 @@ const s = StyleSheet.create({
     width: 24, height: 24, borderRadius: 6, borderWidth: 2,
     borderColor: "#CBD5E1", alignItems: "center", justifyContent: "center",
   },
-  checkboxActive: { backgroundColor: "#2563EB", borderColor: "#2563EB" },
+  checkboxActive: { backgroundColor: "#EA580C", borderColor: "#EA580C" },
   checkLabel: { fontSize: 14, fontWeight: "700", color: "#0F172A", fontFamily: "Inter_600SemiBold" },
   checkSub: { fontSize: 11, color: "#94A3B8", fontFamily: "Inter_400Regular", marginTop: 1 },
 
@@ -723,7 +723,7 @@ const s = StyleSheet.create({
     paddingVertical: 14, paddingHorizontal: 12, borderRadius: 12,
     marginBottom: 4,
   },
-  wardRowActive: { backgroundColor: "#EFF6FF" },
+  wardRowActive: { backgroundColor: "#FFF7ED" },
   wardRowText: {
     flex: 1, fontSize: 14, color: "#334155", fontFamily: "Inter_400Regular",
   },

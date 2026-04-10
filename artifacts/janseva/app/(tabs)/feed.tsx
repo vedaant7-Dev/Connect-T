@@ -27,7 +27,7 @@ const postTypeConfig: Record<PostType, { color: string; bg: string; icon: string
   announcement: { color: "#DC2626", bg: "#FEE2E2", icon: "alert-circle" },
   update: { color: "#059669", bg: "#D1FAE5", icon: "check-circle" },
   complaint: { color: "#D97706", bg: "#FEF3C7", icon: "alert-triangle" },
-  general: { color: "#2563EB", bg: "#DBEAFE", icon: "message-circle" },
+  general: { color: "#EA580C", bg: "#FFEDD5", icon: "message-circle" },
 };
 
 const statusLabelKeys: Record<ComplaintStatus, string> = {
@@ -40,7 +40,7 @@ const statusLabelKeys: Record<ComplaintStatus, string> = {
 
 const statusConfig: Record<ComplaintStatus, { color: string; bg: string; icon: string }> = {
   submitted: { color: "#D97706", bg: "#FEF3C7", icon: "clock" },
-  assigned: { color: "#2563EB", bg: "#DBEAFE", icon: "user-check" },
+  assigned: { color: "#EA580C", bg: "#FFEDD5", icon: "user-check" },
   in_progress: { color: "#7C3AED", bg: "#EDE9FE", icon: "tool" },
   resolved: { color: "#059669", bg: "#D1FAE5", icon: "check-circle" },
   rejected: { color: "#DC2626", bg: "#FEE2E2", icon: "x-circle" },
@@ -51,7 +51,7 @@ const categoryConfig: Record<string, { icon: string; color: string; bg: string }
   water: { icon: "droplet", color: "#0369A1", bg: "#BAE6FD" },
   electricity: { icon: "zap", color: "#D97706", bg: "#FEF3C7" },
   garbage: { icon: "trash-2", color: "#059669", bg: "#D1FAE5" },
-  drainage: { icon: "git-merge", color: "#0EA5E9", bg: "#EFF6FF" },
+  drainage: { icon: "git-merge", color: "#0EA5E9", bg: "#FFF7ED" },
   streetlight: { icon: "sun", color: "#7C3AED", bg: "#EDE9FE" },
   encroachment: { icon: "alert-triangle", color: "#DC2626", bg: "#FEE2E2" },
   other: { icon: "more-horizontal", color: "#475569", bg: "#F1F5F9" },
@@ -63,10 +63,10 @@ const roleLabelKeys: Record<string, string> = {
 };
 
 const roleBadgeColor: Record<string, { bg: string; text: string }> = {
-  citizen: { bg: "#EFF6FF", text: "#2563EB" },
+  citizen: { bg: "#FFF7ED", text: "#EA580C" },
   nagarsevak: { bg: "#ECFDF5", text: "#059669" },
   "Nagarsevak": { bg: "#ECFDF5", text: "#059669" },
-  "Citizen": { bg: "#EFF6FF", text: "#2563EB" },
+  "Citizen": { bg: "#FFF7ED", text: "#EA580C" },
 };
 
 function timeAgo(dateStr: string): string {
@@ -207,8 +207,8 @@ function ComplaintCard({ complaint, onPress }: { complaint: Complaint; onPress: 
               <Feather name="share" size={15} color="#94A3B8" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.tweetAction} onPress={onPress} activeOpacity={0.8}>
-              <Feather name="arrow-right" size={15} color="#2563EB" />
-              <Text style={[styles.tweetActionText, { color: "#2563EB", fontSize: 11 }]}>{t("details")}</Text>
+              <Feather name="arrow-right" size={15} color="#EA580C" />
+              <Text style={[styles.tweetActionText, { color: "#EA580C", fontSize: 11 }]}>{t("details")}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -251,7 +251,7 @@ function NewPostModal({ visible, onClose, onSubmit, canPostAnnouncement }: { vis
               <Text style={modalStyles.cancelBtnText}>{t("cancel")}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[modalStyles.postBtn, !content.trim() && { opacity: 0.5 }]} onPress={() => { if (content.trim()) { onSubmit(content.trim(), type); onClose(); setContent(""); } }} disabled={!content.trim()} activeOpacity={0.85}>
-              <LinearGradient colors={["#1E40AF", "#2563EB"]} style={modalStyles.postBtnGrad}>
+              <LinearGradient colors={["#B45309", "#EA580C"]} style={modalStyles.postBtnGrad}>
                 <Feather name="send" size={14} color="white" />
                 <Text style={modalStyles.postBtnText}>{t("post")}</Text>
               </LinearGradient>
@@ -283,7 +283,7 @@ export default function FeedScreen() {
   const resolvedComplaints = complaints.filter((c) => c.status === "resolved" || c.status === "rejected");
 
   const handlePost = (content: string, type: PostType) => {
-    addPost(content, type, user?.name || "Anonymous", t(roleLabelKeys[user?.role || "citizen"]), user?.avatarColor || "#2563EB");
+    addPost(content, type, user?.name || "Anonymous", t(roleLabelKeys[user?.role || "citizen"]), user?.avatarColor || "#EA580C");
   };
 
   const tabs: { id: FeedTab; label: string; count?: number }[] = [
@@ -294,7 +294,7 @@ export default function FeedScreen() {
 
   return (
     <View style={styles.root}>
-      <LinearGradient colors={["#1E3A8A", "#1E40AF", "#2563EB"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.header, { paddingTop: topPad + 12 }]}>
+      <LinearGradient colors={["#7C2D12", "#B45309", "#EA580C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.header, { paddingTop: topPad + 12 }]}>
         <View style={styles.headerRow}>
           <View>
             <Text style={styles.headerTitle}>{t("communityFeed")}</Text>
@@ -325,7 +325,7 @@ export default function FeedScreen() {
 
       {loading ? (
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-          <ActivityIndicator color="#2563EB" size="large" />
+          <ActivityIndicator color="#EA580C" size="large" />
         </View>
       ) : activeTab === "posts" ? (
         <FlatList
@@ -388,14 +388,14 @@ export default function FeedScreen() {
 
       <View style={[styles.bottomComposeBar, { paddingBottom: Math.max(insets.bottom, 8) + 56 }]}>
         <TouchableOpacity style={styles.composeBarInner} onPress={() => setShowNewPost(true)} activeOpacity={0.85}>
-          {user && <Avatar name={user.name} color={user.avatarColor || "#2563EB"} size={36} />}
+          {user && <Avatar name={user.name} color={user.avatarColor || "#EA580C"} size={36} />}
           <Text style={styles.composePlaceholder}>{t("shareWithWard")}</Text>
           <View style={styles.composeActions}>
             <TouchableOpacity style={styles.composeIconBtn} onPress={() => setShowNewPost(true)} activeOpacity={0.8}>
               <Feather name="image" size={18} color="#94A3B8" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.composeSendBtn} onPress={() => setShowNewPost(true)} activeOpacity={0.85}>
-              <LinearGradient colors={["#1E40AF", "#2563EB"]} style={styles.composeSendGrad}>
+              <LinearGradient colors={["#B45309", "#EA580C"]} style={styles.composeSendGrad}>
                 <Feather name="send" size={14} color="white" />
               </LinearGradient>
             </TouchableOpacity>
