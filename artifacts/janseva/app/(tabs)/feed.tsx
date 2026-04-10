@@ -341,7 +341,7 @@ function SubscribeModal({ visible, onClose, onSubscribe }: { visible: boolean; o
             ))}
           </View>
           <TouchableOpacity style={subStyles.subscribeWrap} onPress={onSubscribe} activeOpacity={0.85}>
-            <LinearGradient colors={["#EA580C", "#FB923C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={subStyles.subscribeBtn}>
+            <LinearGradient colors={["#15803D", "#22C55E"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={subStyles.subscribeBtn}>
               <Feather name="zap" size={18} color="white" />
               <Text style={subStyles.subscribeBtnText}>Subscribe & Pay ₹199</Text>
             </LinearGradient>
