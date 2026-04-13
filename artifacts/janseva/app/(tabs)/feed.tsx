@@ -560,20 +560,30 @@ export default function FeedScreen() {
             <Text style={styles.blockedBannerText}>Posting blocked until {blockedUntil} · Community guideline violation</Text>
           </View>
         )}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabScroll} contentContainerStyle={styles.tabRow}>
-          {tabs.map((tab) => (
-            <TouchableOpacity
-              key={tab.id}
-              style={[styles.tab, activeTab === tab.id && styles.tabActive]}
-              onPress={() => setActiveTab(tab.id)}
-              activeOpacity={0.8}
-            >
-              <Text style={[styles.tabText, activeTab === tab.id && styles.tabTextActive]}>
-                {tab.label}{tab.count !== undefined && tab.count > 0 ? ` (${tab.count})` : ""}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        <View style={styles.tabRow}>
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <TouchableOpacity
+                key={tab.id}
+                style={[styles.tab, isActive && styles.tabActive]}
+                onPress={() => setActiveTab(tab.id)}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
+                  {tab.label}
+                </Text>
+                {tab.count !== undefined && tab.count > 0 && (
+                  <View style={[styles.tabBadge, isActive && styles.tabBadgeActive]}>
+                    <Text style={[styles.tabBadgeText, isActive && styles.tabBadgeTextActive]}>
+                      {tab.count}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </LinearGradient>
 
       {activeTab === "news" && (
@@ -645,25 +655,29 @@ export default function FeedScreen() {
               )}
               <View style={[styles.chatInputBar, { paddingBottom: Math.max(insets.bottom, 10) }]}>
                 <View style={styles.chatInputRow}>
-                  <TouchableOpacity style={styles.chatCameraBtn} activeOpacity={0.75} onPress={handlePickChatImage}>
-                    <Feather name="camera" size={20} color="#EA580C" />
+                  {/* Camera button — gradient circle like in the reference */}
+                  <TouchableOpacity onPress={handlePickChatImage} activeOpacity={0.8} style={styles.chatCameraWrap}>
+                    <LinearGradient colors={["#C2410C", "#EA580C", "#FB923C"]} style={styles.chatCameraGrad}>
+                      <Feather name="camera" size={18} color="white" />
+                    </LinearGradient>
                   </TouchableOpacity>
-                  <View style={[styles.chatInputCard, !!chatWarning && { borderColor: "#EF4444", borderWidth: 1.5 }]}>
+
+                  {/* Input pill */}
+                  <View style={[styles.chatInputPill, !!chatWarning && { borderColor: "#EF4444", borderWidth: 1.5 }]}>
                     <TextInput
                       style={styles.chatInput}
                       value={chatInput}
                       onChangeText={handleChatInputChange}
-                      placeholder="Type a message..."
-                      placeholderTextColor="#C4B5A5"
+                      placeholder="Message..."
+                      placeholderTextColor="#94A3B8"
                       returnKeyType="send"
                       onSubmitEditing={handleSendChat}
                       maxLength={300}
                       multiline
                     />
-                    <TouchableOpacity style={styles.chatEmojiBtn} activeOpacity={0.7}>
-                      <Text style={{ fontSize: 20 }}>😊</Text>
-                    </TouchableOpacity>
                   </View>
+
+                  {/* Right action icons */}
                   {chatInput.trim() ? (
                     <TouchableOpacity onPress={handleSendChat} style={styles.chatSendBtn} activeOpacity={0.85}>
                       <LinearGradient colors={["#C2410C", "#EA580C"]} style={styles.chatSendGrad}>
@@ -671,9 +685,17 @@ export default function FeedScreen() {
                       </LinearGradient>
                     </TouchableOpacity>
                   ) : (
-                    <TouchableOpacity style={styles.chatMicBtn} activeOpacity={0.75}>
-                      <Feather name="mic" size={20} color="#EA580C" />
-                    </TouchableOpacity>
+                    <View style={styles.chatIdleIcons}>
+                      <TouchableOpacity style={styles.chatIconBtn} activeOpacity={0.7}>
+                        <Feather name="mic" size={20} color="#64748B" />
+                      </TouchableOpacity>
+                      <TouchableOpacity style={styles.chatIconBtn} activeOpacity={0.7} onPress={handlePickChatImage}>
+                        <Feather name="image" size={20} color="#64748B" />
+                      </TouchableOpacity>
+                      <TouchableOpacity style={styles.chatIconBtn} activeOpacity={0.7}>
+                        <Text style={{ fontSize: 19 }}>🙂</Text>
+                      </TouchableOpacity>
+                    </View>
                   )}
                 </View>
               </View>
@@ -808,11 +830,51 @@ const styles = StyleSheet.create({
   blockedBanner: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "rgba(220,38,38,0.3)", borderRadius: 10, paddingHorizontal: 10, paddingVertical: 6, marginBottom: 10 },
   blockedBannerText: { fontSize: 11, color: "#FDE68A", fontFamily: "Inter_400Regular", flex: 1 },
   tabScroll: { flexGrow: 0 },
-  tabRow: { flexDirection: "row", borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.15)", gap: 4 },
-  tab: { paddingHorizontal: 14, paddingVertical: 12, alignItems: "center" },
-  tabActive: { borderBottomWidth: 2.5, borderBottomColor: "white" },
-  tabText: { fontSize: 13, fontWeight: "600", color: "rgba(255,255,255,0.5)", fontFamily: "Inter_600SemiBold" },
-  tabTextActive: { color: "white", fontFamily: "Inter_700Bold" },
+  tabRow: {
+    flexDirection: "row",
+    borderTopWidth: 1,
+    borderTopColor: "rgba(255,255,255,0.15)",
+    paddingTop: 10,
+    paddingBottom: 6,
+    paddingHorizontal: 12,
+    gap: 6,
+  },
+  tab: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 5,
+    paddingHorizontal: 8,
+    paddingVertical: 7,
+    borderRadius: 10,
+    backgroundColor: "rgba(255,255,255,0.12)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.15)",
+  },
+  tabActive: {
+    backgroundColor: "white",
+    borderColor: "white",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  tabText: { fontSize: 12, fontWeight: "600", color: "rgba(255,255,255,0.65)", fontFamily: "Inter_600SemiBold" },
+  tabTextActive: { color: "#C2410C", fontFamily: "Inter_700Bold" },
+  tabBadge: {
+    backgroundColor: "rgba(255,255,255,0.25)",
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 3,
+  },
+  tabBadgeActive: { backgroundColor: "#EA580C" },
+  tabBadgeText: { fontSize: 9, fontWeight: "700", color: "rgba(255,255,255,0.9)", fontFamily: "Inter_700Bold" },
+  tabBadgeTextActive: { color: "white" },
   list: { paddingTop: 8 },
   separator: { height: 1, backgroundColor: "#E2E8F0", marginLeft: 70 },
 
@@ -850,15 +912,42 @@ const styles = StyleSheet.create({
   bubbleTime: { fontSize: 10, color: "#94A3B8", fontFamily: "Inter_400Regular", marginTop: 4 },
   chatWarningBanner: { backgroundColor: "#FEF2F2", borderTopWidth: 1, borderTopColor: "#FECACA", paddingHorizontal: 14, paddingVertical: 8 },
   chatWarningText: { fontSize: 12, color: "#DC2626", fontFamily: "Inter_400Regular", lineHeight: 18 },
-  chatInputBar: { backgroundColor: "#FFF7ED", borderTopWidth: 1, borderTopColor: "#FED7AA", paddingHorizontal: 10, paddingTop: 10, shadowColor: "#C2410C", shadowOffset: { width: 0, height: -2 }, shadowOpacity: 0.06, shadowRadius: 6 },
+  chatInputBar: {
+    backgroundColor: "#FFFFFF",
+    borderTopWidth: 1,
+    borderTopColor: "#F1F5F9",
+    paddingHorizontal: 12,
+    paddingTop: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+  },
   chatInputRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  chatCameraBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#FFEDD5", alignItems: "center", justifyContent: "center" },
+  chatCameraWrap: { borderRadius: 22, overflow: "hidden", flexShrink: 0 },
+  chatCameraGrad: { width: 44, height: 44, borderRadius: 22, alignItems: "center", justifyContent: "center" },
+  chatCameraBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: "#FFEDD5", alignItems: "center", justifyContent: "center" },
+  chatInputPill: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F1F5F9",
+    borderRadius: 24,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    minHeight: 44,
+    maxHeight: 110,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
   chatInputCard: { flex: 1, flexDirection: "row", alignItems: "center", paddingLeft: 4, paddingRight: 6, paddingVertical: 6, minHeight: 42, maxHeight: 110 },
-  chatInput: { flex: 1, fontSize: 15, color: "#1C1917", fontFamily: "Inter_400Regular", lineHeight: 20, padding: 0, margin: 0, outlineWidth: 0, caretColor: "#EA580C" } as any,
+  chatInput: { flex: 1, fontSize: 15, color: "#0F172A", fontFamily: "Inter_400Regular", lineHeight: 20, padding: 0, margin: 0, outlineWidth: 0, caretColor: "#EA580C" } as any,
   chatEmojiBtn: { width: 32, height: 32, alignItems: "center", justifyContent: "center" },
-  chatSendBtn: { borderRadius: 20, overflow: "hidden" },
-  chatSendGrad: { width: 40, height: 40, borderRadius: 20, alignItems: "center", justifyContent: "center" },
-  chatMicBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#FFEDD5", alignItems: "center", justifyContent: "center" },
+  chatSendBtn: { borderRadius: 22, overflow: "hidden", flexShrink: 0 },
+  chatSendGrad: { width: 44, height: 44, borderRadius: 22, alignItems: "center", justifyContent: "center" },
+  chatMicBtn: { width: 44, height: 44, borderRadius: 22, backgroundColor: "#F1F5F9", alignItems: "center", justifyContent: "center" },
+  chatIdleIcons: { flexDirection: "row", alignItems: "center", gap: 2, flexShrink: 0 },
+  chatIconBtn: { width: 38, height: 38, alignItems: "center", justifyContent: "center" },
   chatIdleActions: { flexDirection: "row", alignItems: "center" },
   chatIdleBtn: { width: 38, height: 38, alignItems: "center", justifyContent: "center" },
 
