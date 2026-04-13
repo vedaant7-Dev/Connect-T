@@ -493,7 +493,27 @@ export default function FeedScreen() {
     setEditingText("");
   };
 
+  const [showCameraSheet, setShowCameraSheet] = useState(false);
+
+  const handleCameraPress = () => setShowCameraSheet(true);
+
+  const handleTakePhoto = async () => {
+    setShowCameraSheet(false);
+    if (Platform.OS === "web") {
+      Alert.alert("Camera", "Camera is not available in the browser. Please use Gallery instead.");
+      return;
+    }
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== "granted") { Alert.alert("Permission needed", "Camera access is required to take photos."); return; }
+    const result = await ImagePicker.launchCameraAsync({ allowsEditing: false, quality: 0.8 });
+    if (!result.canceled && result.assets[0]) {
+      const r = addChatMessage("📷 [Photo shared]", userId, user?.name || "Anonymous", user?.role || "citizen", user?.avatarColor || "#EA580C");
+      if (!r.success) setChatWarning("🚫 Unable to share photo at this time.");
+    }
+  };
+
   const handlePickChatImage = async () => {
+    setShowCameraSheet(false);
     if (Platform.OS !== "web") {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") { return; }
@@ -675,8 +695,8 @@ export default function FeedScreen() {
               )}
               <View style={[styles.chatInputBar, { paddingBottom: Math.max(insets.bottom, 10) }]}>
                 <View style={styles.chatInputRow}>
-                  {/* Camera button — gradient circle like in the reference */}
-                  <TouchableOpacity onPress={handlePickChatImage} activeOpacity={0.8} style={styles.chatCameraWrap}>
+                  {/* Camera button — opens camera/gallery sheet */}
+                  <TouchableOpacity onPress={handleCameraPress} activeOpacity={0.8} style={styles.chatCameraWrap}>
                     <LinearGradient colors={["#C2410C", "#EA580C", "#FB923C"]} style={styles.chatCameraGrad}>
                       <Feather name="camera" size={18} color="white" />
                     </LinearGradient>
@@ -705,17 +725,9 @@ export default function FeedScreen() {
                       </LinearGradient>
                     </TouchableOpacity>
                   ) : (
-                    <View style={styles.chatIdleIcons}>
-                      <TouchableOpacity style={styles.chatIconBtn} activeOpacity={0.7}>
-                        <Feather name="mic" size={20} color="#64748B" />
-                      </TouchableOpacity>
-                      <TouchableOpacity style={styles.chatIconBtn} activeOpacity={0.7} onPress={handlePickChatImage}>
-                        <Feather name="image" size={20} color="#64748B" />
-                      </TouchableOpacity>
-                      <TouchableOpacity style={styles.chatIconBtn} activeOpacity={0.7}>
-                        <Text style={{ fontSize: 19 }}>🙂</Text>
-                      </TouchableOpacity>
-                    </View>
+                    <TouchableOpacity style={styles.chatIconBtn} activeOpacity={0.7}>
+                      <Feather name="mic" size={20} color="#64748B" />
+                    </TouchableOpacity>
                   )}
                 </View>
               </View>
@@ -796,6 +808,33 @@ export default function FeedScreen() {
               </>
             )}
             <TouchableOpacity style={[styles.actionItem, { justifyContent: "center" }]} onPress={() => setShowMsgActions(false)}>
+              <Text style={[styles.actionItemText, { color: "#94A3B8" }]}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* Camera / Gallery picker sheet */}
+      <Modal visible={showCameraSheet} transparent animationType="fade" onRequestClose={() => setShowCameraSheet(false)}>
+        <TouchableOpacity style={styles.actionOverlay} activeOpacity={1} onPress={() => setShowCameraSheet(false)}>
+          <View style={[styles.actionSheet, { paddingBottom: 28 }]}>
+            <View style={styles.actionHandle} />
+            <Text style={[styles.editModalTitle, { marginBottom: 8 }]}>Add Photo</Text>
+            <TouchableOpacity style={styles.actionItem} onPress={handleTakePhoto} activeOpacity={0.8}>
+              <LinearGradient colors={["#C2410C", "#EA580C"]} style={{ width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center" }}>
+                <Feather name="camera" size={18} color="white" />
+              </LinearGradient>
+              <Text style={styles.actionItemText}>Take Photo</Text>
+            </TouchableOpacity>
+            <View style={styles.actionDivider} />
+            <TouchableOpacity style={styles.actionItem} onPress={handlePickChatImage} activeOpacity={0.8}>
+              <LinearGradient colors={["#EA580C", "#FB923C"]} style={{ width: 36, height: 36, borderRadius: 18, alignItems: "center", justifyContent: "center" }}>
+                <Feather name="image" size={18} color="white" />
+              </LinearGradient>
+              <Text style={styles.actionItemText}>Choose from Gallery</Text>
+            </TouchableOpacity>
+            <View style={styles.actionDivider} />
+            <TouchableOpacity style={[styles.actionItem, { justifyContent: "center" }]} onPress={() => setShowCameraSheet(false)}>
               <Text style={[styles.actionItemText, { color: "#94A3B8" }]}>Cancel</Text>
             </TouchableOpacity>
           </View>
