@@ -608,7 +608,11 @@ export default function FeedScreen() {
       )}
 
       {activeTab === "chat" && (
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined} keyboardVerticalOffset={topPad + 60}>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? topPad + 60 : 0}
+        >
           {userBlocked ? (
             <View style={styles.blockedScreen}>
               <Feather name="shield-off" size={48} color="#FCA5A5" />
@@ -627,52 +631,52 @@ export default function FeedScreen() {
                   onLongPress={() => handleMsgLongPress(item)}
                 />
               )}
-              contentContainerStyle={[styles.chatList, { paddingBottom: Math.max(insets.bottom, 8) + 60 + TAB_H }]}
+              contentContainerStyle={[styles.chatList, { paddingBottom: 8 }]}
               showsVerticalScrollIndicator={false}
               onContentSizeChange={() => chatRef.current?.scrollToEnd({ animated: false })}
             />
           )}
           {!userBlocked && (
-            <View style={{ position: "absolute", bottom: TAB_H, left: 0, right: 0 }}>
+            <View style={{ marginBottom: TAB_H }}>
               {!!chatWarning && (
                 <View style={styles.chatWarningBanner}>
                   <Text style={styles.chatWarningText}>{chatWarning}</Text>
                 </View>
               )}
-            <View style={[styles.chatInputBar, { paddingBottom: Math.max(insets.bottom, 10) }]}>
-              <View style={styles.chatInputRow}>
-                <TouchableOpacity style={styles.chatCameraBtn} activeOpacity={0.75} onPress={handlePickChatImage}>
-                  <Feather name="camera" size={20} color="#EA580C" />
-                </TouchableOpacity>
-                <View style={[styles.chatInputCard, !!chatWarning && { borderColor: "#EF4444", borderWidth: 1.5 }]}>
-                  <TextInput
-                    style={styles.chatInput}
-                    value={chatInput}
-                    onChangeText={handleChatInputChange}
-                    placeholder="Type a message..."
-                    placeholderTextColor="#C4B5A5"
-                    returnKeyType="send"
-                    onSubmitEditing={handleSendChat}
-                    maxLength={300}
-                    multiline
-                  />
-                  <TouchableOpacity style={styles.chatEmojiBtn} activeOpacity={0.7}>
-                    <Text style={{ fontSize: 20 }}>😊</Text>
+              <View style={[styles.chatInputBar, { paddingBottom: Math.max(insets.bottom, 10) }]}>
+                <View style={styles.chatInputRow}>
+                  <TouchableOpacity style={styles.chatCameraBtn} activeOpacity={0.75} onPress={handlePickChatImage}>
+                    <Feather name="camera" size={20} color="#EA580C" />
                   </TouchableOpacity>
+                  <View style={[styles.chatInputCard, !!chatWarning && { borderColor: "#EF4444", borderWidth: 1.5 }]}>
+                    <TextInput
+                      style={styles.chatInput}
+                      value={chatInput}
+                      onChangeText={handleChatInputChange}
+                      placeholder="Type a message..."
+                      placeholderTextColor="#C4B5A5"
+                      returnKeyType="send"
+                      onSubmitEditing={handleSendChat}
+                      maxLength={300}
+                      multiline
+                    />
+                    <TouchableOpacity style={styles.chatEmojiBtn} activeOpacity={0.7}>
+                      <Text style={{ fontSize: 20 }}>😊</Text>
+                    </TouchableOpacity>
+                  </View>
+                  {chatInput.trim() ? (
+                    <TouchableOpacity onPress={handleSendChat} style={styles.chatSendBtn} activeOpacity={0.85}>
+                      <LinearGradient colors={["#C2410C", "#EA580C"]} style={styles.chatSendGrad}>
+                        <Feather name="send" size={16} color="white" />
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity style={styles.chatMicBtn} activeOpacity={0.75}>
+                      <Feather name="mic" size={20} color="#EA580C" />
+                    </TouchableOpacity>
+                  )}
                 </View>
-                {chatInput.trim() ? (
-                  <TouchableOpacity onPress={handleSendChat} style={styles.chatSendBtn} activeOpacity={0.85}>
-                    <LinearGradient colors={["#7C2D12", "#EA580C"]} style={styles.chatSendGrad}>
-                      <Feather name="send" size={16} color="white" />
-                    </LinearGradient>
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity style={styles.chatMicBtn} activeOpacity={0.75}>
-                    <Feather name="mic" size={20} color="#EA580C" />
-                  </TouchableOpacity>
-                )}
               </View>
-            </View>
             </View>
           )}
         </KeyboardAvoidingView>
