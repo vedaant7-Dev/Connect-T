@@ -191,25 +191,31 @@ export default function ComplaintsScreen() {
           ))}
         </View>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
-          {filterTabs.map((tab) => (
-            <TouchableOpacity
-              key={tab.id}
-              onPress={() => setFilter(tab.id)}
-              style={[styles.filterChip, filter === tab.id && styles.filterChipActive]}
-              activeOpacity={0.8}
-            >
-              <Text style={[styles.filterChipText, filter === tab.id && styles.filterChipTextActive]}>
-                {tab.label}
-                {counts[tab.id as keyof typeof counts] !== undefined && (
-                  <Text style={[styles.filterChipCount, filter === tab.id && styles.filterChipTextActive]}>
-                    {" "}({counts[tab.id as keyof typeof counts]})
-                  </Text>
+        <View style={styles.filterRow}>
+          {filterTabs.map((tab) => {
+            const isActive = filter === tab.id;
+            const count = counts[tab.id as keyof typeof counts];
+            return (
+              <TouchableOpacity
+                key={tab.id}
+                onPress={() => setFilter(tab.id)}
+                style={[styles.filterChip, isActive && styles.filterChipActive]}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.filterChipText, isActive && styles.filterChipTextActive]}>
+                  {tab.label}
+                </Text>
+                {count !== undefined && count > 0 && (
+                  <View style={[styles.filterChipBadge, isActive && styles.filterChipBadgeActive]}>
+                    <Text style={[styles.filterChipBadgeText, isActive && styles.filterChipBadgeTextActive]}>
+                      {count}
+                    </Text>
+                  </View>
                 )}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </LinearGradient>
 
       <FlatList
@@ -273,17 +279,50 @@ const styles = StyleSheet.create({
   statItem: { flex: 1, alignItems: "center" },
   statCount: { fontSize: 24, fontWeight: "900", fontFamily: "Inter_700Bold" },
   statLabel: { fontSize: 10, color: "rgba(255,255,255,0.6)", fontFamily: "Inter_400Regular", marginTop: 2 },
-  filterRow: { gap: 8, paddingRight: 4, paddingBottom: 4 },
-  filterChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: "rgba(255,255,255,0.12)",
+  filterRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 8,
+    paddingBottom: 4,
   },
-  filterChipActive: { backgroundColor: "rgba(255,255,255,0.3)" },
-  filterChipText: { fontSize: 12, fontWeight: "700", color: "rgba(255,255,255,0.7)", fontFamily: "Inter_600SemiBold" },
-  filterChipTextActive: { color: "white" },
+  filterChip: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 12,
+    backgroundColor: "rgba(255,255,255,0.12)",
+    borderWidth: 1.5,
+    borderColor: "rgba(255,255,255,0.18)",
+  },
+  filterChipActive: {
+    backgroundColor: "white",
+    borderColor: "white",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  filterChipText: { fontSize: 12, fontWeight: "700", color: "rgba(255,255,255,0.75)", fontFamily: "Inter_600SemiBold" },
+  filterChipTextActive: { color: "#C2410C" },
   filterChipCount: { fontSize: 11 },
+  filterChipBadge: {
+    backgroundColor: "rgba(255,255,255,0.25)",
+    borderRadius: 10,
+    minWidth: 18,
+    height: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 4,
+  },
+  filterChipBadgeActive: { backgroundColor: "#EA580C" },
+  filterChipBadgeText: { fontSize: 10, fontWeight: "700", color: "rgba(255,255,255,0.9)", fontFamily: "Inter_700Bold" },
+  filterChipBadgeTextActive: { color: "white" },
   list: { padding: 14 },
   card: {
     backgroundColor: "#FFFFFF",
