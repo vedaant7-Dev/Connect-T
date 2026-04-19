@@ -130,10 +130,9 @@ export default function JobsHomeScreen() {
                 : `Hello, ${jobsUser?.name?.split(" ")[0] || "there"} 👋`}
             </Text>
           </View>
-          <View style={styles.headerBadge}>
-            <Feather name="briefcase" size={16} color="white" />
-            <Text style={styles.headerBadgeText}>{activeJobs.length}</Text>
-          </View>
+          <TouchableOpacity style={styles.headerBadge} activeOpacity={0.8}>
+            <Feather name="bell" size={18} color="white" />
+          </TouchableOpacity>
         </View>
 
         <TouchableOpacity
