@@ -36,7 +36,7 @@ export function AppSplash({ onFinish }: AppSplashProps) {
           <View style={styles.centre}>
             <View style={styles.logoWrap}>
               <Image
-                source={require("../assets/images/connectt-logo-v2-nobg.png")}
+                source={require("../assets/images/connectt-logo-v3.png")}
                 style={styles.logoImg}
                 resizeMode="contain"
               />
