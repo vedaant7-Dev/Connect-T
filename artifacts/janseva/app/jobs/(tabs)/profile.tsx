@@ -31,13 +31,14 @@ function Avatar({ user, size = 72 }: { user: any; size?: number }) {
 }
 
 function CompletionBar({ pct }: { pct: number }) {
-  const color = pct === 100 ? "#059669" : pct >= 60 ? "#EA580C" : "#DC2626";
+  const barColor = pct === 100 ? "#4ADE80" : pct >= 60 ? "#FCD34D" : "#FCA5A5";
+  const labelColor = "white";
   return (
     <View style={cs.barWrap}>
       <View style={cs.barTrack}>
-        <View style={[cs.barFill, { width: `${pct}%` as any, backgroundColor: color }]} />
+        <View style={[cs.barFill, { width: `${pct}%` as any, backgroundColor: barColor }]} />
       </View>
-      <Text style={[cs.barLabel, { color }]}>{pct}%</Text>
+      <Text style={[cs.barLabel, { color: labelColor }]}>{pct}%</Text>
     </View>
   );
 }
@@ -195,8 +196,8 @@ export default function JobsProfileScreen() {
               </Text>
             )}
             {completion === 100 && (
-              <Text style={[cs.completionHint, { color: "#059669" }]}>
-                🎉 Profile complete! Your resume is ready to generate.
+              <Text style={[cs.completionHint, { color: "white", fontFamily: "Inter_600SemiBold" }]}>
+                ✅ Profile complete! Your resume is ready to generate.
               </Text>
             )}
           </View>
