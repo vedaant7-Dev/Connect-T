@@ -39,9 +39,11 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     const inLogin = segments[0] === "login";
     const inTabs = segments[0] === "(tabs)";
     const inJobs = segments[0] === "jobs";
+    const inPortalSelect = segments[0] === "portal-select";
     const currentTab = inTabs ? segments[1] : undefined;
 
     if (inJobs) return;
+    if (inPortalSelect) return;
 
     if (!user && !inLogin) {
       router.replace("/login");
@@ -63,6 +65,7 @@ function RootLayoutNav() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="login" options={{ headerShown: false, animation: "fade" }} />
+      <Stack.Screen name="portal-select" options={{ headerShown: false, animation: "fade" }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="jobs" options={{ headerShown: false, animation: "fade" }} />
       <Stack.Screen

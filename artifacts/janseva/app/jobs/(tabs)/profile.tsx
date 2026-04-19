@@ -502,7 +502,7 @@ export default function JobsProfileScreen() {
           </>
         )}
 
-        <TouchableOpacity style={cs.switchBtn} onPress={() => router.replace("/login" as any)} activeOpacity={0.85}>
+        <TouchableOpacity style={cs.switchBtn} onPress={() => router.replace("/portal-select" as any)} activeOpacity={0.85}>
           <Feather name="home" size={18} color="#EA580C" />
           <Text style={cs.switchBtnText}>Back</Text>
         </TouchableOpacity>
