@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView,
-  KeyboardAvoidingView, Platform, ActivityIndicator, Alert, Image,
+  KeyboardAvoidingView, Platform, ActivityIndicator, Modal, FlatList, Image,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
@@ -17,6 +17,158 @@ const ROLES: { id: JobsUserRole; icon: string; label: string; sub: string }[] = 
   { id: "employer", icon: "briefcase", label: "Employer", sub: "Post jobs & hire talent" },
 ];
 
+const AGE_OPTIONS = Array.from({ length: 43 }, (_, i) => String(i + 18));
+
+const QUALIFICATION_OPTIONS = [
+  "Below 10th",
+  "10th Pass (SSC)",
+  "12th Pass (HSC)",
+  "ITI Certificate",
+  "Diploma",
+  "B.A (Arts)",
+  "B.Com (Commerce)",
+  "B.Sc (Science)",
+  "B.E / B.Tech (Engineering)",
+  "BBA",
+  "BCA",
+  "M.A / M.Com / M.Sc",
+  "M.E / M.Tech",
+  "MBA",
+  "MCA",
+  "PhD",
+  "Other",
+];
+
+const LOCATION_OPTIONS = [
+  "Ambernath East",
+  "Ambernath West",
+  "MIDC Ambernath",
+  "Shivaji Chowk",
+  "Station Area East",
+  "Station Area West",
+  "Old Ambernath",
+  "New Ambernath",
+  "Vithalwadi",
+  "Shelar Colony",
+  "Gupte Colony",
+  "Udayanagar",
+  "Vallabhwadi",
+  "Sahakar Nagar",
+  "Gopini",
+  "Chikhloli",
+  "Badlapur",
+  "Ulhasnagar",
+  "Other",
+];
+
+interface DropdownPickerProps {
+  label: string;
+  value: string;
+  options: string[];
+  placeholder?: string;
+  onSelect: (val: string) => void;
+  required?: boolean;
+}
+
+function DropdownPicker({ label, value, options, placeholder, onSelect, required }: DropdownPickerProps) {
+  const [open, setOpen] = useState(false);
+  const [manualMode, setManualMode] = useState(false);
+  const [manualText, setManualText] = useState("");
+  const insets = useSafeAreaInsets();
+
+  const handleSelect = (opt: string) => {
+    if (opt === "Other") {
+      setManualMode(true);
+      setOpen(false);
+    } else {
+      onSelect(opt);
+      setOpen(false);
+      setManualMode(false);
+    }
+  };
+
+  const handleManualDone = () => {
+    if (manualText.trim()) {
+      onSelect(manualText.trim());
+      setManualMode(false);
+    }
+  };
+
+  return (
+    <View style={dd.wrap}>
+      <Text style={dd.label}>{label}{required && <Text style={{ color: "#DC2626" }}> *</Text>}</Text>
+
+      {!manualMode ? (
+        <TouchableOpacity style={dd.trigger} onPress={() => setOpen(true)} activeOpacity={0.8}>
+          <Text style={[dd.triggerText, !value && dd.placeholder]}>
+            {value || placeholder || `Select ${label}`}
+          </Text>
+          <Feather name="chevron-down" size={16} color="#94A3B8" />
+        </TouchableOpacity>
+      ) : (
+        <View style={dd.manualRow}>
+          <TextInput
+            style={[dd.trigger, { flex: 1 }]}
+            value={manualText}
+            onChangeText={setManualText}
+            placeholder={`Type ${label.toLowerCase()}…`}
+            placeholderTextColor="#CBD5E1"
+            autoFocus
+          />
+          <TouchableOpacity style={dd.doneBtn} onPress={handleManualDone}>
+            <Feather name="check" size={16} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity style={dd.cancelBtn} onPress={() => setManualMode(false)}>
+            <Feather name="x" size={16} color="#64748B" />
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {value && !manualMode && (
+        <TouchableOpacity onPress={() => { setManualMode(true); setManualText(value); }} style={dd.editLink}>
+          <Feather name="edit-2" size={10} color="#EA580C" />
+          <Text style={dd.editLinkText}>Type manually instead</Text>
+        </TouchableOpacity>
+      )}
+
+      <Modal visible={open} transparent animationType="fade" onRequestClose={() => setOpen(false)}>
+        <TouchableOpacity style={dd.overlay} activeOpacity={1} onPress={() => setOpen(false)}>
+          <View style={[dd.sheet, { paddingBottom: Math.max(insets.bottom, 16) }]}>
+            <View style={dd.sheetHeader}>
+              <Text style={dd.sheetTitle}>Select {label}</Text>
+              <TouchableOpacity onPress={() => setOpen(false)}><Feather name="x" size={20} color="#64748B" /></TouchableOpacity>
+            </View>
+            <FlatList
+              data={options}
+              keyExtractor={(o) => o}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={[dd.option, item === value && dd.optionActive, item === "Other" && dd.optionOther]}
+                  onPress={() => handleSelect(item)}
+                  activeOpacity={0.7}
+                >
+                  {item === "Other" ? (
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                      <Feather name="edit-3" size={14} color="#EA580C" />
+                      <Text style={[dd.optionText, { color: "#EA580C" }]}>Other (type manually)</Text>
+                    </View>
+                  ) : (
+                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                      <Text style={[dd.optionText, item === value && dd.optionTextActive]}>{item}</Text>
+                      {item === value && <Feather name="check" size={14} color="#EA580C" />}
+                    </View>
+                  )}
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    </View>
+  );
+}
+
 export default function JobsLoginScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -30,12 +182,25 @@ export default function JobsLoginScreen() {
 
   const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
-  const [company, setCompany] = useState("");
-  const [location, setLocation] = useState("Ambernath");
+
+  // Seeker-specific
+  const [age, setAge] = useState("");
+  const [qualification, setQualification] = useState("");
   const [skills, setSkills] = useState("");
 
+  // Employer-specific
+  const [company, setCompany] = useState("");
+  const [gstNo, setGstNo] = useState("");
+  const [email, setEmail] = useState("");
+  const [location, setLocation] = useState("");
+
   const [otp, setOtp] = useState(["", "", "", ""]);
-  const otpRefs = [useRef<TextInput>(null), useRef<TextInput>(null), useRef<TextInput>(null), useRef<TextInput>(null)];
+  const otpRefs = [
+    useRef<TextInput>(null),
+    useRef<TextInput>(null),
+    useRef<TextInput>(null),
+    useRef<TextInput>(null),
+  ];
 
   const setOtpDigit = (i: number, val: string) => {
     const next = [...otp];
@@ -44,11 +209,31 @@ export default function JobsLoginScreen() {
     if (val && i < 3) otpRefs[i + 1]?.current?.focus();
   };
 
+  const validateSeeker = () => {
+    if (!name.trim()) return "Full name is required.";
+    if (!age) return "Please select your age.";
+    if (phone.length !== 10) return "Enter a valid 10-digit mobile number.";
+    if (!qualification) return "Please select your qualification.";
+    return null;
+  };
+
+  const validateEmployer = () => {
+    if (!name.trim()) return "Full name is required.";
+    if (!company.trim()) return "Company name is required.";
+    if (!location) return "Please select your location.";
+    if (!email.trim() || !email.includes("@")) return "Enter a valid email address.";
+    if (phone.length !== 10) return "Enter a valid 10-digit mobile number.";
+    return null;
+  };
+
   const handleSendOtp = () => {
     setError("");
-    if (phone.length !== 10) { setError("Enter a valid 10-digit mobile number."); return; }
-    if (tab === "register" && !name.trim()) { setError("Please enter your full name."); return; }
-    if (tab === "register" && role === "employer" && !company.trim()) { setError("Please enter your company name."); return; }
+    if (tab === "register") {
+      const err = role === "seeker" ? validateSeeker() : validateEmployer();
+      if (err) { setError(err); return; }
+    } else {
+      if (phone.length !== 10) { setError("Enter a valid 10-digit mobile number."); return; }
+    }
     setStep("otp");
   };
 
@@ -64,9 +249,13 @@ export default function JobsLoginScreen() {
           name: name.trim(),
           phone,
           role,
-          company: company.trim() || undefined,
+          age: age || undefined,
+          qualification: qualification || undefined,
           skills: skills.trim() || undefined,
-          location: location.trim(),
+          company: company.trim() || undefined,
+          gstNo: gstNo.trim() || undefined,
+          email: email.trim() || undefined,
+          location: location || undefined,
           avatarColor: randomColor(),
         });
       } else {
@@ -93,7 +282,12 @@ export default function JobsLoginScreen() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
-      <ScrollView style={{ flex: 1, backgroundColor: "#FFF7ED" }} contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={{ flex: 1, backgroundColor: "#FFF7ED" }}
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         <LinearGradient
           colors={["#C2410C", "#EA580C", "#F97316", "#FB923C"]}
           start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
@@ -148,62 +342,175 @@ export default function JobsLoginScreen() {
 
               {step === "form" && (
                 <>
-                  {tab === "register" && (
-                    <View style={styles.inputWrap}>
-                      <Text style={styles.inputLabel}>Full Name</Text>
-                      <TextInput
-                        style={styles.input}
-                        value={name}
-                        onChangeText={setName}
-                        placeholder="e.g. Ramesh Patil"
-                        placeholderTextColor="#CBD5E1"
-                        autoCapitalize="words"
+                  {tab === "register" && role === "seeker" && (
+                    <>
+                      <View style={styles.sectionBanner}>
+                        <Feather name="user" size={13} color="#EA580C" />
+                        <Text style={styles.sectionBannerText}>Job Seeker Details</Text>
+                      </View>
+
+                      <View style={styles.inputWrap}>
+                        <Text style={styles.inputLabel}>Full Name <Text style={{ color: "#DC2626" }}>*</Text></Text>
+                        <TextInput
+                          style={styles.input}
+                          value={name}
+                          onChangeText={setName}
+                          placeholder="e.g. Ramesh Patil"
+                          placeholderTextColor="#CBD5E1"
+                          autoCapitalize="words"
+                        />
+                      </View>
+
+                      <DropdownPicker
+                        label="Age"
+                        value={age}
+                        options={AGE_OPTIONS}
+                        placeholder="Select your age"
+                        onSelect={setAge}
+                        required
                       />
-                    </View>
+
+                      <View style={styles.inputWrap}>
+                        <Text style={styles.inputLabel}>Mobile Number <Text style={{ color: "#DC2626" }}>*</Text></Text>
+                        <View style={styles.phoneRow}>
+                          <View style={styles.phoneCode}><Text style={styles.phoneCodeText}>+91</Text></View>
+                          <TextInput
+                            style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                            value={phone}
+                            onChangeText={(t) => setPhone(t.replace(/\D/g, "").slice(0, 10))}
+                            placeholder="XXXXX XXXXX"
+                            placeholderTextColor="#CBD5E1"
+                            keyboardType="phone-pad"
+                            maxLength={10}
+                          />
+                        </View>
+                      </View>
+
+                      <DropdownPicker
+                        label="Qualification"
+                        value={qualification}
+                        options={QUALIFICATION_OPTIONS}
+                        placeholder="Select highest qualification"
+                        onSelect={setQualification}
+                        required
+                      />
+
+                      <View style={styles.inputWrap}>
+                        <Text style={styles.inputLabel}>Skills <Text style={styles.optional}>(optional)</Text></Text>
+                        <TextInput
+                          style={styles.input}
+                          value={skills}
+                          onChangeText={setSkills}
+                          placeholder="e.g. Welding, MS Office, Driving"
+                          placeholderTextColor="#CBD5E1"
+                        />
+                        <Text style={styles.hint}>Separate multiple skills with commas</Text>
+                      </View>
+                    </>
                   )}
 
                   {tab === "register" && role === "employer" && (
-                    <View style={styles.inputWrap}>
-                      <Text style={styles.inputLabel}>Company Name</Text>
-                      <TextInput
-                        style={styles.input}
-                        value={company}
-                        onChangeText={setCompany}
-                        placeholder="e.g. XYZ Manufacturing Pvt Ltd"
-                        placeholderTextColor="#CBD5E1"
-                        autoCapitalize="words"
+                    <>
+                      <View style={styles.sectionBanner}>
+                        <Feather name="briefcase" size={13} color="#EA580C" />
+                        <Text style={styles.sectionBannerText}>Employer Registration</Text>
+                      </View>
+
+                      <View style={styles.inputWrap}>
+                        <Text style={styles.inputLabel}>Full Name <Text style={{ color: "#DC2626" }}>*</Text></Text>
+                        <TextInput
+                          style={styles.input}
+                          value={name}
+                          onChangeText={setName}
+                          placeholder="Contact person full name"
+                          placeholderTextColor="#CBD5E1"
+                          autoCapitalize="words"
+                        />
+                      </View>
+
+                      <View style={styles.inputWrap}>
+                        <Text style={styles.inputLabel}>Company Name <Text style={{ color: "#DC2626" }}>*</Text></Text>
+                        <TextInput
+                          style={styles.input}
+                          value={company}
+                          onChangeText={setCompany}
+                          placeholder="e.g. XYZ Manufacturing Pvt Ltd"
+                          placeholderTextColor="#CBD5E1"
+                          autoCapitalize="words"
+                        />
+                      </View>
+
+                      <View style={styles.inputWrap}>
+                        <Text style={styles.inputLabel}>GST Number <Text style={styles.optional}>(optional)</Text></Text>
+                        <TextInput
+                          style={styles.input}
+                          value={gstNo}
+                          onChangeText={(t) => setGstNo(t.toUpperCase())}
+                          placeholder="e.g. 27AABCU9603R1ZN"
+                          placeholderTextColor="#CBD5E1"
+                          autoCapitalize="characters"
+                          maxLength={15}
+                        />
+                        <Text style={styles.hint}>15-digit GST Identification Number</Text>
+                      </View>
+
+                      <DropdownPicker
+                        label="Business Location"
+                        value={location}
+                        options={LOCATION_OPTIONS}
+                        placeholder="Select your area"
+                        onSelect={setLocation}
+                        required
                       />
-                    </View>
+
+                      <View style={styles.inputWrap}>
+                        <Text style={styles.inputLabel}>Email Address <Text style={{ color: "#DC2626" }}>*</Text></Text>
+                        <TextInput
+                          style={styles.input}
+                          value={email}
+                          onChangeText={setEmail}
+                          placeholder="company@email.com"
+                          placeholderTextColor="#CBD5E1"
+                          keyboardType="email-address"
+                          autoCapitalize="none"
+                        />
+                      </View>
+
+                      <View style={styles.inputWrap}>
+                        <Text style={styles.inputLabel}>Mobile Number <Text style={{ color: "#DC2626" }}>*</Text></Text>
+                        <View style={styles.phoneRow}>
+                          <View style={styles.phoneCode}><Text style={styles.phoneCodeText}>+91</Text></View>
+                          <TextInput
+                            style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                            value={phone}
+                            onChangeText={(t) => setPhone(t.replace(/\D/g, "").slice(0, 10))}
+                            placeholder="XXXXX XXXXX"
+                            placeholderTextColor="#CBD5E1"
+                            keyboardType="phone-pad"
+                            maxLength={10}
+                          />
+                        </View>
+                      </View>
+                    </>
                   )}
 
-                  {tab === "register" && role === "seeker" && (
+                  {tab === "login" && (
                     <View style={styles.inputWrap}>
-                      <Text style={styles.inputLabel}>Skills (optional)</Text>
-                      <TextInput
-                        style={styles.input}
-                        value={skills}
-                        onChangeText={setSkills}
-                        placeholder="e.g. Welding, MS Office, Driving"
-                        placeholderTextColor="#CBD5E1"
-                      />
+                      <Text style={styles.inputLabel}>Mobile Number <Text style={{ color: "#DC2626" }}>*</Text></Text>
+                      <View style={styles.phoneRow}>
+                        <View style={styles.phoneCode}><Text style={styles.phoneCodeText}>+91</Text></View>
+                        <TextInput
+                          style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                          value={phone}
+                          onChangeText={(t) => setPhone(t.replace(/\D/g, "").slice(0, 10))}
+                          placeholder="XXXXX XXXXX"
+                          placeholderTextColor="#CBD5E1"
+                          keyboardType="phone-pad"
+                          maxLength={10}
+                        />
+                      </View>
                     </View>
                   )}
-
-                  <View style={styles.inputWrap}>
-                    <Text style={styles.inputLabel}>Mobile Number</Text>
-                    <View style={styles.phoneRow}>
-                      <View style={styles.phoneCode}><Text style={styles.phoneCodeText}>+91</Text></View>
-                      <TextInput
-                        style={[styles.input, { flex: 1, marginBottom: 0 }]}
-                        value={phone}
-                        onChangeText={(t) => setPhone(t.replace(/\D/g, "").slice(0, 10))}
-                        placeholder="XXXXX XXXXX"
-                        placeholderTextColor="#CBD5E1"
-                        keyboardType="phone-pad"
-                        maxLength={10}
-                      />
-                    </View>
-                  </View>
 
                   {!!error && <Text style={styles.error}>{error}</Text>}
 
@@ -238,14 +545,19 @@ export default function JobsLoginScreen() {
 
                   <TouchableOpacity style={styles.btn} onPress={handleVerifyOtp} activeOpacity={0.85} disabled={loading}>
                     <LinearGradient colors={["#C2410C", "#EA580C", "#FB923C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.btnGrad}>
-                      {loading ? <ActivityIndicator color="white" /> : <>
-                        <Text style={styles.btnText}>Verify & Continue</Text>
-                        <Feather name="check" size={18} color="white" />
-                      </>}
+                      {loading ? <ActivityIndicator color="white" /> : (
+                        <>
+                          <Text style={styles.btnText}>Verify & Continue</Text>
+                          <Feather name="check" size={18} color="white" />
+                        </>
+                      )}
                     </LinearGradient>
                   </TouchableOpacity>
 
-                  <TouchableOpacity onPress={() => { setStep("form"); setOtp(["", "", "", ""]); setError(""); }} style={{ alignSelf: "center", marginTop: 10 }}>
+                  <TouchableOpacity
+                    onPress={() => { setStep("form"); setOtp(["", "", "", ""]); setError(""); }}
+                    style={{ alignSelf: "center", marginTop: 10 }}
+                  >
                     <Text style={styles.backLink}>← Change number</Text>
                   </TouchableOpacity>
                 </>
@@ -290,9 +602,14 @@ const styles = StyleSheet.create({
   tabText: { fontSize: 14, color: "#64748B", fontFamily: "Inter_500Medium" },
   tabTextActive: { color: "#EA580C", fontFamily: "Inter_700Bold" },
 
+  sectionBanner: { flexDirection: "row", alignItems: "center", gap: 7, backgroundColor: "#FFF7ED", borderRadius: 10, paddingHorizontal: 12, paddingVertical: 8, marginBottom: 16, borderLeftWidth: 3, borderLeftColor: "#EA580C" },
+  sectionBannerText: { fontSize: 13, fontWeight: "700", color: "#EA580C", fontFamily: "Inter_700Bold" },
+
   inputWrap: { marginBottom: 14 },
   inputLabel: { fontSize: 12, fontWeight: "600", color: "#475569", fontFamily: "Inter_600SemiBold", marginBottom: 6 },
+  optional: { fontSize: 11, color: "#94A3B8", fontWeight: "400", fontFamily: "Inter_400Regular" },
   input: { backgroundColor: "#F8FAFC", borderWidth: 1.5, borderColor: "#E2E8F0", borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 15, color: "#0F172A", fontFamily: "Inter_400Regular" },
+  hint: { fontSize: 10, color: "#94A3B8", fontFamily: "Inter_400Regular", marginTop: 4 },
   phoneRow: { flexDirection: "row", gap: 8, alignItems: "center" },
   phoneCode: { backgroundColor: "#F8FAFC", borderWidth: 1.5, borderColor: "#E2E8F0", borderRadius: 12, paddingHorizontal: 12, paddingVertical: 12 },
   phoneCodeText: { fontSize: 15, color: "#0F172A", fontFamily: "Inter_600SemiBold" },
@@ -318,4 +635,31 @@ const styles = StyleSheet.create({
   backBtn: { alignItems: "center", paddingBottom: 32 },
   backPill: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "white", paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20, borderWidth: 1.5, borderColor: "#FED7AA" },
   backPillText: { fontSize: 13, color: "#EA580C", fontFamily: "Inter_600SemiBold" },
+});
+
+const dd = StyleSheet.create({
+  wrap: { marginBottom: 14 },
+  label: { fontSize: 12, fontWeight: "600", color: "#475569", fontFamily: "Inter_600SemiBold", marginBottom: 6 },
+  trigger: {
+    backgroundColor: "#F8FAFC", borderWidth: 1.5, borderColor: "#E2E8F0", borderRadius: 12,
+    paddingHorizontal: 14, paddingVertical: 12,
+    flexDirection: "row" as const, alignItems: "center" as const, justifyContent: "space-between" as const,
+  },
+  triggerText: { fontSize: 15, color: "#0F172A", fontFamily: "Inter_400Regular", flex: 1 },
+  placeholder: { color: "#CBD5E1" },
+  manualRow: { flexDirection: "row", gap: 8, alignItems: "center" },
+  doneBtn: { width: 44, height: 44, borderRadius: 12, backgroundColor: "#EA580C", alignItems: "center", justifyContent: "center" },
+  cancelBtn: { width: 44, height: 44, borderRadius: 12, backgroundColor: "#F1F5F9", alignItems: "center", justifyContent: "center" },
+  editLink: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 },
+  editLinkText: { fontSize: 10, color: "#EA580C", fontFamily: "Inter_400Regular" },
+
+  overlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.4)", justifyContent: "flex-end" },
+  sheet: { backgroundColor: "white", borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: 480 },
+  sheetHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: "#F1F5F9" },
+  sheetTitle: { fontSize: 16, fontWeight: "700", color: "#0F172A", fontFamily: "Inter_700Bold" },
+  option: { paddingHorizontal: 20, paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: "#F8FAFC" },
+  optionActive: { backgroundColor: "#FFF7ED" },
+  optionOther: { borderTopWidth: 1, borderTopColor: "#FED7AA", marginTop: 4 },
+  optionText: { fontSize: 14, color: "#334155", fontFamily: "Inter_400Regular" },
+  optionTextActive: { color: "#EA580C", fontFamily: "Inter_700Bold" },
 });

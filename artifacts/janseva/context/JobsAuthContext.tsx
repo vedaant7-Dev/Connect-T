@@ -8,10 +8,15 @@ export interface JobsUser {
   name: string;
   phone: string;
   role: JobsUserRole;
-  company?: string;
+  // Seeker fields
+  age?: string;
+  qualification?: string;
   skills?: string;
-  education?: string;
   experience?: string;
+  // Employer fields
+  company?: string;
+  gstNo?: string;
+  email?: string;
   location?: string;
   avatarColor: string;
   createdAt: string;

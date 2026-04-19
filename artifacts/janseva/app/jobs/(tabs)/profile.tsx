@@ -96,6 +96,33 @@ export default function JobsProfileScreen() {
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={[styles.content, { paddingBottom: Math.max(insets.bottom, 8) + 80 }]} showsVerticalScrollIndicator={false}>
 
+        {!isEmployer && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Personal Details</Text>
+            {jobsUser.age && (
+              <View style={[styles.infoRow, { marginBottom: 10 }]}>
+                <Feather name="calendar" size={15} color="#EA580C" />
+                <Text style={styles.infoLabel}>Age</Text>
+                <Text style={styles.infoText}>{jobsUser.age} years</Text>
+              </View>
+            )}
+            {jobsUser.qualification && (
+              <View style={[styles.infoRow, { marginBottom: 10 }]}>
+                <Feather name="book" size={15} color="#EA580C" />
+                <Text style={styles.infoLabel}>Qualification</Text>
+                <Text style={styles.infoText}>{jobsUser.qualification}</Text>
+              </View>
+            )}
+            {jobsUser.location && (
+              <View style={styles.infoRow}>
+                <Feather name="map-pin" size={15} color="#EA580C" />
+                <Text style={styles.infoLabel}>Location</Text>
+                <Text style={styles.infoText}>{jobsUser.location}</Text>
+              </View>
+            )}
+          </View>
+        )}
+
         {!isEmployer && jobsUser.skills && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>My Skills</Text>
@@ -111,21 +138,33 @@ export default function JobsProfileScreen() {
 
         {isEmployer && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Company</Text>
-            <View style={styles.infoRow}>
-              <Feather name="briefcase" size={16} color="#EA580C" />
+            <Text style={styles.sectionTitle}>Company Details</Text>
+            <View style={[styles.infoRow, { marginBottom: 10 }]}>
+              <Feather name="briefcase" size={15} color="#EA580C" />
+              <Text style={styles.infoLabel}>Company</Text>
               <Text style={styles.infoText}>{jobsUser.company || "—"}</Text>
+            </View>
+            {jobsUser.gstNo && (
+              <View style={[styles.infoRow, { marginBottom: 10 }]}>
+                <Feather name="file-text" size={15} color="#EA580C" />
+                <Text style={styles.infoLabel}>GST No</Text>
+                <Text style={styles.infoText}>{jobsUser.gstNo}</Text>
+              </View>
+            )}
+            {jobsUser.email && (
+              <View style={[styles.infoRow, { marginBottom: 10 }]}>
+                <Feather name="mail" size={15} color="#EA580C" />
+                <Text style={styles.infoLabel}>Email</Text>
+                <Text style={styles.infoText}>{jobsUser.email}</Text>
+              </View>
+            )}
+            <View style={styles.infoRow}>
+              <Feather name="map-pin" size={15} color="#EA580C" />
+              <Text style={styles.infoLabel}>Location</Text>
+              <Text style={styles.infoText}>{jobsUser.location || "Ambernath"}</Text>
             </View>
           </View>
         )}
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Location</Text>
-          <View style={styles.infoRow}>
-            <Feather name="map-pin" size={16} color="#EA580C" />
-            <Text style={styles.infoText}>{jobsUser.location || "Ambernath"}</Text>
-          </View>
-        </View>
 
         <TouchableOpacity style={styles.switchBtn} onPress={() => router.replace("/login" as any)} activeOpacity={0.85}>
           <Feather name="home" size={18} color="#EA580C" />
@@ -190,7 +229,8 @@ const styles = StyleSheet.create({
   skillChip: { backgroundColor: "#FFF7ED", paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: "#FED7AA" },
   skillText: { fontSize: 13, color: "#C2410C", fontFamily: "Inter_500Medium" },
   infoRow: { flexDirection: "row", alignItems: "center", gap: 10 },
-  infoText: { fontSize: 14, color: "#334155", fontFamily: "Inter_400Regular" },
+  infoLabel: { fontSize: 12, color: "#94A3B8", fontFamily: "Inter_500Medium", width: 90 },
+  infoText: { fontSize: 14, color: "#334155", fontFamily: "Inter_400Regular", flex: 1 },
   switchBtn: { flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: "white", borderRadius: 14, padding: 16, marginBottom: 10, borderWidth: 1.5, borderColor: "#FED7AA" },
   switchBtnText: { fontSize: 15, fontWeight: "600", color: "#EA580C", fontFamily: "Inter_600SemiBold" },
   logoutBtn: { flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: "#FEE2E2", borderRadius: 14, padding: 16, borderWidth: 1.5, borderColor: "#FECACA" },
