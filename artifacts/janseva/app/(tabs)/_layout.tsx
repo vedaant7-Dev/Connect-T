@@ -45,7 +45,7 @@ function AnimatedTabBar(props: any) {
         {state.routes.map((route: any, index: number) => {
           const { options } = descriptors[route.key];
 
-          if (options.href === null || route.name === "services" || route.name === "admin") return null;
+          if (options.href === null || route.name === "services" || route.name === "admin" || route.name === "emergency") return null;
 
           const isFocused = state.index === index;
           const tintColor = isFocused ? "#EA580C" : "#94A3B8";
@@ -67,42 +67,6 @@ function AnimatedTabBar(props: any) {
               target: route.key,
             });
           };
-
-          if (route.name === "emergency") {
-            return (
-              <TouchableOpacity
-                key={route.key}
-                onPress={onPress}
-                onLongPress={onLongPress}
-                activeOpacity={0.8}
-                style={{ flex: 1, alignItems: "center", justifyContent: "center", marginTop: -28 }}
-                accessibilityRole="button"
-                accessibilityState={isFocused ? { selected: true } : {}}
-                accessibilityLabel="SOS"
-              >
-                <View
-                  style={{
-                    width: 60,
-                    height: 60,
-                    borderRadius: 30,
-                    backgroundColor: isFocused ? "#B91C1C" : "#DC2626",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    borderWidth: 4,
-                    borderColor: "white",
-                    shadowColor: "#DC2626",
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.4,
-                    shadowRadius: 10,
-                    elevation: 10,
-                    gap: 1,
-                  }}
-                >
-                  <Feather name="phone-call" size={22} color="white" />
-                </View>
-              </TouchableOpacity>
-            );
-          }
 
           const iconMap: Record<string, string> = {
             index: "home",
@@ -177,10 +141,7 @@ export default function TabLayout() {
 
       <Tabs.Screen
         name="emergency"
-        options={{
-          title: "SOS",
-          href: isNagarsevak ? null : undefined,
-        }}
+        options={{ href: null }}
       />
 
       <Tabs.Screen
