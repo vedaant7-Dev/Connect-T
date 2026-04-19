@@ -18,12 +18,12 @@ const s = StyleSheet.create({
   blob: {
     position: "absolute",
     borderRadius: 9999,
-    backgroundColor: "rgba(255,255,255,0.18)",
+    backgroundColor: "rgba(255,255,255,0.10)",
   },
   ring: {
     position: "absolute",
     borderRadius: 9999,
-    borderColor: "rgba(255,255,255,0.50)",
+    borderColor: "rgba(255,255,255,0.10)",
   },
   b1: { width: 160, height: 160, top: -40,  right: -40 },
   b2: { width: 90,  height: 90,  bottom: -30, left: 10 },
