@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import {
-  View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, Animated,
+  View, Text, StyleSheet, Dimensions, TouchableOpacity, Animated,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
+import ConnectTLogoSvg from "./ConnectTLogoSvg";
 
 const { width } = Dimensions.get("window");
 
@@ -35,19 +36,7 @@ export function AppSplash({ onFinish }: AppSplashProps) {
         <>
           <View style={styles.centre}>
             <View style={styles.logoWrap}>
-              {/* dark depth ring */}
-              <View style={styles.logoRingDark} />
-              {/* bright outer glow */}
-              <View style={styles.logoGlowBright} />
-              {/* mid warm glow */}
-              <View style={styles.logoGlow} />
-              {/* circular backdrop so white parts read on gradient */}
-              <View style={styles.logoBackdrop} />
-              <Image
-                source={require("../assets/images/connectt-logo.png")}
-                style={styles.logoImg}
-                resizeMode="contain"
-              />
+              <ConnectTLogoSvg size={190} green="#4ADE80" />
             </View>
             <Text style={styles.appName}>Connect T</Text>
             <View style={styles.taglineWrap}>
@@ -145,24 +134,7 @@ const styles = StyleSheet.create({
   ringInner: { width: width * 1.15, height: width * 1.15, bottom: -width * 0.78 },
 
   centre: { alignItems: "center", flex: 1, justifyContent: "center" },
-  logoWrap: { marginBottom: 18, alignItems: "center", justifyContent: "center", width: 210, height: 210 },
-  logoRingDark: {
-    position: "absolute", width: 240, height: 240, borderRadius: 120,
-    backgroundColor: "#7C2D12", opacity: 0.35,
-  },
-  logoGlowBright: {
-    position: "absolute", width: 220, height: 220, borderRadius: 110,
-    backgroundColor: "#FDE68A", opacity: 0.22,
-  },
-  logoGlow: {
-    position: "absolute", width: 196, height: 196, borderRadius: 98,
-    backgroundColor: "#F97316", opacity: 0.28,
-  },
-  logoBackdrop: {
-    position: "absolute", width: 172, height: 172, borderRadius: 86,
-    backgroundColor: "rgba(0,0,0,0.55)",
-  },
-  logoImg: { width: 200, height: 200 },
+  logoWrap: { marginBottom: 18, alignItems: "center", justifyContent: "center" },
   appName: {
     fontSize: 32, fontWeight: "900", color: "white",
     fontFamily: "Inter_700Bold", letterSpacing: -0.5, marginBottom: 10,
