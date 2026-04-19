@@ -711,7 +711,7 @@ const s = StyleSheet.create({
   fillFill: { backgroundColor: "#EA580C", borderRadius: 3 },
   viewAppsBtn: { flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 14, paddingVertical: 11, borderTopWidth: 1, borderTopColor: "#F1F5F9" },
   viewAppsBtnText: { flex: 1, fontSize: 13, fontWeight: "600", color: "#EA580C", fontFamily: "Inter_600SemiBold" },
-  deleteJobBtn: { width: 44, alignItems: "center", justifyContent: "center", borderTopWidth: 1, borderTopColor: "#F1F5F9", borderLeftWidth: 1, borderLeftColor: "#F1F5F9", borderRadius: 10, backgroundColor: "#FEF2F2" },
+  deleteJobBtn: { width: 44, alignItems: "center", justifyContent: "center", paddingVertical: 11, borderTopWidth: 1, borderTopColor: "#F1F5F9", backgroundColor: "#FEF2F2", borderRadius: 10 },
   deleteOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.45)", justifyContent: "center", paddingHorizontal: 28 },
   deleteCard: { backgroundColor: "white", borderRadius: 24, padding: 24, alignItems: "center", gap: 10 },
   deleteIconWrap: { width: 64, height: 64, borderRadius: 32, backgroundColor: "#FEE2E2", alignItems: "center", justifyContent: "center", marginBottom: 4 },
