@@ -128,6 +128,8 @@ export default function PostJobScreen() {
   const [description, setDescription] = useState("");
   const [requirements, setRequirements] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [posted, setPosted] = useState(false);
+  const [postedTitle, setPostedTitle] = useState("");
 
   if (!jobsUser || jobsUser.role !== "employer") {
     return (
@@ -135,6 +137,50 @@ export default function PostJobScreen() {
         <Feather name="lock" size={44} color="#CBD5E1" />
         <Text style={styles.restrictedTitle}>Employers Only</Text>
         <Text style={styles.restrictedSub}>Only employer accounts can post jobs.</Text>
+      </View>
+    );
+  }
+
+  if (posted) {
+    return (
+      <View style={styles.successScreen}>
+        <LinearGradient
+          colors={["#C2410C", "#EA580C", "#F97316", "#FB923C"]}
+          start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+          style={styles.successIconWrap}
+        >
+          <Feather name="check" size={48} color="white" />
+        </LinearGradient>
+        <Text style={styles.successTitle}>Posted Successfully!</Text>
+        <Text style={styles.successSub}>
+          <Text style={{ fontFamily: "Inter_600SemiBold", color: "#EA580C" }}>{postedTitle}</Text>
+          {"\n"}is now live and visible to job seekers.
+        </Text>
+        <TouchableOpacity
+          style={styles.successBtn}
+          activeOpacity={0.85}
+          onPress={() => router.replace("/jobs/(tabs)" as any)}
+        >
+          <LinearGradient
+            colors={["#C2410C", "#EA580C", "#F97316"]}
+            start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+            style={styles.successBtnGrad}
+          >
+            <Feather name="home" size={16} color="white" />
+            <Text style={styles.successBtnText}>Go to Dashboard</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.successSecondaryBtn}
+          activeOpacity={0.75}
+          onPress={() => {
+            setPosted(false);
+            setTitle(""); setSalary(""); setDescription(""); setRequirements("");
+            setLocation("Ambernath"); setOpenings("1"); setCategory("manufacturing"); setCustomCategory("");
+          }}
+        >
+          <Text style={styles.successSecondaryText}>Post Another Job</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -147,7 +193,7 @@ export default function PostJobScreen() {
     if (!requirements.trim()) { Alert.alert("Enter requirements"); return; }
 
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 600));
+    await new Promise((r) => setTimeout(r, 800));
     addJob({
       employerId: jobsUser.id,
       employerName: jobsUser.name,
@@ -161,10 +207,9 @@ export default function PostJobScreen() {
       description: description.trim(),
       requirements: requirements.trim(),
     });
+    setPostedTitle(title.trim());
     setSubmitting(false);
-    Alert.alert("Job Posted!", "Your job listing is now live.", [
-      { text: "View Jobs", onPress: () => router.replace("/jobs/(tabs)" as any) },
-    ]);
+    setPosted(true);
   };
 
   return (
@@ -320,6 +365,16 @@ const styles = StyleSheet.create({
   restricted: { flex: 1, alignItems: "center", justifyContent: "center", gap: 12, backgroundColor: "#FFF7ED" },
   restrictedTitle: { fontSize: 20, fontWeight: "700", color: "#0F172A", fontFamily: "Inter_700Bold" },
   restrictedSub: { fontSize: 14, color: "#64748B", fontFamily: "Inter_400Regular" },
+
+  successScreen: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#FFF7ED", paddingHorizontal: 32, gap: 16 },
+  successIconWrap: { width: 100, height: 100, borderRadius: 50, alignItems: "center", justifyContent: "center", marginBottom: 8 },
+  successTitle: { fontSize: 26, fontWeight: "800", color: "#0F172A", fontFamily: "Inter_700Bold", textAlign: "center" },
+  successSub: { fontSize: 15, color: "#64748B", fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 22 },
+  successBtn: { borderRadius: 14, overflow: "hidden", width: "100%", marginTop: 8 },
+  successBtnGrad: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 15, gap: 10 },
+  successBtnText: { fontSize: 16, fontWeight: "700", color: "white", fontFamily: "Inter_700Bold" },
+  successSecondaryBtn: { paddingVertical: 12, paddingHorizontal: 24 },
+  successSecondaryText: { fontSize: 14, color: "#EA580C", fontFamily: "Inter_600SemiBold", textDecorationLine: "underline" },
 
   // Dropdown
   dropdownBtn: { flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: "white", borderWidth: 1.5, borderColor: "#FED7AA", borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12 },
