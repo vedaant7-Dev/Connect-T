@@ -398,8 +398,8 @@ function EmployerDashboard({
                 <Switch
                   value={job.active}
                   onValueChange={() => onToggle(job.id)}
-                  trackColor={{ false: "#E2E8F0", true: "#FED7AA" }}
-                  thumbColor={job.active ? "#EA580C" : "#94A3B8"}
+                  trackColor={{ false: "#E2E8F0", true: "#BFDBFE" }}
+                  thumbColor={job.active ? "#2563EB" : "#94A3B8"}
                   style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
                 />
               </View>
