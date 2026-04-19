@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, Linking, Platform, Modal,
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, Linking, Platform, Modal, Image,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
@@ -178,9 +178,7 @@ export default function HomeScreen() {
         {/* REPORT A PROBLEM CTA */}
         <TouchableOpacity style={styles.complaintCTA} onPress={() => router.push("/complaint/new")} activeOpacity={0.88}>
           <LinearGradient colors={["#15803D", "#16A34A", "#22C55E"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.complaintCTAGrad}>
-            <View style={styles.complaintCTAIcon}>
-              <Feather name="camera" size={24} color="white" />
-            </View>
+            <Image source={require("../../assets/images/complaint-icon.png")} style={styles.complaintCTAImage} resizeMode="contain" />
             <View style={{ flex: 1 }}>
               <Text style={styles.complaintCTATitle}>{t("reportProblem")}</Text>
               <Text style={styles.complaintCTASub}>{t("reportProblemSub")}</Text>
@@ -242,25 +240,45 @@ export default function HomeScreen() {
               <Text style={styles.modalTitle}>{t("alerts")}</Text>
             </View>
             <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 420, width: "100%" }}>
-              {alertsAndNews.filter((item) => item.type === "alert").map((item) => (
-                <TouchableOpacity
-                  key={item.id}
-                  style={styles.notifItem}
-                  activeOpacity={0.8}
-                  onPress={() => { setShowNotifPanel(false); setTimeout(() => setSelectedAlert(item), 200); }}
-                >
-                  <View style={[styles.notifItemIcon, { backgroundColor: item.bg }]}>
-                    <Feather name={item.icon as any} size={16} color={item.color} />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 2 }}>
-                      <Text style={styles.notifItemTitle} numberOfLines={1}>{item.title}</Text>
-                      <Text style={styles.notifItemTime}>{item.time}</Text>
+              {alerts.length === 0 ? (
+                <View style={{ padding: 24, alignItems: "center", gap: 8 }}>
+                  <Feather name="bell-off" size={32} color="#CBD5E1" />
+                  <Text style={{ fontSize: 13, color: "#94A3B8", fontFamily: "Inter_400Regular" }}>No alerts right now</Text>
+                </View>
+              ) : alerts.map((item) => {
+                const isAlert = item.type === "alert";
+                const cardColor = isAlert ? "#DC2626" : "#EA580C";
+                const cardBg = isAlert ? "#FEE2E2" : "#FFEDD5";
+                const timeStr = (() => {
+                  const diff = Date.now() - new Date(item.createdAt).getTime();
+                  const mins = Math.floor(diff / 60000);
+                  const hours = Math.floor(mins / 60);
+                  const days = Math.floor(hours / 24);
+                  if (days > 0) return `${days}d ago`;
+                  if (hours > 0) return `${hours}h ago`;
+                  if (mins > 0) return `${mins}m ago`;
+                  return "just now";
+                })();
+                return (
+                  <TouchableOpacity
+                    key={item.id}
+                    style={styles.notifItem}
+                    activeOpacity={0.8}
+                    onPress={() => { setShowNotifPanel(false); setTimeout(() => setSelectedAlert(item), 200); }}
+                  >
+                    <View style={[styles.notifItemIcon, { backgroundColor: cardBg }]}>
+                      <Feather name={isAlert ? "alert-triangle" : "radio"} size={16} color={cardColor} />
                     </View>
-                    <Text style={styles.notifItemBody} numberOfLines={2}>{item.body}</Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
+                    <View style={{ flex: 1 }}>
+                      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 2 }}>
+                        <Text style={styles.notifItemTitle} numberOfLines={1}>{item.title}</Text>
+                        <Text style={styles.notifItemTime}>{timeStr}</Text>
+                      </View>
+                      <Text style={styles.notifItemBody} numberOfLines={2}>{item.body}</Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
             </ScrollView>
             <TouchableOpacity style={styles.modalCloseBtn} onPress={() => setShowNotifPanel(false)} activeOpacity={0.85}>
               <Text style={styles.modalCloseBtnText}>{t("cancel")}</Text>
@@ -417,6 +435,7 @@ const styles = StyleSheet.create({
   complaintCTA: { borderRadius: 20, overflow: "hidden", marginBottom: 12, shadowColor: "#B45309", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.25, shadowRadius: 14, elevation: 6 },
   complaintCTAGrad: { flexDirection: "row", alignItems: "center", padding: 18, gap: 14 },
   complaintCTAIcon: { width: 52, height: 52, borderRadius: 16, backgroundColor: "rgba(255,255,255,0.18)", alignItems: "center", justifyContent: "center", flexShrink: 0 },
+  complaintCTAImage: { width: 52, height: 52, flexShrink: 0 },
   complaintCTATitle: { fontSize: 16, fontWeight: "800", color: "white", fontFamily: "Inter_700Bold" },
   complaintCTASub: { fontSize: 11, color: "rgba(255,255,255,0.7)", fontFamily: "Inter_400Regular", marginTop: 2 },
   complaintCTAArrow: { width: 34, height: 34, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.18)", alignItems: "center", justifyContent: "center" },
