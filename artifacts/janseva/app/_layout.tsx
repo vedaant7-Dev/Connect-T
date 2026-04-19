@@ -9,7 +9,7 @@ import {
 import { Asset } from "expo-asset";
 import { Image } from "react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Stack, useRouter, useSegments } from "expo-router";
+import { Stack, useRouter, useSegments, router as staticRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
@@ -38,7 +38,10 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     if (loading) return;
     const inLogin = segments[0] === "login";
     const inTabs = segments[0] === "(tabs)";
+    const inJobs = segments[0] === "jobs";
     const currentTab = inTabs ? segments[1] : undefined;
+
+    if (inJobs) return;
 
     if (!user && !inLogin) {
       router.replace("/login");
@@ -61,6 +64,7 @@ function RootLayoutNav() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="login" options={{ headerShown: false, animation: "fade" }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="jobs" options={{ headerShown: false, animation: "fade" }} />
       <Stack.Screen
         name="complaint/new"
         options={{ headerShown: false, presentation: "modal" }}
@@ -127,7 +131,14 @@ export default function RootLayout() {
                         <RootLayoutNav />
                       </AuthGate>
                       {!splashDone && (
-                        <AppSplash onFinish={() => setSplashDone(true)} />
+                        <AppSplash
+                          onFinish={(portal) => {
+                            setSplashDone(true);
+                            if (portal === "jobs") {
+                              staticRouter.replace("/jobs/login" as any);
+                            }
+                          }}
+                        />
                       )}
                     </TabBarVisibilityProvider>
                   </GestureHandlerRootView>

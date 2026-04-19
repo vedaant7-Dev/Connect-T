@@ -65,6 +65,26 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - Admin & Services are hidden screens (`href: null`) accessed via Profile card
 - SOS is tab 3 of 5 (true centre)
 
+### Dual Portal System (v2)
+- **Splash → Portal Select**: After "Continue", users choose between two portals:
+  - **Civic Services** (saffron orange, home icon) → normal login → main civic app
+  - **Job Portal** (dark orange, briefcase icon) → `/jobs/login` → job portal
+- `AppSplash.tsx` has 2 steps: `splash` (logo) → `choose` (two portal cards)
+- `_layout.tsx` AuthGate skips jobs routes (`segments[0] === "jobs"`)
+
+### Job Portal (Connect T Jobs)
+- **Theme**: Same saffron-orange `#C2410C → #EA580C → #F97316 → #FB923C`
+- **Roles**: Job Seeker (find jobs) / Employer (post & manage jobs)
+- **Auth**: Separate `JobsAuthContext` with AsyncStorage key `connectt_jobs_user`
+- **Data**: `JobsContext` with 7 seeded Ambernath/MIDC jobs, AsyncStorage key `connectt_jobs_listings`
+- **Categories**: manufacturing, it, retail, healthcare, construction, transport, education, security, other
+- **Job Types**: full-time, part-time, contract, apprentice
+- **Screens**:
+  - `app/jobs/login.tsx` — role selection + OTP login/register
+  - `app/jobs/(tabs)/index.tsx` — job listings with category filters + apply flow
+  - `app/jobs/(tabs)/post.tsx` — employer-only job posting form
+  - `app/jobs/(tabs)/profile.tsx` — profile with stats, edit, logout
+
 ### Key Files
 - `artifacts/janseva/app/_layout.tsx` — Root layout, AuthGate, AppSplash overlay, Feather font loading
 - `artifacts/janseva/app/login.tsx` — Phone-first auth (register/login) with ambernathWards picker
