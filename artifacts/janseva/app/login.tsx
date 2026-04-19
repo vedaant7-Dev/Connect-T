@@ -510,6 +510,15 @@ export default function LoginScreen() {
 
           {activeTab === "login" && loginStep === "form" && renderLoginForm()}
           {activeTab === "login" && loginStep === "otp" && renderOtpInput()}
+
+          <TouchableOpacity
+            style={s.backPill}
+            onPress={() => router.replace("/portal-select" as any)}
+            activeOpacity={0.8}
+          >
+            <Feather name="arrow-left" size={14} color="#EA580C" />
+            <Text style={s.backPillText}>Back</Text>
+          </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
 
@@ -569,6 +578,8 @@ const s = StyleSheet.create({
   langPillActive: { backgroundColor: "rgba(255,255,255,0.25)", borderColor: "rgba(255,255,255,0.5)" },
   langPillText: { fontSize: 12, color: "rgba(255,255,255,0.55)", fontFamily: "Inter_600SemiBold", fontWeight: "700" },
   langPillTextActive: { color: "white" },
+  backPill: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "white", paddingHorizontal: 20, paddingVertical: 10, borderRadius: 20, borderWidth: 1.5, borderColor: "#FED7AA", alignSelf: "center", marginTop: 20, marginBottom: 8 },
+  backPillText: { fontSize: 13, color: "#EA580C", fontFamily: "Inter_600SemiBold", fontWeight: "600" },
   tabBar: {
     flexDirection: "row", backgroundColor: "rgba(255,255,255,0.12)",
     borderRadius: 16, padding: 4, marginBottom: 16, width: "100%",
