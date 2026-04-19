@@ -231,6 +231,13 @@ export default function HomeScreen() {
             </TouchableOpacity>
           ))}
         </View>
+
+        {/* PAGE FOOTER */}
+        <View style={styles.pageFooter}>
+          <Text style={styles.pageFooterBrand}>Connect T</Text>
+          <Text style={styles.pageFooterSub}>BJP Member Services · सबका साथ, सबका विकास</Text>
+          <Text style={styles.pageFooterVersion}>v1.0 · Bharatiya Janata Party · 2025</Text>
+        </View>
       </ScrollView>
 
       {/* Notification Panel Modal */}
@@ -585,5 +592,34 @@ const styles = StyleSheet.create({
   },
   utilityStatDivider: {
     width: 1, height: 40, backgroundColor: "#F1F5F9",
+  },
+  pageFooter: {
+    alignItems: "center",
+    paddingVertical: 28,
+    paddingHorizontal: 20,
+    marginTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: "#F1F5F9",
+    gap: 4,
+  },
+  pageFooterBrand: {
+    fontSize: 18,
+    fontWeight: "900",
+    fontFamily: "Inter_700Bold",
+    color: "#EA580C",
+    letterSpacing: -0.3,
+  },
+  pageFooterSub: {
+    fontSize: 12,
+    color: "#64748B",
+    fontFamily: "Inter_400Regular",
+    textAlign: "center",
+    marginTop: 2,
+  },
+  pageFooterVersion: {
+    fontSize: 11,
+    color: "#94A3B8",
+    fontFamily: "Inter_400Regular",
+    marginTop: 2,
   },
 });
