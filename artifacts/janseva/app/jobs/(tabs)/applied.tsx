@@ -52,7 +52,6 @@ function AppliedCard({ job }: { job: Job }) {
       </View>
 
       <View style={s.salaryRow}>
-        <Feather name="dollar-sign" size={13} color="#059669" />
         <Text style={s.salary}>{job.salary}</Text>
         <Text style={s.openings}>{job.openings} opening{job.openings > 1 ? "s" : ""}</Text>
       </View>

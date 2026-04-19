@@ -74,7 +74,6 @@ function JobCard({
         </View>
 
         <View style={styles.salaryRow}>
-          <Feather name="dollar-sign" size={14} color="#059669" />
           <Text style={styles.salary}>{job.salary}</Text>
         </View>
       </TouchableOpacity>

@@ -105,7 +105,6 @@ function ResultCard({ job, onApply, applied }: { job: Job; applied: boolean; onA
       </View>
 
       <View style={styles.salaryRow}>
-        <Feather name="dollar-sign" size={13} color="#059669" />
         <Text style={styles.salary}>{job.salary}</Text>
       </View>
 
