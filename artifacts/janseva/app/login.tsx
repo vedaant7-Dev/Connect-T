@@ -468,6 +468,7 @@ export default function LoginScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
+          <Text style={s.connectTitle}>Connect T</Text>
           <View style={s.langRow}>
             {languageOptions.map((opt) => (
               <TouchableOpacity
@@ -578,6 +579,7 @@ const s = StyleSheet.create({
   langPillActive: { backgroundColor: "rgba(255,255,255,0.25)", borderColor: "rgba(255,255,255,0.5)" },
   langPillText: { fontSize: 12, color: "rgba(255,255,255,0.55)", fontFamily: "Inter_600SemiBold", fontWeight: "700" },
   langPillTextActive: { color: "white" },
+  connectTitle: { fontSize: 28, fontWeight: "900", color: "white", fontFamily: "Inter_700Bold", letterSpacing: -0.5, textAlign: "center", marginBottom: 16 },
   backPill: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "white", paddingHorizontal: 20, paddingVertical: 10, borderRadius: 20, borderWidth: 1.5, borderColor: "#FED7AA", alignSelf: "center", marginTop: 20, marginBottom: 8 },
   backPillText: { fontSize: 13, color: "#EA580C", fontFamily: "Inter_600SemiBold", fontWeight: "600" },
   tabBar: {
