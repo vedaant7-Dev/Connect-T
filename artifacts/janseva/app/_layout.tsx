@@ -48,18 +48,35 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 
     if (!user && !inLogin) {
       router.replace("/login");
-    } else if (user && inLogin) {
-      if (user.role === "nagarsevak") {
-        router.replace("/(tabs)/admin" as any);
-      } else {
-        router.replace("/(tabs)");
-      }
     } else if (user && user.role === "nagarsevak" && inTabs && currentTab !== "admin") {
       router.replace("/(tabs)/admin" as any);
     }
   }, [user, loading, segments]);
 
   return <>{children}</>;
+}
+
+function AppShell({ children }: { children: React.ReactNode }) {
+  const [splashDone, setSplashDone] = useState(false);
+  const { logout } = useAuth();
+
+  const handleFinish = async (portal: "civic" | "jobs") => {
+    if (portal === "civic") {
+      await logout();
+      setSplashDone(true);
+      staticRouter.replace("/login");
+    } else {
+      setSplashDone(true);
+      staticRouter.replace("/jobs/login" as any);
+    }
+  };
+
+  return (
+    <>
+      {children}
+      {!splashDone && <AppSplash onFinish={handleFinish} />}
+    </>
+  );
 }
 
 function RootLayoutNav() {
@@ -96,7 +113,6 @@ export default function RootLayout() {
     Inter_700Bold,
   });
   const [assetsReady, setAssetsReady] = useState(false);
-  const [splashDone, setSplashDone] = useState(false);
 
   useEffect(() => {
     const preload = async () => {
@@ -132,19 +148,11 @@ export default function RootLayout() {
                 <FeedProvider>
                   <GestureHandlerRootView style={{ flex: 1 }}>
                     <TabBarVisibilityProvider>
-                      <AuthGate>
-                        <RootLayoutNav />
-                      </AuthGate>
-                      {!splashDone && (
-                        <AppSplash
-                          onFinish={(portal) => {
-                            setSplashDone(true);
-                            if (portal === "jobs") {
-                              staticRouter.replace("/jobs/login" as any);
-                            }
-                          }}
-                        />
-                      )}
+                      <AppShell>
+                        <AuthGate>
+                          <RootLayoutNav />
+                        </AuthGate>
+                      </AppShell>
                     </TabBarVisibilityProvider>
                   </GestureHandlerRootView>
                 </FeedProvider>
