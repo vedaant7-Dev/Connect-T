@@ -229,7 +229,6 @@ export default function JobsLoginScreen() {
                         onChangeText={(v) => setOtpDigit(i, v.replace(/\D/g, "").slice(-1))}
                         keyboardType="number-pad"
                         maxLength={1}
-                        textAlign="center"
                       />
                     ))}
                   </View>
@@ -304,7 +303,7 @@ const styles = StyleSheet.create({
 
   otpHint: { fontSize: 13, color: "#64748B", fontFamily: "Inter_400Regular", textAlign: "center", marginBottom: 16 },
   otpRow: { flexDirection: "row", gap: 10, justifyContent: "center", marginBottom: 8 },
-  otpBox: { width: 56, height: 60, borderRadius: 14, borderWidth: 2, borderColor: "#E2E8F0", fontSize: 24, fontWeight: "700", color: "#0F172A", backgroundColor: "#F8FAFC", fontFamily: "Inter_700Bold" },
+  otpBox: { width: 56, height: 60, borderRadius: 14, borderWidth: 2, borderColor: "#E2E8F0", fontSize: 24, fontWeight: "700", color: "#0F172A", backgroundColor: "#F8FAFC", fontFamily: "Inter_700Bold", textAlign: "center", textAlignVertical: "center", paddingVertical: 0, includeFontPadding: false, lineHeight: 60 },
   otpBoxFilled: { borderColor: "#EA580C", backgroundColor: "#FFF7ED" },
   otpDemoNote: { fontSize: 11, color: "#94A3B8", textAlign: "center", marginBottom: 14, fontFamily: "Inter_400Regular" },
 
