@@ -94,9 +94,9 @@ const styles = StyleSheet.create({
 });
 
 const ps = StyleSheet.create({
-  b1: { position: "absolute", borderRadius: 9999, backgroundColor: "rgba(255,255,255,0.12)", width: width * 0.50, height: width * 0.50, top: -width * 0.16, right: -width * 0.14 },
-  b2: { position: "absolute", borderRadius: 9999, backgroundColor: "rgba(255,255,255,0.10)", width: width * 0.30, height: width * 0.30, bottom: -width * 0.10, left: -width * 0.08 },
+  b1: { position: "absolute", borderRadius: 9999, backgroundColor: "rgba(255,255,255,0.20)", width: width * 0.50, height: width * 0.50, top: -width * 0.16, right: -width * 0.14 },
+  b2: { position: "absolute", borderRadius: 9999, backgroundColor: "rgba(255,255,255,0.20)", width: width * 0.30, height: width * 0.30, bottom: -width * 0.10, left: -width * 0.08 },
   r1: { position: "absolute", borderRadius: 9999, borderColor: "rgba(255,255,255,0.20)", borderWidth: 1.5, width: width * 0.88, height: width * 0.88, top: -width * 0.32, right: -width * 0.32 },
-  r2: { position: "absolute", borderRadius: 9999, borderColor: "rgba(255,255,255,0.15)", borderWidth: 1, width: width * 0.62, height: width * 0.62, top: -width * 0.10, right: -width * 0.10 },
-  r3: { position: "absolute", borderRadius: 9999, borderColor: "rgba(255,255,255,0.18)", borderWidth: 1.5, width: width * 0.72, height: width * 0.72, bottom: -width * 0.28, left: -width * 0.26 },
+  r2: { position: "absolute", borderRadius: 9999, borderColor: "rgba(255,255,255,0.20)", borderWidth: 1, width: width * 0.62, height: width * 0.62, top: -width * 0.10, right: -width * 0.10 },
+  r3: { position: "absolute", borderRadius: 9999, borderColor: "rgba(255,255,255,0.20)", borderWidth: 1.5, width: width * 0.72, height: width * 0.72, bottom: -width * 0.28, left: -width * 0.26 },
 });

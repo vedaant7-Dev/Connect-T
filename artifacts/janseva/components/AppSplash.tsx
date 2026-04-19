@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
 });
 
 const s2 = StyleSheet.create({
-  blob: { position: "absolute", borderRadius: 9999, backgroundColor: "rgba(255,255,255,0.12)" },
+  blob: { position: "absolute", borderRadius: 9999, backgroundColor: "rgba(255,255,255,0.20)" },
   ring: { position: "absolute", borderRadius: 9999, borderColor: "rgba(255,255,255,0.20)", borderWidth: 1.5 },
   b1: { width: width * 0.50, height: width * 0.50, top: -width * 0.16, right: -width * 0.14 },
   b2: { width: width * 0.28, height: width * 0.28, bottom: -width * 0.10, left: -width * 0.08 },
