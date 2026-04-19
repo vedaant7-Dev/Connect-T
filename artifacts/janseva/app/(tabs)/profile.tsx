@@ -251,7 +251,7 @@ export default function ProfileScreen() {
           <View style={styles.card}>
             {[
               { icon: "edit-3" as const, label: "My Complaints", sub: "View and track all complaints", color: "#EA580C", bg: "#FFF7ED", onPress: () => router.push("/(tabs)/complaints") },
-              { icon: "rss" as const, label: "Community Feed", sub: "Ward updates & announcements", color: "#7C3AED", bg: "#F5F3FF", onPress: () => router.push("/(tabs)/feed") },
+              { icon: "rss" as const, label: "News Feed", sub: "Ward updates & announcements", color: "#7C3AED", bg: "#F5F3FF", onPress: () => router.push("/(tabs)/feed") },
               { icon: "phone-call" as const, label: "Emergency", sub: "Quick access to help numbers", color: "#DC2626", bg: "#FEE2E2", onPress: () => router.push("/(tabs)/emergency") },
             ].map((item, idx, arr) => (
               <TouchableOpacity

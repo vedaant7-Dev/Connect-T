@@ -390,12 +390,12 @@ export default function FeedScreen() {
     setShowSubscribe(false);
     setActiveTab("community");
     if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    Alert.alert("Welcome to Community! 🎉", "You now have full access to Connect T Community features.");
+    Alert.alert("Welcome to News! 🎉", "You now have full access to Connect T News & Community features.");
   };
 
   const tabs: { id: FeedTab; label: string; count?: number; locked?: boolean }[] = subscribed
     ? [
-        { id: "community", label: "Community" },
+        { id: "community", label: "News" },
         { id: "complaints", label: "Complaints", count: complaints.length },
         { id: "resolved", label: "Resolved", count: resolvedComplaints.length },
       ]
@@ -417,7 +417,7 @@ export default function FeedScreen() {
       <LinearGradient colors={["#C2410C", "#EA580C", "#FB923C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.header, { paddingTop: topPad + 12 }]}>
         <View style={styles.headerRow}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.headerTitle}>Community Feed</Text>
+            <Text style={styles.headerTitle}>News Feed</Text>
             <Text style={styles.headerSub}>Ambernath · BJP Ward Network</Text>
           </View>
           {isSubTab ? (
