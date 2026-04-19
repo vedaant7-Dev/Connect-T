@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, Dimensions } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -23,11 +23,6 @@ export default function PortalSelectScreen() {
 
       <View style={[styles.wrap, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 32 }]}>
         <View style={styles.logoRow}>
-          <Image
-            source={require("../assets/images/logo_transparent.png")}
-            style={styles.logo}
-            resizeMode="contain"
-          />
           <Text style={styles.appName}>Connect T</Text>
           <Text style={styles.subtitle}>Choose your portal to continue</Text>
         </View>
@@ -79,7 +74,6 @@ const styles = StyleSheet.create({
   wrap: { flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 24 },
 
   logoRow: { alignItems: "center", marginBottom: 40 },
-  logo: { width: 80, height: 80, marginBottom: 12 },
   appName: { fontSize: 28, fontWeight: "900", color: "white", fontFamily: "Inter_700Bold", letterSpacing: -0.5, marginBottom: 6 },
   subtitle: { fontSize: 14, color: "rgba(255,255,255,0.7)", fontFamily: "Inter_400Regular", textAlign: "center" },
 

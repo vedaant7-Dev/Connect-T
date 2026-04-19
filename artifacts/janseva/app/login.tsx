@@ -15,7 +15,6 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Image } from "expo-image";
 import { router } from "expo-router";
 
 import { useAuth } from "@/context/AuthContext";
@@ -484,13 +483,6 @@ export default function LoginScreen() {
             ))}
           </View>
 
-          <View style={s.logoBox}>
-            <Image
-              source={require("@/assets/images/logo_transparent.png")}
-              style={s.logo}
-              contentFit="contain"
-            />
-          </View>
 
           <View style={s.tabBar}>
             <TouchableOpacity
@@ -577,9 +569,6 @@ const s = StyleSheet.create({
   langPillActive: { backgroundColor: "rgba(255,255,255,0.25)", borderColor: "rgba(255,255,255,0.5)" },
   langPillText: { fontSize: 12, color: "rgba(255,255,255,0.55)", fontFamily: "Inter_600SemiBold", fontWeight: "700" },
   langPillTextActive: { color: "white" },
-  logoBox: { alignItems: "center", marginBottom: 8, marginTop: 0 },
-  logo: { width: 100, height: 100 },
-
   tabBar: {
     flexDirection: "row", backgroundColor: "rgba(255,255,255,0.12)",
     borderRadius: 16, padding: 4, marginBottom: 16, width: "100%",

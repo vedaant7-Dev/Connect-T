@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView,
-  KeyboardAvoidingView, Platform, ActivityIndicator, Modal, FlatList, Image,
+  KeyboardAvoidingView, Platform, ActivityIndicator, Modal, FlatList,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
@@ -293,9 +293,6 @@ export default function JobsLoginScreen() {
           start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
           style={[styles.header, { paddingTop: (Platform.OS === "web" ? 44 : insets.top) + 20 }]}
         >
-          <View style={styles.headerLogo}>
-            <Image source={require("../../assets/images/logo_transparent.png")} style={styles.headerLogoImg} resizeMode="contain" />
-          </View>
           <Text style={styles.headerTitle}>Connect T Jobs</Text>
           <Text style={styles.headerSub}>Ambernath's #1 Local Job Portal</Text>
         </LinearGradient>
@@ -579,8 +576,6 @@ export default function JobsLoginScreen() {
 
 const styles = StyleSheet.create({
   header: { alignItems: "center", paddingHorizontal: 24, paddingBottom: 32 },
-  headerLogo: { marginBottom: 8 },
-  headerLogoImg: { width: 60, height: 60 },
   headerTitle: { fontSize: 24, fontWeight: "900", color: "white", fontFamily: "Inter_700Bold", letterSpacing: -0.3 },
   headerSub: { fontSize: 12, color: "rgba(255,255,255,0.7)", fontFamily: "Inter_400Regular", marginTop: 4 },
 
