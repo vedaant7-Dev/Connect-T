@@ -34,6 +34,7 @@ interface JobsContextType {
   toggleJobActive: (jobId: string) => void;
   shortlistApplicant: (jobId: string, seekerId: string) => void;
   rejectApplicant: (jobId: string, seekerId: string) => void;
+  deleteJob: (jobId: string) => void;
 }
 
 const JobsContext = createContext<JobsContextType | null>(null);
@@ -212,8 +213,12 @@ export function JobsProvider({ children }: { children: ReactNode }) {
     ));
   };
 
+  const deleteJob = (jobId: string) => {
+    save(jobs.filter((j) => j.id !== jobId));
+  };
+
   return (
-    <JobsContext.Provider value={{ jobs, loading, addJob, applyJob, hasApplied, getJobsByEmployer, toggleJobActive, shortlistApplicant, rejectApplicant }}>
+    <JobsContext.Provider value={{ jobs, loading, addJob, applyJob, hasApplied, getJobsByEmployer, toggleJobActive, shortlistApplicant, rejectApplicant, deleteJob }}>
       {children}
     </JobsContext.Provider>
   );

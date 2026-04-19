@@ -267,7 +267,7 @@ function ApplicantsModal({
 
 // ─── Employer Dashboard ───────────────────────────────────────────────────────
 function EmployerDashboard({
-  jobs, employerId, onPostJob, onToggle, onShortlist, onReject,
+  jobs, employerId, onPostJob, onToggle, onShortlist, onReject, onDelete,
 }: {
   jobs: Job[];
   employerId: string;
@@ -275,9 +275,11 @@ function EmployerDashboard({
   onToggle: (id: string) => void;
   onShortlist: (jobId: string, seekerId: string) => void;
   onReject: (jobId: string, seekerId: string) => void;
+  onDelete: (jobId: string) => void;
 }) {
   const myJobs = jobs.filter((j) => j.employerId === employerId);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Job | null>(null);
 
   const totalApplicants = myJobs.reduce((n, j) => n + j.applicants.length, 0);
   const totalShortlisted = myJobs.reduce((n, j) => n + j.shortlisted.length, 0);
@@ -434,18 +436,27 @@ function EmployerDashboard({
                 </View>
               </View>
 
-              {/* View applicants */}
-              <TouchableOpacity
-                onPress={() => setSelectedJob(job)}
-                activeOpacity={0.85}
-                style={[s.viewAppsBtn, { opacity: job.applicants.length === 0 ? 0.5 : 1 }]}
-              >
-                <Feather name="users" size={14} color="#EA580C" />
-                <Text style={s.viewAppsBtnText}>
-                  {job.applicants.length === 0 ? "No applicants yet" : `View ${job.applicants.length} applicant${job.applicants.length !== 1 ? "s" : ""}`}
-                </Text>
-                {job.applicants.length > 0 && <Feather name="chevron-right" size={14} color="#EA580C" />}
-              </TouchableOpacity>
+              {/* View applicants + delete row */}
+              <View style={{ flexDirection: "row", gap: 8 }}>
+                <TouchableOpacity
+                  onPress={() => setSelectedJob(job)}
+                  activeOpacity={0.85}
+                  style={[s.viewAppsBtn, { flex: 1, opacity: job.applicants.length === 0 ? 0.5 : 1 }]}
+                >
+                  <Feather name="users" size={14} color="#EA580C" />
+                  <Text style={s.viewAppsBtnText}>
+                    {job.applicants.length === 0 ? "No applicants yet" : `View ${job.applicants.length} applicant${job.applicants.length !== 1 ? "s" : ""}`}
+                  </Text>
+                  {job.applicants.length > 0 && <Feather name="chevron-right" size={14} color="#EA580C" />}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setDeleteTarget(job)}
+                  activeOpacity={0.8}
+                  style={s.deleteJobBtn}
+                >
+                  <Feather name="trash-2" size={15} color="#DC2626" />
+                </TouchableOpacity>
+              </View>
             </View>
           );
         })
@@ -480,6 +491,36 @@ function EmployerDashboard({
         onShortlist={(jobId, id) => { onShortlist(jobId, id); }}
         onReject={(jobId, id) => { onReject(jobId, id); }}
       />
+
+      {/* Delete confirm modal */}
+      <Modal visible={!!deleteTarget} transparent animationType="fade" onRequestClose={() => setDeleteTarget(null)}>
+        <View style={s.deleteOverlay}>
+          <View style={s.deleteCard}>
+            <View style={s.deleteIconWrap}>
+              <Feather name="trash-2" size={28} color="#DC2626" />
+            </View>
+            <Text style={s.deleteTitle}>Delete Job Posting?</Text>
+            <Text style={s.deleteSub}>
+              "{deleteTarget?.title}" will be permanently removed. All applicant records for this job will also be deleted.
+            </Text>
+            <View style={s.deleteBtns}>
+              <TouchableOpacity style={s.deleteCancelBtn} onPress={() => setDeleteTarget(null)} activeOpacity={0.8}>
+                <Text style={s.deleteCancelText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={s.deleteConfirmBtn}
+                activeOpacity={0.8}
+                onPress={() => {
+                  if (deleteTarget) { onDelete(deleteTarget.id); setDeleteTarget(null); }
+                }}
+              >
+                <Feather name="trash-2" size={14} color="white" />
+                <Text style={s.deleteConfirmText}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -489,7 +530,7 @@ export default function JobsHomeScreen() {
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const { jobsUser } = useJobsAuth();
-  const { jobs, applyJob, hasApplied, toggleJobActive, shortlistApplicant, rejectApplicant } = useJobs();
+  const { jobs, applyJob, hasApplied, toggleJobActive, shortlistApplicant, rejectApplicant, deleteJob } = useJobs();
   const router = useRouter();
   const [showNotifs, setShowNotifs] = useState(false);
   const isEmployer = jobsUser?.role === "employer";
@@ -559,6 +600,7 @@ export default function JobsHomeScreen() {
               onToggle={toggleJobActive}
               onShortlist={shortlistApplicant}
               onReject={rejectApplicant}
+              onDelete={deleteJob}
             />
           ) : (
             <>
@@ -669,6 +711,17 @@ const s = StyleSheet.create({
   fillFill: { backgroundColor: "#EA580C", borderRadius: 3 },
   viewAppsBtn: { flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 14, paddingVertical: 11, borderTopWidth: 1, borderTopColor: "#F1F5F9" },
   viewAppsBtnText: { flex: 1, fontSize: 13, fontWeight: "600", color: "#EA580C", fontFamily: "Inter_600SemiBold" },
+  deleteJobBtn: { width: 44, alignItems: "center", justifyContent: "center", borderTopWidth: 1, borderTopColor: "#F1F5F9", borderLeftWidth: 1, borderLeftColor: "#F1F5F9", borderRadius: 10, backgroundColor: "#FEF2F2" },
+  deleteOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.45)", justifyContent: "center", paddingHorizontal: 28 },
+  deleteCard: { backgroundColor: "white", borderRadius: 24, padding: 24, alignItems: "center", gap: 10 },
+  deleteIconWrap: { width: 64, height: 64, borderRadius: 32, backgroundColor: "#FEE2E2", alignItems: "center", justifyContent: "center", marginBottom: 4 },
+  deleteTitle: { fontSize: 18, fontWeight: "800", color: "#0F172A", fontFamily: "Inter_700Bold", textAlign: "center" },
+  deleteSub: { fontSize: 13, color: "#64748B", fontFamily: "Inter_400Regular", textAlign: "center", lineHeight: 19 },
+  deleteBtns: { flexDirection: "row", gap: 10, marginTop: 8, width: "100%" as any },
+  deleteCancelBtn: { flex: 1, backgroundColor: "#F1F5F9", padding: 13, borderRadius: 14, alignItems: "center" },
+  deleteCancelText: { fontSize: 14, fontWeight: "600", color: "#64748B", fontFamily: "Inter_600SemiBold" },
+  deleteConfirmBtn: { flex: 1, backgroundColor: "#DC2626", padding: 13, borderRadius: 14, alignItems: "center", flexDirection: "row", justifyContent: "center", gap: 8 },
+  deleteConfirmText: { fontSize: 14, fontWeight: "700", color: "white", fontFamily: "Inter_700Bold" },
 
   statusPill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
   statusPillText: { fontSize: 11, fontWeight: "700", fontFamily: "Inter_700Bold" },
