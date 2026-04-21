@@ -221,18 +221,22 @@ export default function HomeScreen() {
         <SectionHeader title={t("quickServices")} actionLabel={t("allServices")} onAction={() => router.push("/(tabs)/services" as any)} />
         <View style={styles.servicesCard}>
           <View style={styles.servicesGrid}>
-            {quickServices.map((svc) => (
-              <TouchableOpacity
-                key={svc.id}
-                style={styles.serviceItem}
-                activeOpacity={0.8}
-                onPress={() => handleServiceTap(svc.id)}
-              >
-                <View style={[styles.serviceIcon, { backgroundColor: svc.bg }]}>
-                  <Feather name={svc.icon as any} size={22} color={svc.color} />
-                </View>
-                <Text style={styles.serviceLabel}>{svc.label}</Text>
-              </TouchableOpacity>
+            {Array.from({ length: Math.ceil(quickServices.length / 2) }, (_, rowIndex) => quickServices.slice(rowIndex * 2, rowIndex * 2 + 2)).map((row, rowIndex) => (
+              <View key={`service-row-${rowIndex}`} style={styles.serviceRow}>
+                {row.map((svc) => (
+                  <TouchableOpacity
+                    key={svc.id}
+                    style={styles.serviceItem}
+                    activeOpacity={0.8}
+                    onPress={() => handleServiceTap(svc.id)}
+                  >
+                    <View style={[styles.serviceIcon, { backgroundColor: svc.bg }]}>
+                      <Feather name={svc.icon as any} size={22} color={svc.color} />
+                    </View>
+                    <Text style={styles.serviceLabel}>{svc.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             ))}
           </View>
         </View>
@@ -526,13 +530,14 @@ const styles = StyleSheet.create({
   utilityRow: { flexDirection: "row", gap: 10, marginBottom: 18 },
   servicesCard: { backgroundColor: "#FFFFFF", borderRadius: 18, padding: 16, marginBottom: 18, shadowColor: "#B45309", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
   servicesGrid: {
+    gap: 18,
+  },
+  serviceRow: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    rowGap: 16,
+    gap: 18,
   },
   serviceItem: {
-    width: "48%",
+    flex: 1,
     alignItems: "center",
     gap: 6,
   },
