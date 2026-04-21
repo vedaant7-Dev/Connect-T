@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput,
-  FlatList, Platform, Alert,
+  FlatList, Platform, Alert, Modal,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
@@ -138,9 +138,12 @@ export default function SearchScreen() {
   const { jobsUser } = useJobsAuth();
 
   const [query, setQuery] = useState("");
-  const [salary, setSalary] = useState("all");
+  const [salaryMin, setSalaryMin] = useState("");
+  const [salaryMax, setSalaryMax] = useState("");
   const [jobType, setJobType] = useState<JobType | "all">("all");
   const [category, setCategory] = useState<JobCategory | "all">("all");
+  const [customCategory, setCustomCategory] = useState("");
+  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [showAllAreas, setShowAllAreas] = useState(false);
@@ -151,7 +154,9 @@ export default function SearchScreen() {
     );
   };
 
-  const salaryRange = SALARY_RANGES.find((r) => r.id === salary)!;
+  const minSalNum = parseInt(salaryMin.replace(/[^\d]/g, "")) || 0;
+  const maxSalNum = parseInt(salaryMax.replace(/[^\d]/g, "")) || Infinity;
+  const customCatLower = customCategory.trim().toLowerCase();
 
   const results = useMemo(() => {
     return jobs.filter((j) => {
@@ -160,14 +165,16 @@ export default function SearchScreen() {
         const q = query.toLowerCase();
         if (!j.title.toLowerCase().includes(q) && !j.company.toLowerCase().includes(q) && !j.location.toLowerCase().includes(q)) return false;
       }
-      if (category !== "all" && j.category !== category) return false;
+      if (customCatLower) {
+        if (!j.title.toLowerCase().includes(customCatLower) && !j.category.toLowerCase().includes(customCatLower)) return false;
+      } else if (category !== "all" && j.category !== category) return false;
       if (jobType !== "all" && j.type !== jobType) return false;
       if (selectedAreas.length > 0 && !selectedAreas.some((a) => j.location.toLowerCase().includes(a.toLowerCase()))) return false;
       const salMin = parseSalaryMin(j.salary);
-      if (salMin < salaryRange.min || salMin > salaryRange.max) return false;
+      if (salMin < minSalNum || salMin > maxSalNum) return false;
       return true;
     });
-  }, [jobs, query, salary, jobType, category, selectedAreas]);
+  }, [jobs, query, minSalNum, maxSalNum, jobType, category, customCatLower, selectedAreas]);
 
   const handleApply = (job: Job) => {
     if (!jobsUser || jobsUser.role !== "seeker") return;
@@ -179,10 +186,11 @@ export default function SearchScreen() {
   };
 
   const clearAll = () => {
-    setSalary("all"); setJobType("all"); setCategory("all"); setSelectedAreas([]);
+    setSalaryMin(""); setSalaryMax(""); setJobType("all"); setCategory("all"); setCustomCategory(""); setSelectedAreas([]);
   };
 
-  const hasFilters = salary !== "all" || jobType !== "all" || category !== "all" || selectedAreas.length > 0;
+  const hasFilters = salaryMin !== "" || salaryMax !== "" || jobType !== "all" || category !== "all" || customCategory !== "" || selectedAreas.length > 0;
+  const selectedCategoryLabel = customCategory.trim() || CATEGORIES.find((c) => c.id === category)?.label || "All";
   const visibleAreas = showAllAreas ? AREAS : AREAS.slice(0, 6);
 
   return (
@@ -228,17 +236,13 @@ export default function SearchScreen() {
 
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         <View style={styles.cleanFilterCard}>
-          <View style={styles.cleanFilterHeader}>
-            <View>
-              <Text style={styles.cleanFilterTitle}>Top filters</Text>
-              <Text style={styles.cleanFilterSub}>Choose only what matters</Text>
-            </View>
-            {hasFilters && (
+          {hasFilters && (
+            <View style={styles.resetRow}>
               <TouchableOpacity onPress={clearAll} style={styles.smallClearBtn} activeOpacity={0.8}>
                 <Text style={styles.smallClearText}>Reset</Text>
               </TouchableOpacity>
-            )}
-          </View>
+            </View>
+          )}
 
           <View style={styles.filterBlock}>
             <Text style={styles.filterTitle}>Job Type</Text>
@@ -251,11 +255,51 @@ export default function SearchScreen() {
 
           <View style={styles.filterBlock}>
             <Text style={styles.filterTitle}>Category</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
-              {CATEGORIES.slice(0, 7).map((c) => (
-                <FilterChip key={c.id} label={c.label} active={category === c.id} onPress={() => setCategory(c.id as any)} />
-              ))}
-            </ScrollView>
+            <TouchableOpacity
+              style={styles.dropdownBtn}
+              onPress={() => setCategoryDropdownOpen(true)}
+              activeOpacity={0.85}
+            >
+              <Text style={[styles.dropdownText, (category === "all" && !customCategory) && { color: "#94A3B8" }]} numberOfLines={1}>
+                {selectedCategoryLabel}
+              </Text>
+              <Feather name="chevron-down" size={18} color="#64748B" />
+            </TouchableOpacity>
+            <TextInput
+              style={styles.manualInput}
+              placeholder="Or type a custom category…"
+              placeholderTextColor="#94A3B8"
+              value={customCategory}
+              onChangeText={(v) => { setCustomCategory(v); if (v) setCategory("all"); }}
+            />
+          </View>
+
+          <View style={styles.filterBlock}>
+            <Text style={styles.filterTitle}>Salary</Text>
+            <View style={styles.salaryInputRow}>
+              <View style={styles.salaryInputBox}>
+                <Text style={styles.salaryInputLabel}>Min</Text>
+                <TextInput
+                  style={styles.salaryInput}
+                  placeholder="₹ 0"
+                  placeholderTextColor="#94A3B8"
+                  keyboardType="numeric"
+                  value={salaryMin}
+                  onChangeText={setSalaryMin}
+                />
+              </View>
+              <View style={styles.salaryInputBox}>
+                <Text style={styles.salaryInputLabel}>Max</Text>
+                <TextInput
+                  style={styles.salaryInput}
+                  placeholder="₹ Any"
+                  placeholderTextColor="#94A3B8"
+                  keyboardType="numeric"
+                  value={salaryMax}
+                  onChangeText={setSalaryMax}
+                />
+              </View>
+            </View>
           </View>
 
           <TouchableOpacity
@@ -269,7 +313,7 @@ export default function SearchScreen() {
             </View>
             <View style={styles.moreFilterBadge}>
               <Text style={styles.moreFilterBadgeText}>
-                {[salary !== "all", selectedAreas.length > 0].filter(Boolean).length || "Optional"}
+                {selectedAreas.length > 0 ? selectedAreas.length : "Optional"}
               </Text>
             </View>
             <Feather name={showMoreFilters ? "chevron-up" : "chevron-down"} size={17} color="#94A3B8" />
@@ -277,15 +321,6 @@ export default function SearchScreen() {
 
           {showMoreFilters && (
             <View style={styles.morePanel}>
-              <View style={styles.filterBlock}>
-                <Text style={styles.filterTitle}>Salary</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
-                  {SALARY_RANGES.map((r) => (
-                    <FilterChip key={r.id} label={r.label} active={salary === r.id} onPress={() => setSalary(r.id)} />
-                  ))}
-                </ScrollView>
-              </View>
-
               <View style={styles.filterBlock}>
                 <Text style={styles.filterTitle}>Area / Location</Text>
                 <Text style={styles.filterHint}>Select nearby areas if needed</Text>
@@ -301,6 +336,43 @@ export default function SearchScreen() {
             </View>
           )}
         </View>
+
+        <Modal
+          visible={categoryDropdownOpen}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setCategoryDropdownOpen(false)}
+        >
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={() => setCategoryDropdownOpen(false)}
+          >
+            <View style={styles.dropdownMenu}>
+              <Text style={styles.dropdownMenuTitle}>Select Category</Text>
+              <ScrollView style={{ maxHeight: 320 }}>
+                {CATEGORIES.map((c) => (
+                  <TouchableOpacity
+                    key={c.id}
+                    style={[styles.dropdownItem, category === c.id && !customCategory && styles.dropdownItemActive]}
+                    onPress={() => {
+                      setCategory(c.id as any);
+                      setCustomCategory("");
+                      setCategoryDropdownOpen(false);
+                    }}
+                  >
+                    <Text style={[styles.dropdownItemText, category === c.id && !customCategory && styles.dropdownItemTextActive]}>
+                      {c.label}
+                    </Text>
+                    {category === c.id && !customCategory && (
+                      <Feather name="check" size={16} color="#EA580C" />
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          </TouchableOpacity>
+        </Modal>
 
         <View style={styles.divider} />
 
@@ -344,9 +416,21 @@ const styles = StyleSheet.create({
   resultCountText: { fontSize: 12, color: "rgba(255,255,255,0.7)", fontFamily: "Inter_400Regular" },
 
   cleanFilterCard: { backgroundColor: "white", margin: 14, marginBottom: 0, borderRadius: 20, padding: 14, borderWidth: 1, borderColor: "#E2E8F0", shadowColor: "#EA580C", shadowOpacity: 0.06, shadowRadius: 10, shadowOffset: { width: 0, height: 3 }, elevation: 2 },
-  cleanFilterHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 },
-  cleanFilterTitle: { fontSize: 15, fontWeight: "800", color: "#0F172A", fontFamily: "Inter_700Bold" },
-  cleanFilterSub: { fontSize: 11, color: "#94A3B8", fontFamily: "Inter_400Regular", marginTop: 1 },
+  resetRow: { flexDirection: "row", justifyContent: "flex-end", marginBottom: 6 },
+  dropdownBtn: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: "#F8FAFC", borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, borderWidth: 1.5, borderColor: "#E2E8F0" },
+  dropdownText: { flex: 1, fontSize: 14, color: "#0F172A", fontFamily: "Inter_600SemiBold", fontWeight: "600" },
+  manualInput: { marginTop: 8, backgroundColor: "#F8FAFC", borderRadius: 12, paddingHorizontal: 14, paddingVertical: 11, borderWidth: 1.5, borderColor: "#E2E8F0", fontSize: 13, color: "#0F172A", fontFamily: "Inter_400Regular" },
+  salaryInputRow: { flexDirection: "row", gap: 10 },
+  salaryInputBox: { flex: 1, backgroundColor: "#F8FAFC", borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8, borderWidth: 1.5, borderColor: "#E2E8F0" },
+  salaryInputLabel: { fontSize: 10, fontWeight: "700", color: "#94A3B8", fontFamily: "Inter_700Bold", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 2 },
+  salaryInput: { fontSize: 15, color: "#0F172A", fontFamily: "Inter_700Bold", fontWeight: "700", paddingVertical: 2 },
+  modalOverlay: { flex: 1, backgroundColor: "rgba(15,23,42,0.45)", justifyContent: "center", padding: 24 },
+  dropdownMenu: { backgroundColor: "white", borderRadius: 18, padding: 14, shadowColor: "#000", shadowOpacity: 0.2, shadowRadius: 20, shadowOffset: { width: 0, height: 8 }, elevation: 8 },
+  dropdownMenuTitle: { fontSize: 14, fontWeight: "800", color: "#0F172A", fontFamily: "Inter_700Bold", marginBottom: 10, paddingHorizontal: 4 },
+  dropdownItem: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 12, paddingVertical: 12, borderRadius: 10 },
+  dropdownItemActive: { backgroundColor: "#FFF7ED" },
+  dropdownItemText: { fontSize: 14, color: "#334155", fontFamily: "Inter_500Medium" },
+  dropdownItemTextActive: { color: "#EA580C", fontFamily: "Inter_700Bold", fontWeight: "700" },
   smallClearBtn: { backgroundColor: "#FFF7ED", borderRadius: 12, paddingHorizontal: 10, paddingVertical: 6, borderWidth: 1, borderColor: "#FED7AA" },
   smallClearText: { fontSize: 11, fontWeight: "800", color: "#EA580C", fontFamily: "Inter_700Bold" },
   filterBlock: { marginTop: 6, marginBottom: 10 },
