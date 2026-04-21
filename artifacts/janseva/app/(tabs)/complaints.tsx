@@ -137,16 +137,17 @@ export default function ComplaintsScreen() {
   const [filter, setFilter] = useState("all");
 
   const filterTabs = [
-    { id: "all", label: t("viewAll") },
-    { id: "submitted", label: t("new") },
-    { id: "in_progress", label: t("active") },
-    { id: "resolved", label: t("done") },
+    { id: "all", label: t("complaints"), icon: "file-text", color: "#92400E" },
+    { id: "resolved", label: t("resolved"), icon: "check-circle", color: "#059669" },
+    { id: "in_progress", label: t("inProgress"), icon: "tool", color: "#7C3AED" },
+    { id: "rejected", label: t("rejected"), icon: "x-circle", color: "#DC2626" },
   ];
 
   const filtered = filter === "all"
     ? complaints
     : complaints.filter((c) => {
         if (filter === "in_progress") return c.status === "in_progress" || c.status === "assigned";
+        if (filter === "rejected") return c.status === "rejected";
         return c.status === filter;
       });
 
@@ -155,6 +156,7 @@ export default function ComplaintsScreen() {
     submitted: complaints.filter((c) => c.status === "submitted").length,
     in_progress: complaints.filter((c) => c.status === "in_progress" || c.status === "assigned").length,
     resolved: complaints.filter((c) => c.status === "resolved").length,
+    rejected: complaints.filter((c) => c.status === "rejected").length,
   };
 
   return (
@@ -182,19 +184,6 @@ export default function ComplaintsScreen() {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.statRow}>
-          {[
-            { label: t("submitted"), count: counts.submitted, color: "#FDE68A" },
-            { label: t("active"), count: counts.in_progress, color: "#C4B5FD" },
-            { label: t("resolved"), count: counts.resolved, color: "#6EE7B7" },
-          ].map((s, i) => (
-            <View key={i} style={styles.statItem}>
-              <Text style={[styles.statCount, { color: s.color }]}>{s.count}</Text>
-              <Text style={styles.statLabel}>{s.label}</Text>
-            </View>
-          ))}
-        </View>
-
         <View style={styles.filterRow}>
           {filterTabs.map((tab) => {
             const isActive = filter === tab.id;
@@ -206,16 +195,15 @@ export default function ComplaintsScreen() {
                 style={[styles.filterChip, isActive && styles.filterChipActive]}
                 activeOpacity={0.8}
               >
+                <View style={[styles.filterChipIcon, isActive && { backgroundColor: tab.color + "12" }]}>
+                  <Feather name={tab.icon as any} size={16} color={isActive ? tab.color : "rgba(255,255,255,0.55)"} />
+                </View>
+                <Text style={[styles.filterChipCount, isActive && styles.filterChipCountActive]}>
+                  {count ?? 0}
+                </Text>
                 <Text style={[styles.filterChipText, isActive && styles.filterChipTextActive]}>
                   {tab.label}
                 </Text>
-                {count !== undefined && count > 0 && (
-                  <View style={[styles.filterChipBadge, isActive && styles.filterChipBadgeActive]}>
-                    <Text style={[styles.filterChipBadgeText, isActive && styles.filterChipBadgeTextActive]}>
-                      {count}
-                    </Text>
-                  </View>
-                )}
               </TouchableOpacity>
             );
           })}
@@ -272,31 +260,20 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.25)",
   },
   newBtnText: { fontSize: 13, fontWeight: "700", color: "white", fontFamily: "Inter_700Bold" },
-  statRow: {
-    flexDirection: "row",
-    backgroundColor: "rgba(255,255,255,0.1)",
-    borderRadius: 14,
-    padding: 12,
-    marginBottom: 12,
-    gap: 0,
-  },
-  statItem: { flex: 1, alignItems: "center" },
-  statCount: { fontSize: 24, fontWeight: "900", fontFamily: "Inter_700Bold" },
-  statLabel: { fontSize: 10, color: "rgba(255,255,255,0.6)", fontFamily: "Inter_400Regular", marginTop: 2 },
   filterRow: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
     gap: 8,
     paddingBottom: 4,
   },
   filterChip: {
-    flex: 1,
-    flexDirection: "row",
+    width: "23%",
+    aspectRatio: 1,
     alignItems: "center",
     justifyContent: "center",
     gap: 5,
-    paddingHorizontal: 10,
+    paddingHorizontal: 6,
     paddingVertical: 8,
     borderRadius: 12,
     backgroundColor: "rgba(255,255,255,0.12)",
@@ -312,9 +289,18 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 4,
   },
-  filterChipText: { fontSize: 12, fontWeight: "700", color: "rgba(255,255,255,0.75)", fontFamily: "Inter_600SemiBold" },
+  filterChipIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255,255,255,0.12)",
+  },
+  filterChipCount: { fontSize: 20, fontWeight: "900", color: "white", fontFamily: "Inter_700Bold", lineHeight: 24 },
+  filterChipCountActive: { color: "#111827" },
+  filterChipText: { fontSize: 9, fontWeight: "700", color: "rgba(255,255,255,0.75)", fontFamily: "Inter_600SemiBold", textAlign: "center", lineHeight: 12 },
   filterChipTextActive: { color: "#C2410C" },
-  filterChipCount: { fontSize: 11 },
   filterChipBadge: {
     backgroundColor: "rgba(255,255,255,0.25)",
     borderRadius: 10,
