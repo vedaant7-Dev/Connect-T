@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { findNagarsevakById } from "@/data/nagarsevaks";
 
 export type UserRole = "citizen" | "nagarsevak";
 
@@ -40,7 +41,6 @@ const USERS_KEY = "janseva_users";
 
 const AVATAR_COLORS = ["#1E40AF", "#059669", "#7C3AED", "#D97706", "#DC2626", "#0EA5E9"];
 
-const NAGARSEVAK_IDS = ["NS001", "NS002", "NS003", "NS004", "NS005"];
 
 async function getAllUsers(): Promise<User[]> {
   try {
@@ -110,25 +110,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginWithNagarsevakId = async (mobile: string, nagarsevakId: string): Promise<User | null> => {
     const normalizedId = nagarsevakId.toUpperCase().trim();
-    const isValidId = NAGARSEVAK_IDS.includes(normalizedId);
-    if (!isValidId) return null;
+    const directoryEntry = findNagarsevakById(normalizedId);
+    if (!directoryEntry) return null;
+
+    const enteredMobile = mobile.trim().replace(/\D/g, "");
+    if (enteredMobile && enteredMobile !== directoryEntry.mobile) return null;
 
     const users = await getAllUsers();
-    const found = users.find((u) => u.mobile === mobile.trim() && u.role === "nagarsevak" && u.nagarsevakId === normalizedId);
+    const found = users.find((u) => u.role === "nagarsevak" && u.nagarsevakId === normalizedId);
     if (found) {
-      await login(found);
-      return found;
+      const refreshed: User = {
+        ...found,
+        name: directoryEntry.name,
+        mobile: directoryEntry.mobile,
+        ward: directoryEntry.ward,
+      };
+      const idx = users.findIndex((u) => u.id === found.id);
+      if (idx >= 0) {
+        users[idx] = refreshed;
+        await saveAllUsers(users);
+      }
+      await login(refreshed);
+      return refreshed;
     }
-
-    const existingCitizen = users.find((u) => u.mobile === mobile.trim());
-    if (existingCitizen) return null;
 
     const colorIndex = Math.floor(Math.random() * AVATAR_COLORS.length);
     const newUser: User = {
       id: "U" + Date.now(),
-      name: "Nagarsevak",
-      mobile: mobile.trim(),
+      name: directoryEntry.name,
+      mobile: directoryEntry.mobile,
       role: "nagarsevak",
+      ward: directoryEntry.ward,
       nagarsevakId: normalizedId,
       avatarColor: AVATAR_COLORS[colorIndex],
       createdAt: new Date().toISOString(),
