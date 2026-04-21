@@ -380,6 +380,7 @@ export default function SearchScreen() {
       <View style={[styles.ctaBar, { paddingBottom: Math.max(insets.bottom, 12) }]}>
         <TouchableOpacity
           activeOpacity={0.9}
+          style={{ borderRadius: 14, overflow: "hidden" }}
           onPress={() => router.push({
             pathname: "/jobs/results" as any,
             params: {
