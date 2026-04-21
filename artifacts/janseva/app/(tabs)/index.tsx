@@ -473,11 +473,11 @@ const styles = StyleSheet.create({
   servicesGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "center",
-    gap: 14,
+    justifyContent: "space-between",
+    rowGap: 16,
   },
   serviceItem: {
-    width: 72,
+    width: "48%",
     alignItems: "center",
     gap: 6,
   },
