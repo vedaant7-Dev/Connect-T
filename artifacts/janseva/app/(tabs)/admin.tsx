@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
   Platform, Modal, TextInput, FlatList,
@@ -207,6 +207,7 @@ export default function AdminScreen() {
   const [alertTitle, setAlertTitle] = useState("");
   const [alertBody, setAlertBody] = useState("");
   const [alertType, setAlertType] = useState<AlertType>("alert");
+  const complaintListRef = useRef<FlatList<Complaint>>(null);
 
   if (!user || user.role !== "nagarsevak") {
     return (
@@ -245,6 +246,15 @@ export default function AdminScreen() {
     { filter: "resolved", label: t("resolved"), count: resolvedCount, icon: "check-circle", color: "#059669", bg: "#D1FAE5" },
     { filter: "rejected", label: t("rejected"), count: rejectedCount, icon: "x-circle", color: "#DC2626", bg: "#FEE2E2" },
   ];
+  const selectedDashboard = dashboardFilters.find((item) => item.filter === filter) ?? dashboardFilters[0];
+
+  const openComplaintTab = (nextFilter: ComplaintStatus | "all") => {
+    if (Platform.OS !== "web") Haptics.selectionAsync();
+    setFilter(nextFilter);
+    requestAnimationFrame(() => {
+      complaintListRef.current?.scrollToOffset({ offset: 0, animated: true });
+    });
+  };
 
   const handleLogout = async () => {
     setShowLogoutModal(false);
@@ -381,7 +391,7 @@ export default function AdminScreen() {
                 },
                 isActive && styles.dashboardCardActive,
               ]}
-              onPress={() => setFilter(item.filter)}
+              onPress={() => openComplaintTab(item.filter)}
               activeOpacity={0.85}
             >
               <View style={[styles.dashboardIcon, { backgroundColor: item.color + "15" }]}>
@@ -395,11 +405,26 @@ export default function AdminScreen() {
       </View>
 
       <FlatList
+        ref={complaintListRef}
         data={filtered}
+        extraData={filter}
         keyExtractor={(c) => c.id}
         renderItem={({ item }) => <DetailedComplaintCard complaint={item} onAction={() => setActive(item)} />}
         contentContainerStyle={[{ padding: 14 }, { paddingBottom: Math.max(insets.bottom, 8) + 20 }]}
         showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <View style={[styles.selectedTabHeader, { borderLeftColor: selectedDashboard.color }]}>
+            <View style={[styles.selectedTabIcon, { backgroundColor: selectedDashboard.bg }]}>
+              <Feather name={selectedDashboard.icon as any} size={16} color={selectedDashboard.color} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.selectedTabTitle}>{selectedDashboard.label}</Text>
+              <Text style={styles.selectedTabSub}>
+                {filtered.length} {t("complaints")} details
+              </Text>
+            </View>
+          </View>
+        }
         ListEmptyComponent={
           <View style={styles.empty}>
             <Feather name="check-circle" size={36} color="#CBD5E1" />
@@ -775,6 +800,30 @@ const styles = StyleSheet.create({
   },
   dashboardCount: { fontSize: 24, fontWeight: "900", fontFamily: "Inter_700Bold" },
   dashboardLabel: { width: "100%", fontSize: 13, fontWeight: "800", color: "#334155", fontFamily: "Inter_700Bold", textAlign: "center", lineHeight: 18 },
+  selectedTabHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    backgroundColor: "white",
+    borderRadius: 16,
+    borderLeftWidth: 5,
+    padding: 12,
+    marginBottom: 10,
+    shadowColor: "#166534",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  selectedTabIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  selectedTabTitle: { fontSize: 15, fontWeight: "800", color: "#0F172A", fontFamily: "Inter_700Bold" },
+  selectedTabSub: { fontSize: 11, color: "#64748B", fontFamily: "Inter_400Regular", marginTop: 2 },
   card: { backgroundColor: "white", borderRadius: 16, marginBottom: 10, overflow: "hidden", shadowColor: "#166534", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 2 },
   cardHeader: { flexDirection: "row", alignItems: "center", gap: 10, padding: 14, paddingBottom: 10 },
   catDot: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center", flexShrink: 0 },
