@@ -63,6 +63,7 @@ export default function HomeScreen() {
 
   const roleColor = getRoleColor(user?.role);
   const readAlertsKey = `connectt_read_alerts_${user?.id || "guest"}`;
+  const alertItems = alerts.filter((item) => item.type === "alert");
 
   useEffect(() => {
     AsyncStorage.getItem(readAlertsKey)
@@ -81,7 +82,7 @@ export default function HomeScreen() {
 
   const openNotifications = () => {
     setShowNotifPanel(true);
-    markAlertsRead(alerts.map((item) => item.id));
+    markAlertsRead(alertItems.map((item) => item.id));
   };
 
   const openAlertDetail = (item: AppAlert) => {
@@ -89,7 +90,7 @@ export default function HomeScreen() {
     setSelectedAlert(item);
   };
 
-  const notifCount = alerts.filter((i) => i.type === "alert" && !readAlertIds.includes(i.id)).length;
+  const notifCount = alertItems.filter((i) => !readAlertIds.includes(i.id)).length;
 
   const handleCall = (number: string) => {
     if (Platform.OS !== "web") Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -162,17 +163,16 @@ export default function HomeScreen() {
               <Text style={styles.alertsLiveText}>{t("live")}</Text>
             </View>
           </View>
-          {alerts.length === 0 ? (
+          {alertItems.length === 0 ? (
             <View style={styles.alertsEmpty}>
               <Feather name="bell-off" size={20} color="#CBD5E1" />
               <Text style={styles.alertsEmptyText}>No alerts right now</Text>
             </View>
           ) : (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10, paddingHorizontal: 2, paddingBottom: 2 }}>
-              {alerts.map((item) => {
-                const isAlert = item.type === "alert";
-                const cardColor = isAlert ? "#DC2626" : "#EA580C";
-                const cardBg = isAlert ? "#FEE2E2" : "#FFEDD5";
+              {alertItems.map((item) => {
+                const cardColor = "#DC2626";
+                const cardBg = "#FEE2E2";
                 const timeStr = (() => {
                   const diff = Date.now() - new Date(item.createdAt).getTime();
                   const mins = Math.floor(diff / 60000);
@@ -194,14 +194,14 @@ export default function HomeScreen() {
                       </View>
                     ) : (
                       <View style={[styles.alertCardIcon, { backgroundColor: cardBg }]}>
-                        <Feather name={isAlert ? "alert-triangle" : "radio"} size={16} color={cardColor} />
+                        <Feather name="alert-triangle" size={16} color={cardColor} />
                       </View>
                     )}
                     <View style={styles.alertCardBody}>
                       <View style={styles.alertCardRow}>
                         <View style={[styles.alertTypePill, { backgroundColor: cardBg }]}>
                           <Text style={[styles.alertTypeText, { color: cardColor }]}>
-                            {isAlert ? `⚠ ${t("alert")}` : `📢 ${t("news")}`}
+                            ⚠ {t("alert")}
                           </Text>
                         </View>
                         <Text style={styles.alertCardTime}>{timeStr}</Text>
@@ -300,15 +300,14 @@ export default function HomeScreen() {
               <Text style={styles.modalTitle}>{t("alerts")}</Text>
             </View>
             <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 420, width: "100%" }}>
-              {alerts.length === 0 ? (
+              {alertItems.length === 0 ? (
                 <View style={{ padding: 24, alignItems: "center", gap: 8 }}>
                   <Feather name="bell-off" size={32} color="#CBD5E1" />
                   <Text style={{ fontSize: 13, color: "#94A3B8", fontFamily: "Inter_400Regular" }}>No alerts right now</Text>
                 </View>
-              ) : alerts.map((item) => {
-                const isAlert = item.type === "alert";
-                const cardColor = isAlert ? "#DC2626" : "#EA580C";
-                const cardBg = isAlert ? "#FEE2E2" : "#FFEDD5";
+              ) : alertItems.map((item) => {
+                const cardColor = "#DC2626";
+                const cardBg = "#FEE2E2";
                 const timeStr = (() => {
                   const diff = Date.now() - new Date(item.createdAt).getTime();
                   const mins = Math.floor(diff / 60000);
@@ -331,7 +330,7 @@ export default function HomeScreen() {
                     }}
                   >
                     <View style={[styles.notifItemIcon, { backgroundColor: cardBg }]}>
-                      <Feather name={isAlert ? "alert-triangle" : "radio"} size={16} color={cardColor} />
+                      <Feather name="alert-triangle" size={16} color={cardColor} />
                     </View>
                     <View style={{ flex: 1 }}>
                       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 2 }}>

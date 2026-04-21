@@ -8,6 +8,7 @@ import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import { useFeed, FeedPost, PostType } from "@/context/FeedContext";
+import { AppAlert, useAlerts } from "@/context/AlertContext";
 import { useAuth } from "@/context/AuthContext";
 import { useTabBarVisibility } from "@/context/TabBarVisibilityContext";
 import DecorativeCircles from "@/components/DecorativeCircles";
@@ -102,17 +103,65 @@ function PostCard({ post, userId }: { post: FeedPost; userId: string }) {
   );
 }
 
+function NewsAlertCard({ item }: { item: AppAlert }) {
+  return (
+    <View style={styles.card}>
+      <View style={styles.cardMeta}>
+        <Avatar name={item.postedBy || "Nagarsevak"} color="#16A34A" size={30} />
+        <Text style={styles.cardAuthor} numberOfLines={1}>{item.postedBy || "Nagarsevak"}</Text>
+        <View style={[styles.roleBadge, { backgroundColor: "#ECFDF5" }]}>
+          <Text style={[styles.roleBadgeText, { color: "#059669" }]}>Nagarsevak</Text>
+        </View>
+        <Text style={styles.cardTime}>· {timeAgo(item.createdAt)}</Text>
+      </View>
+      <View style={[styles.typePill, { backgroundColor: "#FFEDD5", marginBottom: 8 }]}>
+        <Feather name="radio" size={9} color="#EA580C" />
+        <Text style={[styles.typePillText, { color: "#EA580C" }]}>news</Text>
+      </View>
+      <Text style={styles.newsTitle}>{item.title}</Text>
+      <Text style={styles.cardContent}>{item.body}</Text>
+      {item.media?.type === "image" ? (
+        <Image source={{ uri: item.media.uri }} style={styles.postImage} resizeMode="cover" />
+      ) : item.media?.type === "video" ? (
+        <View style={styles.newsVideoBox}>
+          <Feather name="play-circle" size={34} color="#EA580C" />
+          <Text style={styles.newsVideoText}>Video attached</Text>
+        </View>
+      ) : null}
+      <View style={styles.newsInfoRow}>
+        {!!item.location && (
+          <View style={styles.newsInfoChip}>
+            <Feather name="map-pin" size={11} color="#64748B" />
+            <Text style={styles.newsInfoText}>{item.location}</Text>
+          </View>
+        )}
+        {!!item.validUntil && (
+          <View style={styles.newsInfoChip}>
+            <Feather name="clock" size={11} color="#64748B" />
+            <Text style={styles.newsInfoText}>Valid until {item.validUntil}</Text>
+          </View>
+        )}
+      </View>
+    </View>
+  );
+}
+
 export default function FeedScreen() {
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const TAB_H = Platform.OS === "web" ? 72 : 56 + Math.max(insets.bottom, 8);
   const { posts, toggleLike } = useFeed();
+  const { alerts } = useAlerts();
   const { user } = useAuth();
   const { handleScroll } = useTabBarVisibility();
 
   const userId = user?.id || "guest";
 
   const [activeTab] = useState<FeedTab>("community");
+  const newsItems = [
+    ...alerts.filter((item) => item.type === "news").map((item) => ({ kind: "news" as const, createdAt: item.createdAt, item })),
+    ...posts.map((item) => ({ kind: "post" as const, createdAt: item.createdAt, item })),
+  ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   return (
     <View style={styles.root}>
@@ -134,9 +183,9 @@ export default function FeedScreen() {
 
       {activeTab === "community" && (
         <FlatList
-          data={posts}
-          keyExtractor={(p) => p.id}
-          renderItem={({ item }) => <PostCard post={item} userId={userId} />}
+          data={newsItems}
+          keyExtractor={(p) => p.item.id}
+          renderItem={({ item }) => item.kind === "news" ? <NewsAlertCard item={item.item} /> : <PostCard post={item.item} userId={userId} />}
           contentContainerStyle={[styles.list, { paddingBottom: Math.max(insets.bottom, 8) + 20 + TAB_H }]}
           showsVerticalScrollIndicator={false}
           onScroll={handleScroll}
@@ -145,7 +194,7 @@ export default function FeedScreen() {
           ListEmptyComponent={
             <View style={styles.emptyState}>
               <Feather name="inbox" size={40} color="#CBD5E1" />
-              <Text style={styles.emptyTitle}>No posts yet</Text>
+              <Text style={styles.emptyTitle}>No news yet</Text>
             </View>
           }
         />
@@ -230,7 +279,13 @@ const styles = StyleSheet.create({
   typePill: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 7, paddingVertical: 3, borderRadius: 20, alignSelf: "flex-start", marginBottom: 6 },
   typePillText: { fontSize: 9, fontWeight: "700", fontFamily: "Inter_600SemiBold" },
   cardContent: { fontSize: 14, color: "#334155", fontFamily: "Inter_400Regular", lineHeight: 21, marginBottom: 8 },
+  newsTitle: { fontSize: 16, fontWeight: "800", color: "#0F172A", fontFamily: "Inter_700Bold", marginBottom: 6 },
   postImage: { width: "100%", height: 180, borderRadius: 12, marginBottom: 10, resizeMode: "cover" },
+  newsVideoBox: { height: 150, borderRadius: 12, backgroundColor: "#FFF7ED", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 10 },
+  newsVideoText: { fontSize: 12, fontWeight: "800", color: "#EA580C", fontFamily: "Inter_700Bold" },
+  newsInfoRow: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginBottom: 8 },
+  newsInfoChip: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "#F8FAFC", borderRadius: 10, paddingHorizontal: 8, paddingVertical: 5 },
+  newsInfoText: { fontSize: 11, color: "#64748B", fontFamily: "Inter_600SemiBold", fontWeight: "600" },
   cardActions: { flexDirection: "row", marginTop: 4, marginBottom: 10, justifyContent: "space-between" },
   action: { flexDirection: "row", alignItems: "center", gap: 4, paddingVertical: 4, paddingHorizontal: 4 },
   actionText: { fontSize: 12, color: "#94A3B8", fontFamily: "Inter_400Regular" },
