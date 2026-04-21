@@ -66,6 +66,7 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 - Admin & Services are hidden screens (`href: null`) accessed via Profile card
 - SOS is tab 3 of 5 (true centre)
 - Nagarsevak dashboard status cards open `/complaint/list?status=...` for status-specific complaint rows
+- Alerts/news expire automatically after 12 hours; the post form shows a read-only valid-until time
 
 ### Dual Portal System (v2)
 - **Splash → Portal Select**: After "Continue", users choose between two portals:

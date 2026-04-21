@@ -14,6 +14,7 @@ import { AlertMedia, AlertPriority, AlertType, useAlerts } from "@/context/Alert
 import { useAuth } from "@/context/AuthContext";
 
 const MAX_VIDEO_MS = 120000;
+const ALERT_ACTIVE_MS = 12 * 60 * 60 * 1000;
 
 const categories = ["Civic", "Water", "Electricity", "Road", "Health", "Event"];
 const audiences = ["All citizens", "Ward residents", "Senior citizens", "Women", "Students", "Shop owners"];
@@ -70,6 +71,16 @@ function showMessage(title: string, message: string) {
   }
 }
 
+function formatValidUntil(value: string) {
+  const date = new Date(value);
+  return date.toLocaleString("en-IN", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export default function NewAlertScreen() {
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === "web" ? 54 : insets.top;
@@ -82,11 +93,12 @@ export default function NewAlertScreen() {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [location, setLocation] = useState(user?.ward || "");
-  const [validUntil, setValidUntil] = useState("");
   const [contact, setContact] = useState("");
   const [media, setMedia] = useState<AlertMedia | null>(null);
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [audienceOpen, setAudienceOpen] = useState(false);
+  const [expiresAt] = useState(() => new Date(Date.now() + ALERT_ACTIVE_MS).toISOString());
+  const validUntilLabel = formatValidUntil(expiresAt);
 
   const canSubmit = title.trim().length > 0 && body.trim().length > 0;
 
@@ -135,7 +147,8 @@ export default function NewAlertScreen() {
       category,
       targetAudience,
       location: location.trim(),
-      validUntil: validUntil.trim(),
+      validUntil: validUntilLabel,
+      expiresAt,
       media,
     }, user?.name || "Nagarsevak");
     router.back();
@@ -197,7 +210,13 @@ export default function NewAlertScreen() {
             </View>
             <View style={styles.half}>
               <Text style={styles.label}>Valid until</Text>
-              <TextInput style={styles.input} value={validUntil} onChangeText={setValidUntil} placeholder="e.g. 10 PM today" placeholderTextColor="#CBD5E1" maxLength={50} />
+              <View style={styles.readOnlyBox}>
+                <Feather name="clock" size={14} color="#EA580C" />
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.readOnlyValue}>{validUntilLabel}</Text>
+                  <Text style={styles.readOnlyHint}>Post valid for 12 hours</Text>
+                </View>
+              </View>
             </View>
           </View>
           <Text style={styles.label}>Helpline / contact optional</Text>
@@ -314,6 +333,9 @@ const styles = StyleSheet.create({
   dropdownOptionText: { fontSize: 13, fontWeight: "700", color: "#475569", fontFamily: "Inter_700Bold" },
   dropdownOptionTextActive: { color: "#C2410C" },
   input: { borderWidth: 1.5, borderColor: "#E2E8F0", borderRadius: 14, paddingHorizontal: 13, paddingVertical: 11, fontSize: 14, color: "#0F172A", fontFamily: "Inter_400Regular", backgroundColor: "#FFFFFF", marginBottom: 10, outlineWidth: 0 } as any,
+  readOnlyBox: { minHeight: 46, flexDirection: "row", alignItems: "center", gap: 8, borderWidth: 1.5, borderColor: "#FED7AA", borderRadius: 14, paddingHorizontal: 12, paddingVertical: 8, backgroundColor: "#FFF7ED", marginBottom: 10 },
+  readOnlyValue: { fontSize: 13, fontWeight: "900", color: "#C2410C", fontFamily: "Inter_700Bold" },
+  readOnlyHint: { fontSize: 10, fontWeight: "700", color: "#EA580C", fontFamily: "Inter_700Bold", marginTop: 1 },
   textArea: { minHeight: 128, lineHeight: 20 },
   twoCol: { flexDirection: "row", gap: 10 },
   half: { flex: 1 },

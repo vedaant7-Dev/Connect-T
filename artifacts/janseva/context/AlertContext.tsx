@@ -21,13 +21,14 @@ export interface AppAlert {
   priority?: AlertPriority;
   location?: string;
   validUntil?: string;
+  expiresAt?: string;
   targetAudience?: string;
   media?: AlertMedia | null;
   createdAt: string;
   postedBy: string;
 }
 
-export type AlertDraft = Pick<AppAlert, "title" | "body" | "type"> & Partial<Pick<AppAlert, "category" | "priority" | "location" | "validUntil" | "targetAudience" | "media">>;
+export type AlertDraft = Pick<AppAlert, "title" | "body" | "type"> & Partial<Pick<AppAlert, "category" | "priority" | "location" | "validUntil" | "expiresAt" | "targetAudience" | "media">>;
 
 interface AlertContextType {
   alerts: AppAlert[];
@@ -39,6 +40,28 @@ interface AlertContextType {
 const AlertContext = createContext<AlertContextType | null>(null);
 
 const STORAGE_KEY = "connectt_alerts_v1";
+const ALERT_ACTIVE_MS = 12 * 60 * 60 * 1000;
+
+function getExpiryTime(alert: AppAlert) {
+  const explicitExpiry = alert.expiresAt ? new Date(alert.expiresAt).getTime() : NaN;
+  if (!Number.isNaN(explicitExpiry)) return explicitExpiry;
+  return new Date(alert.createdAt).getTime() + ALERT_ACTIVE_MS;
+}
+
+function getActiveAlerts(items: AppAlert[]) {
+  const now = Date.now();
+  return items.filter((item) => getExpiryTime(item) > now);
+}
+
+function formatValidUntil(value: string) {
+  const date = new Date(value);
+  return date.toLocaleString("en-IN", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 export function AlertProvider({ children }: { children: ReactNode }) {
   const [alerts, setAlerts] = useState<AppAlert[]>([]);
@@ -47,10 +70,29 @@ export function AlertProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     AsyncStorage.getItem(STORAGE_KEY)
       .then((stored) => {
-        if (stored) setAlerts(JSON.parse(stored));
+        if (!stored) return;
+        const parsed: AppAlert[] = JSON.parse(stored);
+        const active = getActiveAlerts(parsed);
+        setAlerts(active);
+        if (active.length !== parsed.length) {
+          AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(active)).catch(() => {});
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setAlerts((current) => {
+        const active = getActiveAlerts(current);
+        if (active.length !== current.length) {
+          AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(active)).catch(() => {});
+        }
+        return active;
+      });
+    }, 60000);
+    return () => clearInterval(timer);
   }, []);
 
   const save = (updated: AppAlert[]) => {
@@ -59,15 +101,19 @@ export function AlertProvider({ children }: { children: ReactNode }) {
   };
 
   const addAlert = (data: AlertDraft, postedBy: string) => {
+    const createdAt = new Date();
+    const expiresAt = new Date(createdAt.getTime() + ALERT_ACTIVE_MS).toISOString();
     const newAlert: AppAlert = {
       ...data,
       priority: data.priority || "normal",
       media: data.media || null,
       id: "ALT" + Date.now().toString().slice(-6),
-      createdAt: new Date().toISOString(),
+      createdAt: createdAt.toISOString(),
+      expiresAt,
+      validUntil: formatValidUntil(expiresAt),
       postedBy,
     };
-    save([newAlert, ...alerts]);
+    save([newAlert, ...getActiveAlerts(alerts)]);
   };
 
   const removeAlert = (id: string) => {
