@@ -515,7 +515,7 @@ export default function JobsLoginScreen() {
                   {!!error && <Text style={styles.error}>{error}</Text>}
 
                   <TouchableOpacity style={styles.btn} onPress={handleSendOtp} activeOpacity={0.85}>
-                    <LinearGradient colors={["#C2410C", "#EA580C", "#FB923C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.btnGrad}>
+                    <LinearGradient colors={["#047857", "#059669", "#10B981"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.btnGrad}>
                       <Text style={styles.btnText}>Send OTP</Text>
                       <Feather name="arrow-right" size={18} color="white" />
                     </LinearGradient>
@@ -544,7 +544,7 @@ export default function JobsLoginScreen() {
                   {!!error && <Text style={styles.error}>{error}</Text>}
 
                   <TouchableOpacity style={styles.btn} onPress={handleVerifyOtp} activeOpacity={0.85} disabled={loading}>
-                    <LinearGradient colors={["#C2410C", "#EA580C", "#FB923C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.btnGrad}>
+                    <LinearGradient colors={["#047857", "#059669", "#10B981"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.btnGrad}>
                       {loading ? <ActivityIndicator color="white" /> : (
                         <>
                           <Text style={styles.btnText}>Verify & Continue</Text>

@@ -241,7 +241,7 @@ export default function LoginScreen() {
         {loading ? (
           <ActivityIndicator color="white" />
         ) : (
-          <LinearGradient colors={["#EA580C", "#FB923C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.primaryBtnGrad}>
+          <LinearGradient colors={["#059669", "#10B981"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.primaryBtnGrad}>
             <Text style={s.primaryBtnText}>{t("verifyOtp")}</Text>
             <Feather name="check" size={18} color="white" />
           </LinearGradient>
@@ -341,7 +341,7 @@ export default function LoginScreen() {
         onPress={handleRegisterSubmit}
         activeOpacity={0.85}
       >
-        <LinearGradient colors={["#EA580C", "#FB923C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.primaryBtnGrad}>
+        <LinearGradient colors={["#059669", "#10B981"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.primaryBtnGrad}>
           <Text style={s.primaryBtnText}>{t("continue")}</Text>
           <Feather name="arrow-right" size={18} color="white" />
         </LinearGradient>
@@ -447,7 +447,7 @@ export default function LoginScreen() {
         onPress={handleLoginSubmit}
         activeOpacity={0.85}
       >
-        <LinearGradient colors={["#EA580C", "#FB923C"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.primaryBtnGrad}>
+        <LinearGradient colors={["#059669", "#10B981"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.primaryBtnGrad}>
           <Text style={s.primaryBtnText}>{t("continue")}</Text>
           <Feather name="arrow-right" size={18} color="white" />
         </LinearGradient>

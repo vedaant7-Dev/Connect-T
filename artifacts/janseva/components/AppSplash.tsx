@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   footerText: { fontSize: 11, color: "rgba(255,255,255,0.35)", fontFamily: "Inter_400Regular", letterSpacing: 1.5, marginBottom: 8 },
   continueBtn: { width: "100%", borderRadius: 18, overflow: "hidden", backgroundColor: "white" },
   continueBtnGrad: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 16, paddingHorizontal: 24, gap: 12 },
-  continueBtnText: { fontSize: 17, fontWeight: "700", color: "#EA580C", fontFamily: "Inter_700Bold", letterSpacing: 0.3 },
+  continueBtnText: { fontSize: 17, fontWeight: "700", color: "#059669", fontFamily: "Inter_700Bold", letterSpacing: 0.3 },
   continueBtnIcon: { width: 32, height: 32, borderRadius: 16, backgroundColor: "#FFF7ED", alignItems: "center", justifyContent: "center" },
   continueHint: { fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "Inter_400Regular", letterSpacing: 0.5 },
 
