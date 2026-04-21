@@ -169,7 +169,7 @@ export default function HomeScreen() {
               <Text style={styles.alertsEmptyText}>No alerts right now</Text>
             </View>
           ) : (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10, paddingHorizontal: 2, paddingBottom: 2 }}>
+            <View style={styles.alertCardList}>
               {alertItems.map((item) => {
                 const cardColor = "#DC2626";
                 const cardBg = "#FEE2E2";
@@ -218,7 +218,7 @@ export default function HomeScreen() {
                   </TouchableOpacity>
                 );
               })}
-            </ScrollView>
+            </View>
           )}
         </View>
 
@@ -602,12 +602,13 @@ const styles = StyleSheet.create({
   alertsLivePill: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: "#FEE2E2", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 },
   alertsLiveDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: "#DC2626" },
   alertsLiveText: { fontSize: 9, fontWeight: "900", color: "#DC2626", fontFamily: "Inter_700Bold", letterSpacing: 1 },
-  alertCard: { width: 230, backgroundColor: "white", borderRadius: 16, overflow: "hidden", shadowColor: "#B45309", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3, borderWidth: 1, borderColor: "#F1F5F9" },
-  alertCardMedia: { width: "100%", height: 92, backgroundColor: "#F8FAFC" },
-  alertCardVideo: { height: 92, alignItems: "center", justifyContent: "center", gap: 4 },
-  alertCardVideoText: { fontSize: 11, fontWeight: "800", fontFamily: "Inter_700Bold" },
-  alertCardIcon: { padding: 14, paddingBottom: 0, alignSelf: "flex-start" },
-  alertCardBody: { padding: 12 },
+  alertCardList: { gap: 10 },
+  alertCard: { width: "100%", minHeight: 108, flexDirection: "row", alignItems: "stretch", gap: 12, backgroundColor: "white", borderRadius: 16, padding: 12, overflow: "hidden", shadowColor: "#B45309", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 3, borderWidth: 1, borderColor: "#F1F5F9" },
+  alertCardMedia: { width: 86, minHeight: 84, borderRadius: 14, backgroundColor: "#F8FAFC" },
+  alertCardVideo: { width: 86, minHeight: 84, borderRadius: 14, alignItems: "center", justifyContent: "center", gap: 4 },
+  alertCardVideoText: { fontSize: 9, fontWeight: "800", fontFamily: "Inter_700Bold", textAlign: "center" },
+  alertCardIcon: { width: 48, height: 48, borderRadius: 14, alignItems: "center", justifyContent: "center", alignSelf: "center" },
+  alertCardBody: { flex: 1, paddingVertical: 2 },
   alertCardRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 6 },
   alertTypePill: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 10 },
   alertTypeText: { fontSize: 9, fontWeight: "700", fontFamily: "Inter_600SemiBold" },
