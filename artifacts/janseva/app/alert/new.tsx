@@ -18,6 +18,50 @@ const MAX_VIDEO_MS = 120000;
 const categories = ["Civic", "Water", "Electricity", "Road", "Health", "Event"];
 const audiences = ["All citizens", "Ward residents", "Senior citizens", "Women", "Students", "Shop owners"];
 
+function DropdownSelect({
+  label,
+  value,
+  options,
+  open,
+  onToggle,
+  onSelect,
+}: {
+  label: string;
+  value: string;
+  options: string[];
+  open: boolean;
+  onToggle: () => void;
+  onSelect: (value: string) => void;
+}) {
+  return (
+    <View style={styles.dropdownBlock}>
+      <Text style={styles.label}>{label}</Text>
+      <TouchableOpacity style={[styles.dropdownBtn, open && styles.dropdownBtnOpen]} onPress={onToggle} activeOpacity={0.85}>
+        <Text style={styles.dropdownValue}>{value}</Text>
+        <Feather name={open ? "chevron-up" : "chevron-down"} size={18} color="#64748B" />
+      </TouchableOpacity>
+      {open && (
+        <View style={styles.dropdownMenu}>
+          {options.map((item) => {
+            const active = value === item;
+            return (
+              <TouchableOpacity
+                key={item}
+                style={[styles.dropdownOption, active && styles.dropdownOptionActive]}
+                onPress={() => onSelect(item)}
+                activeOpacity={0.85}
+              >
+                <Text style={[styles.dropdownOptionText, active && styles.dropdownOptionTextActive]}>{item}</Text>
+                {active && <Feather name="check" size={15} color="#EA580C" />}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
+    </View>
+  );
+}
+
 function showMessage(title: string, message: string) {
   if (Platform.OS === "web") {
     window.alert(`${title}\n${message}`);
@@ -41,6 +85,8 @@ export default function NewAlertScreen() {
   const [validUntil, setValidUntil] = useState("");
   const [contact, setContact] = useState("");
   const [media, setMedia] = useState<AlertMedia | null>(null);
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [audienceOpen, setAudienceOpen] = useState(false);
 
   const canSubmit = title.trim().length > 0 && body.trim().length > 0;
 
@@ -160,22 +206,34 @@ export default function NewAlertScreen() {
 
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>Category & audience</Text>
-          <Text style={styles.label}>Category</Text>
-          <View style={styles.chipRow}>
-            {categories.map((item) => (
-              <TouchableOpacity key={item} onPress={() => setCategory(item)} style={[styles.chip, category === item && styles.chipActive]} activeOpacity={0.85}>
-                <Text style={[styles.chipText, category === item && styles.chipTextActive]}>{item}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-          <Text style={styles.label}>Audience</Text>
-          <View style={styles.chipRow}>
-            {audiences.map((item) => (
-              <TouchableOpacity key={item} onPress={() => setTargetAudience(item)} style={[styles.chip, targetAudience === item && styles.chipActive]} activeOpacity={0.85}>
-                <Text style={[styles.chipText, targetAudience === item && styles.chipTextActive]}>{item}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <DropdownSelect
+            label="Category"
+            value={category}
+            options={categories}
+            open={categoryOpen}
+            onToggle={() => {
+              setCategoryOpen((prev) => !prev);
+              setAudienceOpen(false);
+            }}
+            onSelect={(item) => {
+              setCategory(item);
+              setCategoryOpen(false);
+            }}
+          />
+          <DropdownSelect
+            label="Audience"
+            value={targetAudience}
+            options={audiences}
+            open={audienceOpen}
+            onToggle={() => {
+              setAudienceOpen((prev) => !prev);
+              setCategoryOpen(false);
+            }}
+            onSelect={(item) => {
+              setTargetAudience(item);
+              setAudienceOpen(false);
+            }}
+          />
         </View>
 
         <View style={styles.card}>
@@ -246,6 +304,15 @@ const styles = StyleSheet.create({
   chipActive: { backgroundColor: "#FFF7ED", borderColor: "#EA580C" },
   chipText: { fontSize: 12, color: "#64748B", fontWeight: "800", fontFamily: "Inter_700Bold", textTransform: "capitalize" },
   chipTextActive: { color: "#C2410C" },
+  dropdownBlock: { marginBottom: 12 },
+  dropdownBtn: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderWidth: 1.5, borderColor: "#E2E8F0", borderRadius: 14, paddingHorizontal: 13, paddingVertical: 13, backgroundColor: "#FFFFFF" },
+  dropdownBtnOpen: { borderColor: "#EA580C", backgroundColor: "#FFF7ED" },
+  dropdownValue: { fontSize: 14, fontWeight: "800", color: "#0F172A", fontFamily: "Inter_700Bold" },
+  dropdownMenu: { marginTop: 7, borderWidth: 1, borderColor: "#E2E8F0", borderRadius: 14, backgroundColor: "white", overflow: "hidden" },
+  dropdownOption: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 13, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: "#F1F5F9" },
+  dropdownOptionActive: { backgroundColor: "#FFF7ED" },
+  dropdownOptionText: { fontSize: 13, fontWeight: "700", color: "#475569", fontFamily: "Inter_700Bold" },
+  dropdownOptionTextActive: { color: "#C2410C" },
   input: { borderWidth: 1.5, borderColor: "#E2E8F0", borderRadius: 14, paddingHorizontal: 13, paddingVertical: 11, fontSize: 14, color: "#0F172A", fontFamily: "Inter_400Regular", backgroundColor: "#FFFFFF", marginBottom: 10, outlineWidth: 0 } as any,
   textArea: { minHeight: 128, lineHeight: 20 },
   twoCol: { flexDirection: "row", gap: 10 },
