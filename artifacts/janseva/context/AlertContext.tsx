@@ -26,13 +26,15 @@ export interface AppAlert {
   media?: AlertMedia | null;
   createdAt: string;
   postedBy: string;
+  postedById?: string;
+  ward?: string;
 }
 
 export type AlertDraft = Pick<AppAlert, "title" | "body" | "type"> & Partial<Pick<AppAlert, "category" | "priority" | "location" | "validUntil" | "expiresAt" | "targetAudience" | "media">>;
 
 interface AlertContextType {
   alerts: AppAlert[];
-  addAlert: (data: AlertDraft, postedBy: string) => void;
+  addAlert: (data: AlertDraft, postedBy: string, postedById?: string, ward?: string) => void;
   removeAlert: (id: string) => void;
   loading: boolean;
 }
@@ -100,7 +102,7 @@ export function AlertProvider({ children }: { children: ReactNode }) {
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated)).catch(() => {});
   };
 
-  const addAlert = (data: AlertDraft, postedBy: string) => {
+  const addAlert = (data: AlertDraft, postedBy: string, postedById?: string, ward?: string) => {
     const createdAt = new Date();
     const expiresAt = new Date(createdAt.getTime() + ALERT_ACTIVE_MS).toISOString();
     const newAlert: AppAlert = {
@@ -112,6 +114,8 @@ export function AlertProvider({ children }: { children: ReactNode }) {
       expiresAt,
       validUntil: formatValidUntil(expiresAt),
       postedBy,
+      postedById,
+      ward,
     };
     save([newAlert, ...getActiveAlerts(alerts)]);
   };

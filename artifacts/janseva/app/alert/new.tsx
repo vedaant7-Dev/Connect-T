@@ -150,7 +150,7 @@ export default function NewAlertScreen() {
       validUntil: validUntilLabel,
       expiresAt,
       media,
-    }, user?.name || "Nagarsevak");
+    }, user?.name || "Nagarsevak", user?.id, user?.ward);
     router.back();
   };
 

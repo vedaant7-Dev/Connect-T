@@ -73,7 +73,7 @@ export default function HomeScreen() {
   const { user } = useAuth();
   const { t } = useLanguage();
   const { handleScroll } = useTabBarVisibility();
-  const { alerts } = useAlerts();
+  const { alerts: allAlerts } = useAlerts();
   const [selectedAlert, setSelectedAlert] = useState<AppAlert | null>(null);
   const [showNotifPanel, setShowNotifPanel] = useState(false);
   const [selectedUtility, setSelectedUtility] = useState<string | null>(null);
@@ -81,6 +81,7 @@ export default function HomeScreen() {
 
   const roleColor = getRoleColor(user?.role);
   const readAlertsKey = `connectt_read_alerts_${user?.id || "guest"}`;
+  const alerts = allAlerts.filter((a) => !a.ward || !user?.ward || a.ward === user.ward);
   const alertItems = alerts.filter((item) => item.type === "alert");
 
   useEffect(() => {

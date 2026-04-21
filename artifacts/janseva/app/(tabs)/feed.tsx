@@ -166,11 +166,12 @@ export default function FeedScreen() {
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const TAB_H = Platform.OS === "web" ? 72 : 56 + Math.max(insets.bottom, 8);
   const { posts, toggleLike } = useFeed();
-  const { alerts } = useAlerts();
+  const { alerts: allAlerts } = useAlerts();
   const { user } = useAuth();
   const { handleScroll } = useTabBarVisibility();
 
   const userId = user?.id || "guest";
+  const alerts = allAlerts.filter((a) => !a.ward || !user?.ward || a.ward === user.ward);
 
   const [activeTab] = useState<FeedTab>("community");
   const newsItems = [

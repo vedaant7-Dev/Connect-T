@@ -193,7 +193,8 @@ export default function AdminScreen() {
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const { user, logout, updateUser } = useAuth();
   const { complaints, updateStatus } = useComplaints();
-  const { alerts, removeAlert } = useAlerts();
+  const { alerts: allAlerts, removeAlert } = useAlerts();
+  const alerts = allAlerts.filter((a) => a.postedById && user?.id ? a.postedById === user.id : a.postedBy === user?.name);
   const router = useRouter();
   const { t } = useLanguage();
   const [filter, setFilter] = useState<ComplaintStatus | "all">("all");

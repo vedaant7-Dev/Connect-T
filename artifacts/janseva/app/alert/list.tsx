@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 
 import { AppAlert, useAlerts } from "@/context/AlertContext";
+import { useAuth } from "@/context/AuthContext";
 
 function formatDate(value: string) {
   const date = new Date(value);
@@ -78,7 +79,11 @@ function AlertRow({ item, onRemove }: { item: AppAlert; onRemove: (id: string) =
 export default function AlertListScreen() {
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === "web" ? 54 : insets.top;
-  const { alerts, removeAlert } = useAlerts();
+  const { alerts: allAlerts, removeAlert } = useAlerts();
+  const { user } = useAuth();
+  const alerts = user?.role === "nagarsevak"
+    ? allAlerts.filter((a) => a.postedById ? a.postedById === user.id : a.postedBy === user.name)
+    : allAlerts.filter((a) => !a.ward || !user?.ward || a.ward === user.ward);
   const alertCount = alerts.filter((item) => item.type === "alert").length;
   const newsCount = alerts.filter((item) => item.type === "news").length;
 
