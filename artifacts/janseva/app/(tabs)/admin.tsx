@@ -392,11 +392,11 @@ export default function AdminScreen() {
               onPress={() => openComplaintTab(item.filter)}
               activeOpacity={0.85}
             >
+              <Text style={styles.dashboardLabel}>{item.label}</Text>
               <View style={[styles.dashboardIcon, { backgroundColor: item.color + "15" }]}>
                 <Feather name={item.icon as any} size={20} color={item.color} />
               </View>
               <Text style={[styles.dashboardCount, { color: item.color }]}>{item.count}</Text>
-              <Text style={styles.dashboardLabel}>{item.label}</Text>
             </TouchableOpacity>
           );
         })}
@@ -765,8 +765,10 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     borderWidth: 2,
     alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
+    justifyContent: "flex-start",
+    gap: 10,
+    paddingTop: 16,
+    paddingHorizontal: 8,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.14,
     shadowRadius: 10,
@@ -784,7 +786,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   dashboardCount: { fontSize: 24, fontWeight: "900", fontFamily: "Inter_700Bold" },
-  dashboardLabel: { width: "100%", fontSize: 13, fontWeight: "800", color: "#334155", fontFamily: "Inter_700Bold", textAlign: "center", lineHeight: 18 },
+  dashboardLabel: { width: "100%", fontSize: 16, fontWeight: "900", color: "#334155", fontFamily: "Inter_700Bold", textAlign: "center", lineHeight: 20 },
   card: { backgroundColor: "white", borderRadius: 16, marginBottom: 10, overflow: "hidden", shadowColor: "#166534", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 2 },
   cardHeader: { flexDirection: "row", alignItems: "center", gap: 10, padding: 14, paddingBottom: 10 },
   catDot: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center", flexShrink: 0 },
