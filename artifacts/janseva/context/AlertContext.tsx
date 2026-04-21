@@ -131,6 +131,12 @@ export function AlertProvider({ children }: { children: ReactNode }) {
   );
 }
 
+export function wardKey(ward?: string | null): string {
+  if (!ward) return "";
+  const m = ward.match(/\d+/);
+  return m ? m[0] : ward.trim().toLowerCase();
+}
+
 export function useAlerts() {
   const ctx = useContext(AlertContext);
   if (!ctx) throw new Error("useAlerts must be used inside AlertProvider");

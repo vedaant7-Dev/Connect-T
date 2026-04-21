@@ -6,7 +6,7 @@ import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 
-import { AppAlert, useAlerts } from "@/context/AlertContext";
+import { AppAlert, useAlerts, wardKey } from "@/context/AlertContext";
 import { useAuth } from "@/context/AuthContext";
 
 function formatDate(value: string) {
@@ -83,7 +83,7 @@ export default function AlertListScreen() {
   const { user } = useAuth();
   const alerts = user?.role === "nagarsevak"
     ? allAlerts.filter((a) => a.postedById ? a.postedById === user.id : a.postedBy === user.name)
-    : allAlerts.filter((a) => !a.ward || !user?.ward || a.ward === user.ward);
+    : allAlerts.filter((a) => !a.ward || (!!user?.ward && wardKey(a.ward) === wardKey(user.ward)));
   const alertCount = alerts.filter((item) => item.type === "alert").length;
   const newsCount = alerts.filter((item) => item.type === "news").length;
 

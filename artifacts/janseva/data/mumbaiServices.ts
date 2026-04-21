@@ -1049,22 +1049,6 @@ export const emergencyContacts = [
 
 // ─── ULHASNAGAR WARDS (for registration) ─────────────────────────────────────
 
-export const ambernathWards = [
-  "Ward 1 — Shivaji Chowk",
-  "Ward 2 — Station Area East",
-  "Ward 3 — Station Area West",
-  "Ward 4 — MIDC Area",
-  "Ward 5 — Vithalwadi",
-  "Ward 6 — Shelar Colony",
-  "Ward 7 — Old Ambernath",
-  "Ward 8 — New Ambernath",
-  "Ward 9 — Gupte Colony",
-  "Ward 10 — Udayanagar",
-  "Ward 11 — Vallabhwadi",
-  "Ward 12 — Sahakar Nagar",
-  "Ward 13 — Gopini",
-  "Ward 14 — Chikhloli",
-  "Ward 15 — Ambernath General",
-];
+export const ambernathWards = Array.from({ length: 29 }, (_, i) => `Ward ${i + 1}`);
 
 export const ulhasnagarWards = ambernathWards;

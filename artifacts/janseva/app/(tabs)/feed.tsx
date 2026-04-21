@@ -9,7 +9,7 @@ import { VideoView, useVideoPlayer } from "expo-video";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import { useFeed, FeedPost, PostType } from "@/context/FeedContext";
-import { AppAlert, useAlerts } from "@/context/AlertContext";
+import { AppAlert, useAlerts, wardKey } from "@/context/AlertContext";
 import { useAuth } from "@/context/AuthContext";
 import { useTabBarVisibility } from "@/context/TabBarVisibilityContext";
 import DecorativeCircles from "@/components/DecorativeCircles";
@@ -171,7 +171,7 @@ export default function FeedScreen() {
   const { handleScroll } = useTabBarVisibility();
 
   const userId = user?.id || "guest";
-  const alerts = allAlerts.filter((a) => !a.ward || !user?.ward || a.ward === user.ward);
+  const alerts = allAlerts.filter((a) => !a.ward || (!!user?.ward && wardKey(a.ward) === wardKey(user.ward)));
 
   const [activeTab] = useState<FeedTab>("community");
   const newsItems = [

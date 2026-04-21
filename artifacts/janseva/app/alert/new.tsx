@@ -17,7 +17,7 @@ const MAX_VIDEO_MS = 120000;
 const ALERT_ACTIVE_MS = 12 * 60 * 60 * 1000;
 
 const categories = ["Civic", "Water", "Electricity", "Road", "Health", "Event"];
-const audiences = ["All citizens", "Ward residents", "Senior citizens", "Women", "Students", "Shop owners"];
+const audiences = ["Ward residents", "All citizens"];
 
 function DropdownSelect({
   label,
@@ -89,7 +89,7 @@ export default function NewAlertScreen() {
   const [type, setType] = useState<AlertType>("alert");
   const [priority, setPriority] = useState<AlertPriority>("important");
   const [category, setCategory] = useState("Civic");
-  const [targetAudience, setTargetAudience] = useState("All citizens");
+  const [targetAudience, setTargetAudience] = useState("Ward residents");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [location, setLocation] = useState(user?.ward || "");
@@ -150,7 +150,7 @@ export default function NewAlertScreen() {
       validUntil: validUntilLabel,
       expiresAt,
       media,
-    }, user?.name || "Nagarsevak", user?.id, user?.ward);
+    }, user?.name || "Nagarsevak", user?.id, targetAudience === "Ward residents" ? user?.ward : undefined);
     router.back();
   };
 

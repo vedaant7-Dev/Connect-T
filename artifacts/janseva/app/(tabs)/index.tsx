@@ -18,7 +18,7 @@ import { emergencyContacts } from "@/data/mumbaiServices";
 import { useAuth } from "@/context/AuthContext";
 import { useTabBarVisibility } from "@/context/TabBarVisibilityContext";
 import { useLanguage } from "@/context/LanguageContext";
-import { useAlerts, AppAlert } from "@/context/AlertContext";
+import { useAlerts, AppAlert, wardKey } from "@/context/AlertContext";
 
 const quickServices = [
   { id: "hospital", label: "Hospitals", icon: "activity", color: "#DC2626", bg: "#FEE2E2" },
@@ -81,7 +81,7 @@ export default function HomeScreen() {
 
   const roleColor = getRoleColor(user?.role);
   const readAlertsKey = `connectt_read_alerts_${user?.id || "guest"}`;
-  const alerts = allAlerts.filter((a) => !a.ward || !user?.ward || a.ward === user.ward);
+  const alerts = allAlerts.filter((a) => !a.ward || (!!user?.ward && wardKey(a.ward) === wardKey(user.ward)));
   const alertItems = alerts.filter((item) => item.type === "alert");
 
   useEffect(() => {
