@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
-  Platform, Image,
+  Platform, Image, Share,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
@@ -121,6 +121,25 @@ function PostCard({ post, userId }: { post: FeedPost; userId: string }) {
   );
 }
 
+async function shareNews(item: AppAlert) {
+  try {
+    if (Platform.OS !== "web") Haptics.selectionAsync();
+    const lines = [
+      `📰 ${item.title}`,
+      "",
+      item.body,
+      item.location ? `\n📍 ${item.location}` : "",
+      item.validUntil ? `🕒 Valid until ${item.validUntil}` : "",
+      `\n— Posted by ${item.postedBy || "Nagarsevak"} on JanSeva Ambernath`,
+    ].filter(Boolean).join("\n");
+    if (Platform.OS === "web" && (navigator as any)?.share) {
+      await (navigator as any).share({ title: item.title, text: lines });
+    } else {
+      await Share.share({ title: item.title, message: lines });
+    }
+  } catch {}
+}
+
 function NewsAlertCard({ item }: { item: AppAlert }) {
   return (
     <View style={styles.card}>
@@ -156,6 +175,12 @@ function NewsAlertCard({ item }: { item: AppAlert }) {
             <Text style={styles.newsInfoText}>Valid until {item.validUntil}</Text>
           </View>
         )}
+      </View>
+      <View style={styles.newsActions}>
+        <TouchableOpacity style={styles.newsShareBtn} onPress={() => shareNews(item)} activeOpacity={0.85}>
+          <Feather name="share-2" size={13} color="#059669" />
+          <Text style={styles.newsShareText}>Share</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -298,6 +323,9 @@ const styles = StyleSheet.create({
   newsInfoRow: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginBottom: 8 },
   newsInfoChip: { flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "#F8FAFC", borderRadius: 10, paddingHorizontal: 8, paddingVertical: 5 },
   newsInfoText: { fontSize: 11, color: "#64748B", fontFamily: "Inter_600SemiBold", fontWeight: "600" },
+  newsActions: { flexDirection: "row", justifyContent: "flex-end", marginTop: 8, paddingTop: 10, borderTopWidth: 1, borderTopColor: "#F1F5F9" },
+  newsShareBtn: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "#ECFDF5", paddingHorizontal: 12, paddingVertical: 7, borderRadius: 10 },
+  newsShareText: { fontSize: 12, fontWeight: "700", color: "#059669", fontFamily: "Inter_700Bold" },
   cardActions: { flexDirection: "row", marginTop: 4, marginBottom: 10, justifyContent: "space-between" },
   action: { flexDirection: "row", alignItems: "center", gap: 4, paddingVertical: 4, paddingHorizontal: 4 },
   actionText: { fontSize: 12, color: "#94A3B8", fontFamily: "Inter_400Regular" },
