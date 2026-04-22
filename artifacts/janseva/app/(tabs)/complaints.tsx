@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
   },
   filterChipCount: { fontSize: 20, fontWeight: "900", color: "white", fontFamily: "Inter_700Bold", lineHeight: 24 },
   filterChipCountActive: { color: "#111827" },
-  filterChipText: { fontSize: 9, fontWeight: "700", color: "rgba(255,255,255,0.75)", fontFamily: "Inter_600SemiBold", textAlign: "center", lineHeight: 12 },
+  filterChipText: { fontSize: 12, fontWeight: "700", color: "rgba(255,255,255,0.85)", fontFamily: "Inter_600SemiBold", textAlign: "center", lineHeight: 15 },
   filterChipTextActive: { color: "#C2410C" },
   filterChipBadge: {
     backgroundColor: "rgba(255,255,255,0.25)",
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   filterChipBadgeActive: { backgroundColor: "#EA580C" },
-  filterChipBadgeText: { fontSize: 10, fontWeight: "700", color: "rgba(255,255,255,0.9)", fontFamily: "Inter_700Bold" },
+  filterChipBadgeText: { fontSize: 12, fontWeight: "700", color: "rgba(255,255,255,0.9)", fontFamily: "Inter_700Bold" },
   filterChipBadgeTextActive: { color: "white" },
   list: { padding: 14 },
   card: {
