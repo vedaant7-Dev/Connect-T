@@ -292,7 +292,7 @@ export default function NewComplaintScreen() {
           activeOpacity={0.85}
         >
           <LinearGradient
-            colors={["#EA580C", "#FB923C"]}
+            colors={["#059669", "#10B981"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.submitBtnGrad}
