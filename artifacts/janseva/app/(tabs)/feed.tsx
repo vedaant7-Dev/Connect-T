@@ -219,8 +219,16 @@ export default function FeedScreen() {
 
   let newsItems: Array<{ kind: "news"; createdAt: string; item: AppAlert } | { kind: "post"; createdAt: string; item: any }> = [];
   if (selectedWard) {
+    const wKey = wardKey(selectedWard);
     newsItems = allNews
-      .filter((n) => !!n.ward && wardKey(n.ward) === wardKey(selectedWard))
+      .filter((n) => {
+        if (n.ward && wardKey(n.ward) === wKey) return true;
+        if (n.location) {
+          const locDigits = n.location.match(/\d+/);
+          if (locDigits && locDigits[0] === wKey) return true;
+        }
+        return false;
+      })
       .map((item) => ({ kind: "news" as const, createdAt: item.createdAt, item }))
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   } else if (isTitleSearch) {
