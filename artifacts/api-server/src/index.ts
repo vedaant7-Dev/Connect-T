@@ -1,3 +1,4 @@
+import pool from "./config/db";
 import app from "./app";
 import { logger } from "./lib/logger";
 
@@ -15,6 +16,13 @@ if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
+pool.getConnection()
+  .then(() => {
+    console.log("MySQL Connected");
+  })
+  .catch((err) => {
+    console.error("DB Error:", err);
+  });
 app.listen(port, (err) => {
   if (err) {
     logger.error({ err }, "Error listening on port");

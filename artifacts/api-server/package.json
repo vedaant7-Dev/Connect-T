@@ -14,8 +14,10 @@
     "@workspace/db": "workspace:*",
     "cookie-parser": "^1.4.7",
     "cors": "^2",
+    "dotenv": "^17.4.2",
     "drizzle-orm": "catalog:",
     "express": "^5",
+    "mysql2": "^3.22.2",
     "pino": "^9",
     "pino-http": "^10"
   },
