@@ -48,6 +48,14 @@ export default function JobStatusScreen() {
         ) : (
           items.map((job) => {
             const pending = job.applicants.filter((id) => !job.shortlisted.includes(id) && !job.rejected.includes(id));
+            const displayUsers =
+              status === "shortlisted"
+                ? job.shortlisted
+                : status === "rejected"
+                  ? job.rejected
+                  : status === "pending"
+                    ? pending
+                    : [];
             return (
               <View key={job.id} style={s.card}>
                 <View style={s.cardTop}>
@@ -78,6 +86,32 @@ export default function JobStatusScreen() {
                 </View>
                 <Text style={s.description}>{job.description}</Text>
                 <Text style={s.requirements}>{job.requirements}</Text>
+                {status !== "active" && (
+                  <View style={s.usersWrap}>
+                    <Text style={s.usersTitle}>
+                      {status === "shortlisted" ? "Shortlisted Users" : status === "rejected" ? "Rejected Users" : "Pending Users"}
+                    </Text>
+                    {displayUsers.length === 0 ? (
+                      <Text style={s.usersEmpty}>No users found</Text>
+                    ) : (
+                      displayUsers.map((id) => (
+                        <View key={id} style={s.userRow}>
+                          <View style={[s.userAvatar, { backgroundColor: status === "shortlisted" ? "#D1FAE5" : status === "rejected" ? "#FEE2E2" : "#EFF6FF" }]}>
+                            <Feather
+                              name={status === "shortlisted" ? "user-check" : status === "rejected" ? "user-x" : "user"}
+                              size={15}
+                              color={status === "shortlisted" ? "#059669" : status === "rejected" ? "#DC2626" : "#1D4ED8"}
+                            />
+                          </View>
+                          <View style={{ flex: 1 }}>
+                            <Text style={s.userName}>Applicant {id.replace(/[^0-9]/g, "") || id.slice(-4)}</Text>
+                            <Text style={s.userId}>ID: {id}</Text>
+                          </View>
+                        </View>
+                      ))
+                    )}
+                  </View>
+                )}
               </View>
             );
           })
@@ -104,6 +138,13 @@ const s = StyleSheet.create({
   chipLabel: { fontSize: 11, color: "#64748B", fontFamily: "Inter_400Regular", marginTop: 2 },
   description: { fontSize: 13, color: "#334155", lineHeight: 19, fontFamily: "Inter_400Regular", marginTop: 4 },
   requirements: { fontSize: 12, color: "#64748B", lineHeight: 18, fontFamily: "Inter_400Regular" },
+  usersWrap: { marginTop: 10, paddingTop: 12, borderTopWidth: 1, borderTopColor: "#F1F5F9", gap: 10 },
+  usersTitle: { fontSize: 14, fontWeight: "800", color: "#0F172A", fontFamily: "Inter_700Bold" },
+  usersEmpty: { fontSize: 12, color: "#94A3B8", fontFamily: "Inter_400Regular" },
+  userRow: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 8 },
+  userAvatar: { width: 34, height: 34, borderRadius: 17, alignItems: "center", justifyContent: "center" },
+  userName: { fontSize: 13, fontWeight: "700", color: "#0F172A", fontFamily: "Inter_700Bold" },
+  userId: { fontSize: 11, color: "#64748B", fontFamily: "Inter_400Regular", marginTop: 1 },
   empty: { alignItems: "center", justifyContent: "center", paddingTop: 80, gap: 10 },
   emptyText: { fontSize: 14, color: "#94A3B8", fontFamily: "Inter_400Regular" },
 });
