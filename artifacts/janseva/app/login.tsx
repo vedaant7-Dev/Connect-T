@@ -52,7 +52,6 @@ export default function LoginScreen() {
 
   const [loginPhone, setLoginPhone] = useState("");
   const [loginId, setLoginId] = useState("");
-  const [previewText, setPreviewText] = useState("");
 
   const otpRef1 = useRef<TextInput>(null);
   const otpRef2 = useRef<TextInput>(null);
@@ -203,11 +202,6 @@ export default function LoginScreen() {
 
   const renderOtpInput = () => (
     <View style={s.otpSection}>
-      <View style={s.previewCard}>
-        <Text style={s.previewLabel}>Preview</Text>
-        <Text style={s.previewValue}>{previewText || otpDigits.join("") || "—"}</Text>
-        <Text style={s.previewHint}>You can see what you typed here.</Text>
-      </View>
       <View style={s.otpIconWrap}>
         <Feather name="smartphone" size={28} color="#EA580C" />
       </View>
@@ -222,7 +216,6 @@ export default function LoginScreen() {
             value={digit}
             onChangeText={(v) => {
               const next = v.slice(-1);
-              setPreviewText((activeTab === "register" ? regPhone : loginPhone) + next);
               setOtpDigit(i, next, otpRefs);
             }}
             keyboardType="number-pad"
@@ -268,7 +261,6 @@ export default function LoginScreen() {
         value={regName}
         onChangeText={(v) => {
           setRegName(v);
-          setPreviewText(v);
         }}
         autoCapitalize="words"
       />
@@ -283,7 +275,6 @@ export default function LoginScreen() {
         value={regAge}
         onChangeText={(v) => {
           setRegAge(v);
-          setPreviewText(v);
         }}
       />
 
@@ -299,7 +290,6 @@ export default function LoginScreen() {
         value={regEmail}
         onChangeText={(v) => {
           setRegEmail(v);
-          setPreviewText(v);
         }}
       />
 
@@ -315,7 +305,6 @@ export default function LoginScreen() {
         value={regAddress}
         onChangeText={(v) => {
           setRegAddress(v);
-          setPreviewText(v);
         }}
       />
 
@@ -335,7 +324,6 @@ export default function LoginScreen() {
           value={regPhone}
           onChangeText={(v) => {
             setRegPhone(v);
-            setPreviewText(v);
           }}
         />
       </View>
@@ -446,7 +434,6 @@ export default function LoginScreen() {
           value={loginPhone}
         onChangeText={(v) => {
           setLoginPhone(v);
-          setPreviewText(v);
         }}
         />
       </View>
@@ -462,7 +449,6 @@ export default function LoginScreen() {
         value={loginId}
         onChangeText={(v) => {
           setLoginId(v);
-          setPreviewText(v);
         }}
       />
       <Text style={s.helperText}>{t("nagarsevakIdHelp")}</Text>
