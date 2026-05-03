@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { findNagarsevakById } from "@/data/nagarsevaks";
+import { findNagarsevakById, findNagarsevakByMobile } from "@/data/nagarsevaks";
 
 export type UserRole = "citizen" | "nagarsevak";
 
@@ -101,11 +101,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const loginWithPhone = async (mobile: string): Promise<User | null> => {
-    const found = await checkPhone(mobile);
-    if (found) {
-      await login(found);
-      return found;
+    const normalizedMobile = mobile.trim().replace(/\D/g, "");
+
+    // First check existing accounts in storage
+    const users = await getAllUsers();
+    const existingUser = users.find((u) => u.mobile === normalizedMobile);
+    if (existingUser) {
+      // Refresh nagarsevak data from directory if applicable
+      if (existingUser.role === "nagarsevak" && existingUser.nagarsevakId) {
+        const directoryEntry = findNagarsevakById(existingUser.nagarsevakId);
+        if (directoryEntry) {
+          const refreshed: User = {
+            ...existingUser,
+            name: directoryEntry.name,
+            ward: directoryEntry.ward,
+          };
+          const idx = users.findIndex((u) => u.id === existingUser.id);
+          if (idx >= 0) {
+            users[idx] = refreshed;
+            await saveAllUsers(users);
+          }
+          await login(refreshed);
+          return refreshed;
+        }
+      }
+      await login(existingUser);
+      return existingUser;
     }
+
+    // Check if this mobile belongs to a nagarsevak in the directory
+    const directoryEntry = findNagarsevakByMobile(normalizedMobile);
+    if (directoryEntry) {
+      const colorIndex = Math.floor(Math.random() * AVATAR_COLORS.length);
+      const nagarsevakUser: User = {
+        id: "U" + Date.now(),
+        name: directoryEntry.name,
+        mobile: directoryEntry.mobile,
+        role: "nagarsevak",
+        ward: directoryEntry.ward,
+        nagarsevakId: directoryEntry.id,
+        avatarColor: AVATAR_COLORS[colorIndex],
+        createdAt: new Date().toISOString(),
+      };
+      users.push(nagarsevakUser);
+      await saveAllUsers(users);
+      await login(nagarsevakUser);
+      return nagarsevakUser;
+    }
+
     return null;
   };
 
