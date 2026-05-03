@@ -54,25 +54,27 @@ export default function JobStatusScreen() {
                   <Text style={s.jobTitle}>{job.title}</Text>
                   <Text style={s.jobMeta}>{job.company} · {job.location}</Text>
                 </View>
-              <View style={s.detailRow}>
-                  <Text style={s.detailLabel}>Openings</Text>
-                  <Text style={s.detailValue}>{job.openings}</Text>
-                </View>
-                <View style={s.detailRow}>
-                  <Text style={s.detailLabel}>Applied</Text>
-                  <Text style={s.detailValue}>{job.applicants.length}</Text>
-                </View>
-                <View style={s.detailRow}>
-                  <Text style={s.detailLabel}>Shortlisted</Text>
-                  <Text style={s.detailValue}>{job.shortlisted.length}</Text>
-                </View>
-                <View style={s.detailRow}>
-                  <Text style={s.detailLabel}>Rejected</Text>
-                  <Text style={s.detailValue}>{job.rejected.length}</Text>
-                </View>
-                <View style={s.detailRow}>
-                  <Text style={s.detailLabel}>Pending</Text>
-                  <Text style={s.detailValue}>{pending.length}</Text>
+                <View style={s.chipGrid}>
+                  <View style={[s.chip, { backgroundColor: "#FFF7ED", borderColor: "#FED7AA" }]}>
+                    <Text style={[s.chipNum, { color: "#C2410C" }]}>{job.openings}</Text>
+                    <Text style={s.chipLabel}>Openings</Text>
+                  </View>
+                  <View style={[s.chip, { backgroundColor: "#EFF6FF", borderColor: "#BFDBFE" }]}>
+                    <Text style={[s.chipNum, { color: "#1D4ED8" }]}>{job.applicants.length}</Text>
+                    <Text style={s.chipLabel}>Applied</Text>
+                  </View>
+                  <View style={[s.chip, { backgroundColor: "#D1FAE5", borderColor: "#A7F3D0" }]}>
+                    <Text style={[s.chipNum, { color: "#059669" }]}>{job.shortlisted.length}</Text>
+                    <Text style={s.chipLabel}>Shortlisted</Text>
+                  </View>
+                  <View style={[s.chip, { backgroundColor: "#FEE2E2", borderColor: "#FECACA" }]}>
+                    <Text style={[s.chipNum, { color: "#DC2626" }]}>{job.rejected.length}</Text>
+                    <Text style={s.chipLabel}>Rejected</Text>
+                  </View>
+                  <View style={[s.chip, { backgroundColor: "#FFF7ED", borderColor: "#FED7AA" }]}>
+                    <Text style={[s.chipNum, { color: "#C2410C" }]}>{pending.length}</Text>
+                    <Text style={s.chipLabel}>Pending</Text>
+                  </View>
                 </View>
                 <Text style={s.description}>{job.description}</Text>
                 <Text style={s.requirements}>{job.requirements}</Text>
@@ -96,9 +98,10 @@ const s = StyleSheet.create({
   cardTop: { gap: 4 },
   jobTitle: { fontSize: 16, fontWeight: "800", color: "#0F172A", fontFamily: "Inter_700Bold" },
   jobMeta: { fontSize: 12, color: "#64748B", fontFamily: "Inter_400Regular" },
-  detailRow: { flexDirection: "row", justifyContent: "space-between" },
-  detailLabel: { fontSize: 13, color: "#64748B", fontFamily: "Inter_400Regular" },
-  detailValue: { fontSize: 13, color: "#0F172A", fontWeight: "700", fontFamily: "Inter_700Bold" },
+  chipGrid: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 2 },
+  chip: { minWidth: 84, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 14, borderWidth: 1, alignItems: "center" },
+  chipNum: { fontSize: 16, fontWeight: "800", fontFamily: "Inter_700Bold" },
+  chipLabel: { fontSize: 11, color: "#64748B", fontFamily: "Inter_400Regular", marginTop: 2 },
   description: { fontSize: 13, color: "#334155", lineHeight: 19, fontFamily: "Inter_400Regular", marginTop: 4 },
   requirements: { fontSize: 12, color: "#64748B", lineHeight: 18, fontFamily: "Inter_400Regular" },
   empty: { alignItems: "center", justifyContent: "center", paddingTop: 80, gap: 10 },
