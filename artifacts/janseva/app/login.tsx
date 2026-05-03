@@ -142,8 +142,8 @@ export default function LoginScreen() {
         useNativeDriver: true,
       }).start();
       setTimeout(() => {
-        router.replace("/(tabs)/");
-      }, 2000);
+        router.replace("/portal-select" as any);
+      }, 1200);
     } catch (e: any) {
       setError(e.message ?? t("registrationFailed"));
     } finally {
@@ -187,11 +187,7 @@ export default function LoginScreen() {
 
       const user = await loginWithPhone(phone);
       if (user) {
-        if (user.role === "nagarsevak") {
-          router.replace("/(tabs)/admin" as any);
-        } else {
-          router.replace("/(tabs)/");
-        }
+        router.replace("/portal-select" as any);
       } else {
         setError(t("accountNotFound"));
         setLoginStep("form");

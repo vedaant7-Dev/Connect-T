@@ -159,6 +159,10 @@ export default function ProfileScreen() {
     setShowEditModal(false);
   };
 
+  const switchPortal = () => {
+    router.replace("/portal-select" as any);
+  };
+
   return (
     <View style={styles.root}>
       <LinearGradient
@@ -191,6 +195,10 @@ export default function ProfileScreen() {
               </View>
               <Text style={styles.roleSub}>{rc.subLabel}</Text>
             </View>
+            <TouchableOpacity style={styles.switchPortalBtn} onPress={switchPortal} activeOpacity={0.85}>
+              <Feather name="refresh-cw" size={12} color="#EA580C" />
+              <Text style={styles.switchPortalText}>Switch to portal</Text>
+            </TouchableOpacity>
             <View style={styles.infoRow}>
               <View style={styles.infoChipRow}>
                 <Feather name="map-pin" size={10} color="rgba(255,255,255,0.55)" />
@@ -563,6 +571,8 @@ const styles = StyleSheet.create({
   rolePill: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: "rgba(255,255,255,0.15)", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 },
   rolePillText: { fontSize: 11, fontWeight: "700", color: "rgba(255,255,255,0.9)", fontFamily: "Inter_700Bold" },
   roleSub: { fontSize: 11, color: "rgba(255,255,255,0.5)", fontFamily: "Inter_400Regular" },
+  switchPortalBtn: { flexDirection: "row", alignItems: "center", gap: 6, alignSelf: "flex-start", backgroundColor: "white", paddingHorizontal: 12, paddingVertical: 8, borderRadius: 999, marginTop: 10 },
+  switchPortalText: { fontSize: 12, color: "#EA580C", fontFamily: "Inter_600SemiBold", fontWeight: "700" },
   infoChipRow: { flexDirection: "row", alignItems: "center", gap: 5 },
   infoChipText: { fontSize: 11, color: "rgba(255,255,255,0.55)", fontFamily: "Inter_400Regular" },
   statsRow: { flexDirection: "row", backgroundColor: "rgba(255,255,255,0.12)", borderRadius: 14, padding: 10, alignItems: "center" },

@@ -226,6 +226,7 @@ export default function JobsProfileScreen() {
   };
 
   const missingFields = getSeekerFields(jobsUser).filter((f) => { const val = jobsUser[f.key]; return !val || String(val).trim() === ""; });
+  const switchPortal = () => router.replace("/portal-select" as any);
 
   return (
     <View style={cs.root}>
@@ -265,6 +266,10 @@ export default function JobsProfileScreen() {
             <Feather name="edit-2" size={16} color="white" />
           </TouchableOpacity>
         </View>
+        <TouchableOpacity style={cs.switchBtn} onPress={switchPortal} activeOpacity={0.85}>
+          <Feather name="refresh-cw" size={13} color="#EA580C" />
+          <Text style={cs.switchBtnText}>Switch to civic service</Text>
+        </TouchableOpacity>
 
         {!isEmployer && (
           <View style={cs.completionCard}>
@@ -689,6 +694,8 @@ const cs = StyleSheet.create({
   rolePillText: { fontSize: 11, fontWeight: "700", color: "#EA580C", fontFamily: "Inter_700Bold" },
   headerSub: { fontSize: 12, color: "rgba(255,255,255,0.65)", fontFamily: "Inter_400Regular", marginTop: 3 },
   editBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: "rgba(255,255,255,0.2)", alignItems: "center", justifyContent: "center" },
+  switchBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, backgroundColor: "white", padding: 12, borderRadius: 14, marginTop: 8 },
+  switchBtnText: { fontSize: 13, fontWeight: "700", color: "#EA580C", fontFamily: "Inter_600SemiBold" },
 
   completionCard: { backgroundColor: "rgba(255,255,255,0.15)", borderRadius: 14, padding: 12, marginBottom: 12 },
   completionTop: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 },
