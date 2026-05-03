@@ -20,10 +20,18 @@ export default function JobStatusScreen() {
   }, [jobs, status]);
 
   const title = status === "shortlisted" ? "Shortlisted Jobs" : status === "rejected" ? "Rejected Jobs" : status === "pending" ? "Pending Jobs" : "Active Jobs";
+  const theme =
+    status === "shortlisted"
+      ? { colors: ["#16A34A", "#22C55E", "#34D399"], accent: "#059669", soft: "#D1FAE5", border: "#A7F3D0", icon: "user-check" as const }
+      : status === "rejected"
+        ? { colors: ["#DC2626", "#EF4444", "#F87171"], accent: "#DC2626", soft: "#FEE2E2", border: "#FECACA", icon: "user-x" as const }
+        : status === "pending"
+          ? { colors: ["#2563EB", "#3B82F6", "#60A5FA"], accent: "#1D4ED8", soft: "#EFF6FF", border: "#BFDBFE", icon: "clock" as const }
+          : { colors: ["#C2410C", "#EA580C", "#FB923C"], accent: "#C2410C", soft: "#FFF7ED", border: "#FED7AA", icon: "zap" as const };
 
   return (
     <View style={s.root}>
-      <LinearGradient colors={["#059669", "#10B981", "#34D399"]} style={s.header}>
+      <LinearGradient colors={theme.colors as any} style={s.header}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn} activeOpacity={0.8}>
           <Feather name="arrow-left" size={18} color="white" />
         </TouchableOpacity>
@@ -34,7 +42,7 @@ export default function JobStatusScreen() {
       <ScrollView contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
         {items.length === 0 ? (
           <View style={s.empty}>
-            <Feather name="inbox" size={42} color="#CBD5E1" />
+          <Feather name={theme.icon} size={42} color={theme.accent} />
             <Text style={s.emptyText}>No {title.toLowerCase()} found</Text>
           </View>
         ) : (
@@ -46,7 +54,7 @@ export default function JobStatusScreen() {
                   <Text style={s.jobTitle}>{job.title}</Text>
                   <Text style={s.jobMeta}>{job.company} · {job.location}</Text>
                 </View>
-                <View style={s.detailRow}>
+              <View style={s.detailRow}>
                   <Text style={s.detailLabel}>Openings</Text>
                   <Text style={s.detailValue}>{job.openings}</Text>
                 </View>
