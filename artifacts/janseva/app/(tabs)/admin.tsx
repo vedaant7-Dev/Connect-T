@@ -556,7 +556,7 @@ export default function AdminScreen() {
 
             <View style={pStyles.appInfoCard}>
               <Text style={pStyles.appInfoBrand}>Connect T</Text>
-              <Text style={pStyles.appInfoTagline}>BJP Member Services · सबका साथ, सबका विकास</Text>
+              <Text style={pStyles.appInfoTagline}>Civic Services · सबका साथ, सबका विकास</Text>
               <Text style={pStyles.appInfoVersion}>v1.0 · AMC Ambernath</Text>
             </View>
 

@@ -261,7 +261,7 @@ export default function FeedScreen() {
         <View style={styles.headerRow}>
           <View style={{ flex: 1 }}>
             <Text style={styles.headerTitle}>News Feed</Text>
-            <Text style={styles.headerSub}>Ambernath · BJP Ward Network</Text>
+            <Text style={styles.headerSub}>Ambernath · Community Ward Network</Text>
           </View>
         </View>
         <View style={styles.searchBar}>

@@ -19,7 +19,7 @@ const colors = {
     border: "#FED7AA",
     input: "#FED7AA",
 
-    // Brand saffron-orange (BJP theme)
+    // Brand saffron-orange
     B1: "#7C2D12",
     B2: "#C2410C",
     B3: "#EA580C",

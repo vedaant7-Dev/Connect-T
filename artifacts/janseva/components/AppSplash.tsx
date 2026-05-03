@@ -50,10 +50,10 @@ export function AppSplash({ onFinish }: AppSplashProps) {
             </View>
             <Text style={styles.appName}>Connect T</Text>
             <View style={styles.taglineWrap}>
-              <Text style={styles.taglineEn}>BJP Member Services Platform</Text>
+              <Text style={styles.taglineEn}>Civic Services Platform</Text>
               <Text style={styles.taglineHi}>सबका साथ, सबका विकास</Text>
             </View>
-            <Text style={styles.poweredBy}>Powered by BJP</Text>
+            <Text style={styles.poweredBy}>Powered by Connect T</Text>
           </View>
 
           <View style={styles.footer}>

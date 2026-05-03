@@ -323,7 +323,7 @@ export default function HomeScreen() {
         {/* PAGE FOOTER */}
         <View style={styles.pageFooter}>
           <Text style={styles.pageFooterBrand}>Connect T</Text>
-          <Text style={styles.pageFooterSub}>BJP Member Services · सबका साथ, सबका विकास</Text>
+          <Text style={styles.pageFooterSub}>Civic Services · सबका साथ, सबका विकास</Text>
           <Text style={styles.pageFooterVersion}>v1.0</Text>
         </View>
       </ScrollView>
