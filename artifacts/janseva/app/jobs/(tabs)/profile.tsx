@@ -673,13 +673,13 @@ export default function JobsProfileScreen() {
                   </>
                 )}
 
-            <TouchableOpacity onPress={handleSave} style={cs.saveBtnFull} activeOpacity={0.85}>
-              <LinearGradient colors={["#059669", "#10B981"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={cs.saveBtnGrad}>
-                <Feather name="check" size={18} color="white" />
-                <Text style={cs.saveBtnText}>Save Profile</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-          </ScrollView>
+                <TouchableOpacity onPress={handleSave} style={cs.saveBtnFull} activeOpacity={0.85}>
+                  <LinearGradient colors={["#059669", "#10B981"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={cs.saveBtnGrad}>
+                    <Feather name="check" size={18} color="white" />
+                    <Text style={cs.saveBtnText}>Save Profile</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </ScrollView>
         </View>
       </Modal>
 
