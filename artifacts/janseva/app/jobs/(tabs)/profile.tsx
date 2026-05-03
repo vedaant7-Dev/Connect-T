@@ -362,7 +362,7 @@ export default function JobsProfileScreen() {
           </View>
         )}
 
-        <View style={cs.statsRow}>
+        <View style={[cs.statsRow, { marginTop: 12 }]}>
           {isEmployer ? (
             <>
               <View style={cs.statBox}><Text style={cs.statNum}>{myJobs.length}</Text><Text style={cs.statLabel}>Posted</Text></View>
