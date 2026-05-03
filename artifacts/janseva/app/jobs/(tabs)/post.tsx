@@ -225,20 +225,28 @@ export default function PostJobScreen() {
         <Text style={styles.headerTitle}>Post a Job</Text>
         <Text style={styles.headerSub}>Fill in the details to attract candidates</Text>
       </LinearGradient>
-        <View style={styles.field}>
-          <Text style={styles.label}>Select Company *</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.companySelectRow}>
-            {(jobsUser.companies || []).map((company) => (
-              <TouchableOpacity key={company.id} onPress={() => setSelectedCompanyId(company.id)} style={[styles.companySelectChip, selectedCompanyId === company.id && styles.companySelectChipActive]}>
-                <Text style={[styles.companySelectText, selectedCompanyId === company.id && styles.companySelectTextActive]}>{company.name}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
+
+      <View style={styles.companyPickerWrap}>
+        <Text style={styles.label}>Select Company *</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.companySelectRow}>
+          {(jobsUser.companies || []).map((company) => (
+            <TouchableOpacity
+              key={company.id}
+              onPress={() => setSelectedCompanyId(company.id)}
+              style={[styles.companySelectChip, selectedCompanyId === company.id && styles.companySelectChipActive]}
+              activeOpacity={0.85}
+            >
+              <Text style={[styles.companySelectText, selectedCompanyId === company.id && styles.companySelectTextActive]} numberOfLines={1}>
+                {company.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={[styles.form, { paddingBottom: Math.max(insets.bottom, 8) + 80 }]}
+        contentContainerStyle={[styles.form, { paddingTop: 4, paddingBottom: Math.max(insets.bottom, 8) + 80 }]}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.field}>
