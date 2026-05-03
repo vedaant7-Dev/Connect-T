@@ -527,6 +527,7 @@ export default function JobsHomeScreen() {
   const isEmployer = jobsUser?.role === "employer";
 
   const activeJobs = jobs.filter((j) => j.active);
+  const visibleJobs = activeJobs.filter((j) => !jobsUser || jobsUser.role !== "seeker" || !j.applicants.includes(jobsUser.id));
   const nearbyJobs = activeJobs.filter((j) => isNearby(j.location, jobsUser?.location));
 
   const handleApply = (job: Job) => {
@@ -595,7 +596,7 @@ export default function JobsHomeScreen() {
             />
           ) : (
             <>
-              {nearbyJobs.length > 0 && (
+              {nearbyJobs.filter((job) => !jobsUser || !hasApplied(job.id, jobsUser.id)).length > 0 && (
                 <View style={s.section}>
                   <View style={s.sectionHeader}>
                     <Feather name="map-pin" size={15} color="#059669" />
@@ -604,7 +605,7 @@ export default function JobsHomeScreen() {
                       <Text style={s.sectionBadgeText}>{nearbyJobs.length}</Text>
                     </View>
                   </View>
-              {nearbyJobs.map((job) => (
+              {nearbyJobs.filter((job) => !jobsUser || !hasApplied(job.id, jobsUser.id)).map((job) => (
                     <JobCard
                       key={job.id}
                       job={job}
@@ -624,13 +625,13 @@ export default function JobsHomeScreen() {
                     <Text style={[s.sectionBadgeText, { color: "#EA580C" }]}>{activeJobs.length}</Text>
                   </View>
                 </View>
-                {activeJobs.length === 0 ? (
+                {visibleJobs.length === 0 ? (
                   <View style={s.empty}>
                     <Feather name="briefcase" size={44} color="#CBD5E1" />
                     <Text style={s.emptyText}>No jobs available yet</Text>
                   </View>
                 ) : (
-                  activeJobs.map((job) => (
+                  visibleJobs.map((job) => (
                     <JobCard
                       key={job.id}
                       job={job}
