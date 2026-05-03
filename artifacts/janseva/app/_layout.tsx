@@ -6,7 +6,6 @@ import {
   Inter_700Bold,
   useFonts,
 } from "@expo-google-fonts/inter";
-import { Asset } from "expo-asset";
 import { Image } from "react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useRouter, useSegments, router as staticRouter } from "expo-router";
@@ -122,8 +121,6 @@ function RootLayoutNav() {
   );
 }
 
-const logoImage = require("@/assets/images/logo_transparent.png");
-
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     ...Feather.font,
@@ -135,17 +132,7 @@ export default function RootLayout() {
   const [assetsReady, setAssetsReady] = useState(false);
 
   useEffect(() => {
-    const preload = async () => {
-      try {
-        await Asset.loadAsync([logoImage]);
-        const resolved = Asset.fromModule(logoImage);
-        if (resolved.uri) {
-          await Image.prefetch(resolved.uri);
-        }
-      } catch {}
-      setAssetsReady(true);
-    };
-    preload();
+    setAssetsReady(true);
   }, []);
 
   useEffect(() => {
