@@ -1,7 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { findNagarsevakById } from "@/data/nagarsevaks";
-
 export type UserRole = "citizen" | "nagarsevak";
 
 export interface User {
@@ -32,7 +30,6 @@ interface AuthContextType {
   checkPhone: (mobile: string) => Promise<User | null>;
   register: (userData: Omit<User, "id" | "avatarColor" | "createdAt">) => Promise<User>;
   loginWithPhone: (mobile: string) => Promise<User | null>;
-  loginWithNagarsevakId: (mobile: string, nagarsevakId: string) => Promise<User | null>;
   updateUser: (updates: Partial<User>) => Promise<void>;
 }
 
@@ -109,49 +106,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return null;
   };
 
-  const loginWithNagarsevakId = async (mobile: string, nagarsevakId: string): Promise<User | null> => {
-    const normalizedId = nagarsevakId.toUpperCase().trim();
-    const directoryEntry = findNagarsevakById(normalizedId);
-    if (!directoryEntry) return null;
-
-    const enteredMobile = mobile.trim().replace(/\D/g, "");
-    if (enteredMobile && enteredMobile !== directoryEntry.mobile) return null;
-
-    const users = await getAllUsers();
-    const found = users.find((u) => u.role === "nagarsevak" && u.nagarsevakId === normalizedId);
-    if (found) {
-      const refreshed: User = {
-        ...found,
-        name: directoryEntry.name,
-        mobile: directoryEntry.mobile,
-        ward: directoryEntry.ward,
-      };
-      const idx = users.findIndex((u) => u.id === found.id);
-      if (idx >= 0) {
-        users[idx] = refreshed;
-        await saveAllUsers(users);
-      }
-      await login(refreshed);
-      return refreshed;
-    }
-
-    const colorIndex = Math.floor(Math.random() * AVATAR_COLORS.length);
-    const newUser: User = {
-      id: "U" + Date.now(),
-      name: directoryEntry.name,
-      mobile: directoryEntry.mobile,
-      role: "nagarsevak",
-      ward: directoryEntry.ward,
-      nagarsevakId: normalizedId,
-      avatarColor: AVATAR_COLORS[colorIndex],
-      createdAt: new Date().toISOString(),
-    };
-    users.push(newUser);
-    await saveAllUsers(users);
-    await login(newUser);
-    return newUser;
-  };
-
   const updateUser = async (updates: Partial<User>) => {
     if (!user) return;
     const updated = { ...user, ...updates, id: user.id, role: user.role, nagarsevakId: user.nagarsevakId, createdAt: user.createdAt };
@@ -166,7 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn: !!user, loading, login, logout, checkPhone, register, loginWithPhone, loginWithNagarsevakId, updateUser }}>
+    <AuthContext.Provider value={{ user, isLoggedIn: !!user, loading, login, logout, checkPhone, register, loginWithPhone, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

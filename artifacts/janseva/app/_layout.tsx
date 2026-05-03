@@ -39,11 +39,9 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     if (loading) return;
     const inLogin = segments[0] === "login";
     const inTabs = segments[0] === "(tabs)";
-    const inJobs = segments[0] === "jobs";
     const inPortalSelect = segments[0] === "portal-select";
     const currentTab = inTabs ? segments[1] : undefined;
 
-    if (inJobs) return;
     if (inPortalSelect) return;
 
     if (!user && !inLogin) {
@@ -65,18 +63,17 @@ function AppShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!loading && user) {
       setSplashDone(true);
-      staticRouter.replace(user.role === "nagarsevak" ? "/(tabs)/admin" as any : "/(tabs)/");
+      staticRouter.replace("/portal-select" as any);
     }
   }, [user, loading]);
 
   const handleFinish = async (portal: "civic" | "jobs") => {
-    if (portal === "civic") {
-      setSplashDone(true);
-      staticRouter.replace(user ? (user.role === "nagarsevak" ? "/(tabs)/admin" as any : "/(tabs)/") : "/login");
-    } else {
-      setSplashDone(true);
-      staticRouter.replace("/jobs/login" as any);
+    setSplashDone(true);
+    if (!user) {
+      staticRouter.replace("/login");
+      return;
     }
+    staticRouter.replace(portal === "civic" ? "/(tabs)/" : "/jobs/login" as any);
   };
 
   return (
