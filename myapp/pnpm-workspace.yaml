@@ -1,8 +1,0 @@
-packages:
-  - .
-  - artifacts/**
-  - lib/**
-  - scripts
-
-onlyBuiltDependencies:
-  - esbuild
