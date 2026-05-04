@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "5cd53c71-acd0-4c57-93c6-7433cac7609d"
+      }
+    },
+    "android": {
+      "package": "com.connectt.app"
+    }
+  }
+}

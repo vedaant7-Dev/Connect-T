@@ -9,14 +9,17 @@ if (!rawPort) {
     "PORT environment variable is required but was not provided.",
   );
 }
-
+app.get("/", (req, res) => {
+  res.send("Connect-T backend is running ✅");
+});
 const port = Number(rawPort);
 
 if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-pool.getConnection()
+pool
+  .getConnection()
   .then(() => {
     console.log("MySQL Connected");
   })
