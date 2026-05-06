@@ -3,8 +3,6 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 
-const complaintRoutes = require("./routes/complaints");
-
 const app = express();
 
 app.use(cors());
@@ -17,10 +15,7 @@ app.get("/", (req, res) => {
   });
 });
 
-app.use("/complaints", complaintRoutes);
-
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`ConnectT backend running on port ${PORT}`);
+app.listen(process.env.PORT || 5000, () => {
+  console.log("Server running");
 });
+
