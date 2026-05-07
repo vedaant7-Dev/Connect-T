@@ -1,19 +1,7 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { API_BASE_URL } from "@/constants/api";
-
-export type ComplaintStatus =
-  | "submitted"
-  | "assigned"
-  | "in_progress"
-  | "resolved"
-  | "rejected";
+export type ComplaintStatus = "submitted" | "assigned" | "in_progress" | "resolved" | "rejected";
 
 export type ComplaintCategory =
   | "roads"
@@ -53,175 +41,103 @@ export interface Complaint {
   userEmail?: string;
 }
 
-type NewComplaintData = Omit<
-  Complaint,
-  "id" | "createdAt" | "updatedAt" | "timeline" | "status"
->;
-
 interface ComplaintContextType {
   complaints: Complaint[];
-  loading: boolean;
-  addComplaint: (data: NewComplaintData) => Promise<Complaint>;
-  updateStatus: (
-    id: string,
-    status: ComplaintStatus,
-    note?: string,
-    updatedBy?: string,
-  ) => Promise<void>;
+  addComplaint: (data: Omit<Complaint, "id" | "createdAt" | "updatedAt" | "timeline" | "status">) => Complaint;
+  updateStatus: (id: string, status: ComplaintStatus, note?: string, updatedBy?: string) => void;
   getComplaintById: (id: string) => Complaint | undefined;
-  refreshComplaints: () => Promise<void>;
+  loading: boolean;
 }
 
 const ComplaintContext = createContext<ComplaintContextType | null>(null);
 
-function buildTimeline(
-  status: ComplaintStatus,
-  createdAt: string,
-): StatusUpdate[] {
-  return [
-    {
-      status,
-      timestamp: createdAt,
-      note: "Complaint registered successfully",
-      updatedBy: "System",
-    },
-  ];
-}
+const STORAGE_KEY = "janseva_complaints_v3";
 
-function normalizeComplaint(item: any): Complaint {
-  const createdAt =
-    item.created_at || item.createdAt || new Date().toISOString();
-  const updatedAt = item.updated_at || item.updatedAt || createdAt;
-  const status: ComplaintStatus = item.status || "submitted";
-
-  return {
-    id: String(item.id),
-    title: item.title || "",
-    description: item.description || "",
-    category: item.category || "other",
-    photoUri: item.photo_url || item.photoUri || "",
-    location: item.location || "",
-    ward: item.ward || "",
-    status,
-    createdAt,
-    updatedAt,
-    timeline:
-      Array.isArray(item.timeline) && item.timeline.length > 0
-        ? item.timeline
-        : buildTimeline(status, createdAt),
-    assignedTo: item.assigned_to || item.assignedTo,
-    resolvedNote: item.resolved_note || item.resolvedNote,
-    userName: item.user_name || item.userName,
-    userMobile: item.user_mobile || item.userMobile,
-    userAddress: item.user_address || item.userAddress,
-    userAge: item.user_age || item.userAge,
-    userEmail: item.user_email || item.userEmail,
-  };
+function generateId(): string {
+  return "CMP" + Date.now().toString().slice(-6) + Math.random().toString(36).substr(2, 4).toUpperCase();
 }
 
 export function ComplaintProvider({ children }: { children: ReactNode }) {
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const refreshComplaints = async () => {
+  useEffect(() => {
+    loadComplaints();
+  }, []);
+
+  const loadComplaints = async () => {
     try {
-      setLoading(true);
-
-      const response = await fetch(`${API_BASE_URL}/api/complaints`);
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || "Failed to load complaints");
+      const stored = await AsyncStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        setComplaints(JSON.parse(stored));
+      } else {
+        setComplaints([]);
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify([]));
       }
-
-      setComplaints((data.complaints || []).map(normalizeComplaint));
-    } catch (error) {
-      console.error("Failed to load complaints", error);
+    } catch (e) {
+      console.error("Failed to load complaints", e);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    refreshComplaints();
-  }, []);
-
-  const addComplaint = async (data: NewComplaintData): Promise<Complaint> => {
-    const response = await fetch(`${API_BASE_URL}/api/complaints`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    const result = await response.json();
-
-    if (!response.ok || !result.success) {
-      throw new Error(result.message || "Failed to create complaint");
+  const saveComplaints = async (updated: Complaint[]) => {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.error("Failed to save complaints", e);
     }
+  };
 
+  const addComplaint = (data: Omit<Complaint, "id" | "createdAt" | "updatedAt" | "timeline" | "status">): Complaint => {
     const now = new Date().toISOString();
-
-    const complaint: Complaint = normalizeComplaint({
+    const newComplaint: Complaint = {
       ...data,
-      id: result.complaintId || result.complaint?.id,
+      id: generateId(),
       status: "submitted",
       createdAt: now,
       updatedAt: now,
-    });
-
-    setComplaints((prev) => [complaint, ...prev]);
-    await refreshComplaints();
-
-    return complaint;
-  };
-
-  const updateStatus = async (
-    id: string,
-    status: ComplaintStatus,
-    note?: string,
-    updatedBy?: string,
-  ) => {
-    const response = await fetch(
-      `${API_BASE_URL}/api/complaints/${id}/status`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+      timeline: [
+        {
+          status: "submitted",
+          timestamp: now,
+          note: "Complaint registered successfully",
+          updatedBy: "System",
         },
-        body: JSON.stringify({
-          status,
-          note,
-          updatedBy,
-        }),
-      },
-    );
-
-    const result = await response.json();
-
-    if (!response.ok || !result.success) {
-      throw new Error(result.message || "Failed to update complaint status");
-    }
-
-    await refreshComplaints();
+      ],
+    };
+    const updated = [newComplaint, ...complaints];
+    setComplaints(updated);
+    saveComplaints(updated);
+    return newComplaint;
   };
 
-  const getComplaintById = (id: string) => {
-    return complaints.find((c) => String(c.id) === String(id));
+  const updateStatus = (id: string, status: ComplaintStatus, note?: string, updatedBy?: string) => {
+    const now = new Date().toISOString();
+    const updated = complaints.map((c) => {
+      if (c.id !== id) return c;
+      const newEntry: StatusUpdate = {
+        status,
+        timestamp: now,
+        note: note || getDefaultNote(status),
+        updatedBy: updatedBy || "Ward Officer",
+      };
+      return {
+        ...c,
+        status,
+        updatedAt: now,
+        timeline: [...c.timeline, newEntry],
+        resolvedNote: status === "resolved" ? note : c.resolvedNote,
+      };
+    });
+    setComplaints(updated);
+    saveComplaints(updated);
   };
+
+  const getComplaintById = (id: string) => complaints.find((c) => c.id === id);
 
   return (
-    <ComplaintContext.Provider
-      value={{
-        complaints,
-        loading,
-        addComplaint,
-        updateStatus,
-        getComplaintById,
-        refreshComplaints,
-      }}
-    >
+    <ComplaintContext.Provider value={{ complaints, addComplaint, updateStatus, getComplaintById, loading }}>
       {children}
     </ComplaintContext.Provider>
   );
@@ -229,10 +145,17 @@ export function ComplaintProvider({ children }: { children: ReactNode }) {
 
 export function useComplaints() {
   const ctx = useContext(ComplaintContext);
-
-  if (!ctx) {
-    throw new Error("useComplaints must be used inside ComplaintProvider");
-  }
-
+  if (!ctx) throw new Error("useComplaints must be used inside ComplaintProvider");
   return ctx;
 }
+
+function getDefaultNote(status: ComplaintStatus): string {
+  switch (status) {
+    case "assigned": return "Complaint assigned to ward team";
+    case "in_progress": return "Work has begun on this complaint";
+    case "resolved": return "Issue has been resolved";
+    case "rejected": return "Complaint could not be processed";
+    default: return "";
+  }
+}
+
