@@ -6,6 +6,7 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 
 const jobsRoutes = require("./routes/jobs");
+const complaintRoutes = require("./routes/complaints");
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/jobs", jobsRoutes);
+app.use("/api/complaints", complaintRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
@@ -44,4 +46,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
-
