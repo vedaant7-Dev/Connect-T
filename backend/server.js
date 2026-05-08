@@ -20,7 +20,8 @@ const db = mysql.createPool({
 });
 
 app.get("/", (req, res) => {
-  res.json({
+  res.status(200).json({
+    success: true,
     message: "Connect-T Railway backend running",
   });
 });
@@ -47,4 +48,10 @@ const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`Connect-T backend running on port ${PORT}`);
+});
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Connect-T Railway backend running",
+  });
 });
