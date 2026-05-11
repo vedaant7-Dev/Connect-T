@@ -109,7 +109,7 @@ app.post("/api/users", async (req, res) => {
 /* COMPLAINTS */
 app.get("/api/complaints", async (req, res) => {
   try {
-    const { ward, status, category } = req.query;
+    const { ward, ward_code, status, category } = req.query;
 
     let sql = "SELECT * FROM complaints WHERE 1=1";
     const params = [];
@@ -117,6 +117,11 @@ app.get("/api/complaints", async (req, res) => {
     if (ward) {
       sql += " AND ward = ?";
       params.push(ward);
+    }
+
+    if (ward_code) {
+      sql += " AND ward_code = ?";
+      params.push(ward_code);
     }
 
     if (status) {
@@ -189,6 +194,8 @@ app.post("/api/complaints", async (req, res) => {
       photo_url,
       location,
       ward,
+      ward_code,
+      assigned_officer_id,
       user_id,
       user_name,
       user_mobile,
@@ -206,8 +213,9 @@ app.post("/api/complaints", async (req, res) => {
 
     await db.query(
       `INSERT INTO complaints
-      (id, title, description, category, photo_url, location, ward, user_id, user_name, user_mobile, user_address, user_age, user_email)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      (id, title, description, category, photo_url, location, ward, ward_code, assigned_officer_id, user_id,
+      user_name, user_mobile, user_address, user_age, user_email)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
         title,
@@ -216,6 +224,8 @@ app.post("/api/complaints", async (req, res) => {
         photo_url || null,
         location,
         ward,
+        ward_code || null,
+        assigned_officer_id || null,
         user_id || null,
         user_name || null,
         user_mobile || null,
