@@ -8,17 +8,20 @@ import React, {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { findNagarsevakById, findNagarsevakByMobile } from "@/data/nagarsevaks";
 
-export type UserRole = "citizen" | "nagarsevak";
+export type UserRole = "citizen" | "nagarsevak" | "super_admin";
 
 export interface User {
   id: string;
   name: string;
   mobile: string;
   role: UserRole;
+
   ward?: string;
-  wardCode?: string;
+  wardCode?: string | null;
   wardNumber?: string;
+
   isSuperAdmin?: boolean;
+
   age?: number;
   email?: string;
   address?: string;
@@ -50,6 +53,7 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
+
 const SESSION_KEY = "janseva_user";
 const USERS_KEY = "janseva_users";
 
@@ -75,6 +79,40 @@ async function saveAllUsers(users: User[]): Promise<void> {
   await AsyncStorage.setItem(USERS_KEY, JSON.stringify(users));
 }
 
+function normalizeMobile(mobile: string): string {
+  return mobile.trim().replace(/\D/g, "");
+}
+
+function createOfficerUser(directoryEntry: any): User {
+  const colorIndex = Math.floor(Math.random() * AVATAR_COLORS.length);
+
+  return {
+    id: "U" + Date.now(),
+    name: directoryEntry.name,
+    mobile: normalizeMobile(directoryEntry.mobile),
+    role: directoryEntry.role || "nagarsevak",
+    ward: directoryEntry.ward,
+    wardCode: directoryEntry.wardCode ?? null,
+    nagarsevakId: directoryEntry.id,
+    isSuperAdmin: directoryEntry.isSuperAdmin || false,
+    avatarColor: AVATAR_COLORS[colorIndex],
+    createdAt: new Date().toISOString(),
+  };
+}
+
+function refreshOfficerUser(existingUser: User, directoryEntry: any): User {
+  return {
+    ...existingUser,
+    name: directoryEntry.name,
+    mobile: normalizeMobile(directoryEntry.mobile),
+    role: directoryEntry.role || "nagarsevak",
+    ward: directoryEntry.ward,
+    wardCode: directoryEntry.wardCode ?? null,
+    nagarsevakId: directoryEntry.id,
+    isSuperAdmin: directoryEntry.isSuperAdmin || false,
+  };
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -82,7 +120,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     AsyncStorage.getItem(SESSION_KEY)
       .then((stored) => {
-        if (stored) setUser(JSON.parse(stored));
+        if (stored) {
+          setUser(JSON.parse(stored));
+        }
       })
       .finally(() => setLoading(false));
   }, []);
@@ -98,8 +138,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const checkPhone = async (mobile: string): Promise<User | null> => {
+    const normalized = normalizeMobile(mobile);
     const users = await getAllUsers();
-    return users.find((u) => u.mobile === mobile.trim()) ?? null;
+
+    return users.find((u) => normalizeMobile(u.mobile) === normalized) ?? null;
   };
 
   const register = async (
@@ -107,65 +149,79 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ): Promise<User> => {
     const users = await getAllUsers();
     const colorIndex = Math.floor(Math.random() * AVATAR_COLORS.length);
+
+    const normalizedMobile = normalizeMobile(userData.mobile);
+
+    const existingIndex = users.findIndex(
+      (u) => normalizeMobile(u.mobile) === normalizedMobile,
+    );
+
     const newUser: User = {
       ...userData,
-      id: "U" + Date.now(),
-      avatarColor: AVATAR_COLORS[colorIndex],
-      createdAt: new Date().toISOString(),
+      mobile: normalizedMobile,
+      role: userData.role || "citizen",
+      wardCode: userData.wardCode ?? null,
+      isSuperAdmin: userData.isSuperAdmin || false,
+      id: existingIndex >= 0 ? users[existingIndex].id : "U" + Date.now(),
+      avatarColor:
+        existingIndex >= 0
+          ? users[existingIndex].avatarColor
+          : AVATAR_COLORS[colorIndex],
+      createdAt:
+        existingIndex >= 0
+          ? users[existingIndex].createdAt
+          : new Date().toISOString(),
     };
-    users.push(newUser);
+
+    if (existingIndex >= 0) {
+      users[existingIndex] = newUser;
+    } else {
+      users.push(newUser);
+    }
+
     await saveAllUsers(users);
     await login(newUser);
+
     return newUser;
   };
 
   const loginWithPhone = async (mobile: string): Promise<User | null> => {
-    const normalizedMobile = mobile.trim().replace(/\D/g, "");
-
-    // First check existing accounts in storage
+    const normalizedMobile = normalizeMobile(mobile);
     const users = await getAllUsers();
-    const existingUser = users.find((u) => u.mobile === normalizedMobile);
-    if (existingUser) {
-      // Refresh nagarsevak data from directory if applicable
-      if (existingUser.role === "nagarsevak" && existingUser.nagarsevakId) {
-        const directoryEntry = findNagarsevakById(existingUser.nagarsevakId);
-        if (directoryEntry) {
-          const refreshed: User = {
-            ...existingUser,
-            name: directoryEntry.name,
-            ward: directoryEntry.ward,
-          };
-          const idx = users.findIndex((u) => u.id === existingUser.id);
-          if (idx >= 0) {
-            users[idx] = refreshed;
-            await saveAllUsers(users);
-          }
-          await login(refreshed);
-          return refreshed;
-        }
+
+    const directoryEntry = findNagarsevakByMobile(normalizedMobile);
+
+    if (directoryEntry) {
+      const existingOfficerIndex = users.findIndex(
+        (u) =>
+          normalizeMobile(u.mobile) === normalizedMobile ||
+          u.nagarsevakId === directoryEntry.id,
+      );
+
+      const officerUser =
+        existingOfficerIndex >= 0
+          ? refreshOfficerUser(users[existingOfficerIndex], directoryEntry)
+          : createOfficerUser(directoryEntry);
+
+      if (existingOfficerIndex >= 0) {
+        users[existingOfficerIndex] = officerUser;
+      } else {
+        users.push(officerUser);
       }
-      await login(existingUser);
-      return existingUser;
+
+      await saveAllUsers(users);
+      await login(officerUser);
+
+      return officerUser;
     }
 
-    // Check if this mobile belongs to a nagarsevak in the directory
-    const directoryEntry = findNagarsevakByMobile(normalizedMobile);
-    if (directoryEntry) {
-      const colorIndex = Math.floor(Math.random() * AVATAR_COLORS.length);
-      const nagarsevakUser: User = {
-        id: "U" + Date.now(),
-        name: directoryEntry.name,
-        mobile: directoryEntry.mobile,
-        role: "nagarsevak",
-        ward: directoryEntry.ward,
-        nagarsevakId: directoryEntry.id,
-        avatarColor: AVATAR_COLORS[colorIndex],
-        createdAt: new Date().toISOString(),
-      };
-      users.push(nagarsevakUser);
-      await saveAllUsers(users);
-      await login(nagarsevakUser);
-      return nagarsevakUser;
+    const existingUser = users.find(
+      (u) => normalizeMobile(u.mobile) === normalizedMobile,
+    );
+
+    if (existingUser) {
+      await login(existingUser);
+      return existingUser;
     }
 
     return null;
@@ -177,66 +233,68 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ): Promise<User | null> => {
     const normalizedId = nagarsevakId.toUpperCase().trim();
     const directoryEntry = findNagarsevakById(normalizedId);
+
     if (!directoryEntry) return null;
 
-    const enteredMobile = mobile.trim().replace(/\D/g, "");
-    if (enteredMobile && enteredMobile !== directoryEntry.mobile) return null;
+    const enteredMobile = normalizeMobile(mobile);
 
-    const users = await getAllUsers();
-    const found = users.find(
-      (u) => u.role === "nagarsevak" && u.nagarsevakId === normalizedId,
-    );
-    if (found) {
-      const refreshed: User = {
-        ...found,
-        name: directoryEntry.name,
-        mobile: directoryEntry.mobile,
-        ward: directoryEntry.ward,
-      };
-      const idx = users.findIndex((u) => u.id === found.id);
-      if (idx >= 0) {
-        users[idx] = refreshed;
-        await saveAllUsers(users);
-      }
-      await login(refreshed);
-      return refreshed;
+    if (
+      enteredMobile &&
+      enteredMobile !== normalizeMobile(directoryEntry.mobile)
+    ) {
+      return null;
     }
 
-    const colorIndex = Math.floor(Math.random() * AVATAR_COLORS.length);
-    const newUser: User = {
-      id: "U" + Date.now(),
-      name: directoryEntry.name,
-      mobile: directoryEntry.mobile,
-      role: "nagarsevak",
-      ward: directoryEntry.ward,
-      nagarsevakId: normalizedId,
-      avatarColor: AVATAR_COLORS[colorIndex],
-      createdAt: new Date().toISOString(),
-    };
-    users.push(newUser);
+    const users = await getAllUsers();
+
+    const existingOfficerIndex = users.findIndex(
+      (u) => u.nagarsevakId === normalizedId,
+    );
+
+    const officerUser =
+      existingOfficerIndex >= 0
+        ? refreshOfficerUser(users[existingOfficerIndex], directoryEntry)
+        : createOfficerUser(directoryEntry);
+
+    if (existingOfficerIndex >= 0) {
+      users[existingOfficerIndex] = officerUser;
+    } else {
+      users.push(officerUser);
+    }
+
     await saveAllUsers(users);
-    await login(newUser);
-    return newUser;
+    await login(officerUser);
+
+    return officerUser;
   };
 
   const updateUser = async (updates: Partial<User>) => {
     if (!user) return;
-    const updated = {
+
+    const updated: User = {
       ...user,
       ...updates,
       id: user.id,
-      role: user.role,
-      nagarsevakId: user.nagarsevakId,
+      role: updates.role || user.role,
+      nagarsevakId: updates.nagarsevakId ?? user.nagarsevakId,
       createdAt: user.createdAt,
+      wardCode: updates.wardCode ?? user.wardCode ?? null,
+      isSuperAdmin: updates.isSuperAdmin ?? user.isSuperAdmin ?? false,
     };
+
     setUser(updated);
     await AsyncStorage.setItem(SESSION_KEY, JSON.stringify(updated));
+
     const users = await getAllUsers();
     const idx = users.findIndex((u) => u.id === user.id);
+
     if (idx >= 0) {
       users[idx] = updated;
-      await saveAllUsers(users);
+    } else {
+      users.push(updated);
     }
+
+    await saveAllUsers(users);
   };
 
   return (
@@ -261,6 +319,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be inside AuthProvider");
+
+  if (!ctx) {
+    throw new Error("useAuth must be inside AuthProvider");
+  }
+
   return ctx;
 }
