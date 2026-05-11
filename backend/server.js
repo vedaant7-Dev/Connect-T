@@ -23,6 +23,24 @@ const db = mysql.createPool({
 const createId = (prefix) =>
   `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
 
+function getOfficerIdByWardCode(wardCode) {
+  if (!wardCode) return null;
+
+  const match = String(wardCode)
+    .trim()
+    .match(/^(\d+)(A|B)$/i);
+  if (!match) return null;
+
+  const wardNo = Number(match[1]);
+  const side = match[2].toUpperCase();
+
+  if (wardNo < 1 || wardNo > 29) return null;
+
+  const officerNumber = 1 + (wardNo - 1) * 2 + (side === "A" ? 1 : 2);
+
+  return `NS${String(officerNumber).padStart(3, "0")}`;
+}
+
 app.get("/", (req, res) => {
   res.json({
     success: true,
@@ -45,6 +63,7 @@ app.get("/api/users", async (req, res) => {
     const [rows] = await db.query(
       "SELECT * FROM users ORDER BY created_at DESC",
     );
+
     res.json({ success: true, users: rows });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
@@ -60,7 +79,9 @@ app.post("/api/users", async (req, res) => {
       mobile,
       role = "citizen",
       ward,
+      ward_code,
       ward_number,
+      is_super_admin = false,
       age,
       email,
       address,
@@ -80,23 +101,40 @@ app.post("/api/users", async (req, res) => {
 
     await db.query(
       `INSERT INTO users
-      (id, name, mobile, role, ward, ward_number, age, email, address, nagarsevak_id, avatar_color, profile_photo, notify_email, notify_whatsapp)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      (id, name, mobile, role, ward, ward_code, ward_number, is_super_admin, age, email, address, nagarsevak_id, avatar_color, profile_photo, notify_email, notify_whatsapp)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+      name = VALUES(name),
+      role = VALUES(role),
+      ward = VALUES(ward),
+      ward_code = VALUES(ward_code),
+      ward_number = VALUES(ward_number),
+      is_super_admin = VALUES(is_super_admin),
+      age = VALUES(age),
+      email = VALUES(email),
+      address = VALUES(address),
+      nagarsevak_id = VALUES(nagarsevak_id),
+      avatar_color = VALUES(avatar_color),
+      profile_photo = VALUES(profile_photo),
+      notify_email = VALUES(notify_email),
+      notify_whatsapp = VALUES(notify_whatsapp)`,
       [
         id,
         name,
         mobile,
         role,
         ward || null,
+        ward_code || null,
         ward_number || null,
+        is_super_admin ? 1 : 0,
         age || null,
         email || null,
         address || null,
         nagarsevak_id || null,
         avatar_color || null,
         profile_photo || null,
-        notify_email,
-        notify_whatsapp,
+        notify_email ? 1 : 0,
+        notify_whatsapp ? 1 : 0,
       ],
     );
 
@@ -109,7 +147,8 @@ app.post("/api/users", async (req, res) => {
 /* COMPLAINTS */
 app.get("/api/complaints", async (req, res) => {
   try {
-    const { ward, ward_code, status, category } = req.query;
+    const { ward, ward_code, assigned_officer_id, status, category } =
+      req.query;
 
     let sql = "SELECT * FROM complaints WHERE 1=1";
     const params = [];
@@ -122,6 +161,11 @@ app.get("/api/complaints", async (req, res) => {
     if (ward_code) {
       sql += " AND ward_code = ?";
       params.push(ward_code);
+    }
+
+    if (assigned_officer_id) {
+      sql += " AND assigned_officer_id = ?";
+      params.push(assigned_officer_id);
     }
 
     if (status) {
@@ -143,10 +187,7 @@ app.get("/api/complaints", async (req, res) => {
       complaints: rows,
     });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      error: err.message,
-    });
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
@@ -176,10 +217,7 @@ app.get("/api/complaints/:id", async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      error: err.message,
-    });
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
@@ -211,10 +249,12 @@ app.post("/api/complaints", async (req, res) => {
       });
     }
 
+    const finalAssignedOfficerId =
+      assigned_officer_id || getOfficerIdByWardCode(ward_code);
+
     await db.query(
       `INSERT INTO complaints
-      (id, title, description, category, photo_url, location, ward, ward_code, assigned_officer_id, user_id,
-      user_name, user_mobile, user_address, user_age, user_email)
+      (id, title, description, category, photo_url, location, ward, ward_code, assigned_officer_id, user_id, user_name, user_mobile, user_address, user_age, user_email)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
@@ -225,7 +265,7 @@ app.post("/api/complaints", async (req, res) => {
         location,
         ward,
         ward_code || null,
-        assigned_officer_id || null,
+        finalAssignedOfficerId || null,
         user_id || null,
         user_name || null,
         user_mobile || null,
@@ -245,12 +285,11 @@ app.post("/api/complaints", async (req, res) => {
     res.status(201).json({
       success: true,
       complaintId: id,
+      ward_code: ward_code || null,
+      assigned_officer_id: finalAssignedOfficerId || null,
     });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      error: err.message,
-    });
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
@@ -281,14 +320,63 @@ app.patch("/api/complaints/:id/status", async (req, res) => {
       [req.params.id, status, note || null, updated_by || "admin"],
     );
 
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/* ADMIN ANALYTICS */
+app.get("/api/admin/analytics", async (req, res) => {
+  try {
+    const [summary] = await db.query(
+      `SELECT 
+        COUNT(*) AS total,
+        SUM(status = 'submitted') AS submitted,
+        SUM(status = 'assigned') AS assigned,
+        SUM(status = 'in_progress') AS in_progress,
+        SUM(status = 'resolved') AS resolved,
+        SUM(status = 'rejected') AS rejected
+       FROM complaints`,
+    );
+
+    const [wardStats] = await db.query(
+      `SELECT 
+        ward_code,
+        ward,
+        COUNT(*) AS total,
+        SUM(status = 'submitted') AS submitted,
+        SUM(status = 'assigned') AS assigned,
+        SUM(status = 'in_progress') AS in_progress,
+        SUM(status = 'resolved') AS resolved,
+        SUM(status = 'rejected') AS rejected
+       FROM complaints
+       GROUP BY ward_code, ward
+       ORDER BY ward_code ASC`,
+    );
+
+    const [officerStats] = await db.query(
+      `SELECT 
+        assigned_officer_id,
+        COUNT(*) AS total,
+        SUM(status = 'submitted') AS submitted,
+        SUM(status = 'assigned') AS assigned,
+        SUM(status = 'in_progress') AS in_progress,
+        SUM(status = 'resolved') AS resolved,
+        SUM(status = 'rejected') AS rejected
+       FROM complaints
+       GROUP BY assigned_officer_id
+       ORDER BY assigned_officer_id ASC`,
+    );
+
     res.json({
       success: true,
+      summary: summary[0],
+      wardStats,
+      officerStats,
     });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      error: err.message,
-    });
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
@@ -296,6 +384,7 @@ app.patch("/api/complaints/:id/status", async (req, res) => {
 app.get("/api/alerts", async (req, res) => {
   try {
     const { type, ward } = req.query;
+
     let sql = "SELECT * FROM alerts WHERE 1=1";
     const params = [];
 
@@ -435,7 +524,7 @@ app.post("/api/feed/posts", async (req, res) => {
         type,
         content,
         image_uri || null,
-        pinned,
+        pinned ? 1 : 0,
       ],
     );
 
@@ -473,6 +562,7 @@ app.get("/api/chat/messages", async (req, res) => {
     const [rows] = await db.query(
       "SELECT * FROM chat_messages ORDER BY created_at ASC",
     );
+
     res.json({ success: true, messages: rows });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
@@ -593,6 +683,7 @@ app.get("/api/emergency", async (req, res) => {
     const [rows] = await db.query(
       "SELECT * FROM emergency_contacts ORDER BY id ASC",
     );
+
     res.json({ success: true, emergencyContacts: rows });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
@@ -605,6 +696,7 @@ app.get("/api/job-users", async (req, res) => {
     const [rows] = await db.query(
       "SELECT * FROM job_users ORDER BY created_at DESC",
     );
+
     res.json({ success: true, jobUsers: rows });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
@@ -783,7 +875,7 @@ app.post("/api/jobs", async (req, res) => {
         description || null,
         requirements || null,
         openings,
-        active,
+        active ? 1 : 0,
       ],
     );
 
