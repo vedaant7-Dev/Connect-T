@@ -79,6 +79,7 @@ export default function LoginScreen() {
     const newDigits = [...otpDigits];
     newDigits[index] = value;
     setOtpDigits(newDigits);
+
     if (value && index < 3) {
       refs[index + 1]?.current?.focus();
     }
@@ -86,15 +87,19 @@ export default function LoginScreen() {
 
   const handleRegisterSubmit = () => {
     setError("");
+
     if (!regName.trim() || regName.trim().length < 2) {
       setError(t("enterFullName"));
       return;
     }
+
     const ageNum = parseInt(regAge, 10);
+
     if (!regAge || isNaN(ageNum) || ageNum < 1 || ageNum > 120) {
       setError(t("enterValidAge"));
       return;
     }
+
     if (
       regEmail.trim() &&
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(regEmail.trim())
@@ -102,28 +107,35 @@ export default function LoginScreen() {
       setError(t("enterValidEmail"));
       return;
     }
+
     if (!regAddress.trim()) {
       setError(t("enterAddress"));
       return;
     }
+
     const phone = regPhone.trim().replace(/\D/g, "");
+
     if (phone.length !== 10) {
       setError(t("enterValidPhone"));
       return;
     }
-    if (!regWard) {
+
+    if (!regWard || !regWardCode) {
       setError(t("selectWardError"));
       return;
     }
+
     setRegStep("otp");
   };
 
   const handleRegisterOtp = async () => {
     const otp = otpDigits.join("");
+
     if (otp.length !== 4) {
       setError(t("enterOtp"));
       return;
     }
+
     setError("");
     setRegStep("notifications");
     setOtpDigits(["", "", "", ""]);
@@ -131,6 +143,7 @@ export default function LoginScreen() {
 
   const handleRegisterFinish = async () => {
     setLoading(true);
+
     try {
       await register({
         name: regName.trim(),
@@ -144,13 +157,16 @@ export default function LoginScreen() {
         notifyEmail,
         notifyWhatsapp,
       });
+
       setRegStep("success");
+
       Animated.spring(successAnim, {
         toValue: 1,
         tension: 60,
         friction: 7,
         useNativeDriver: true,
       }).start();
+
       setTimeout(() => {
         router.replace("/portal-select" as any);
       }, 1200);
@@ -163,28 +179,35 @@ export default function LoginScreen() {
 
   const handleLoginSubmit = () => {
     setError("");
+
     const phone = loginPhone.trim().replace(/\D/g, "");
+
     if (phone.length !== 10) {
       setError(t("enterValidPhone"));
       return;
     }
+
     setLoginStep("otp");
   };
 
   const handleLoginOtp = async () => {
     const otp = otpDigits.join("");
+
     if (otp.length !== 4) {
       setError(t("enterOtp"));
       return;
     }
+
     setLoading(true);
     setError("");
+
     try {
       const phone = loginPhone.trim().replace(/\D/g, "");
       const user = await loginWithPhone(phone);
+
       if (user) {
         router.replace(
-          user.role === "nagarsevak"
+          user.role === "nagarsevak" || user.role === "super_admin"
             ? ("/(tabs)/admin" as any)
             : ("/portal-select" as any),
         );
@@ -205,10 +228,13 @@ export default function LoginScreen() {
       <View style={s.otpIconWrap}>
         <Feather name="smartphone" size={28} color="#EA580C" />
       </View>
+
       <Text style={s.otpTitle}>{t("otpVerification")}</Text>
+
       <Text style={s.otpSub}>
         {t("otpSent")} +91 {activeTab === "register" ? regPhone : loginPhone}
       </Text>
+
       <View style={s.otpRow}>
         {otpDigits.map((digit, i) => (
           <TextInput
@@ -231,8 +257,11 @@ export default function LoginScreen() {
           />
         ))}
       </View>
+
       <Text style={s.otpHint}>{t("otpHint")}</Text>
+
       {error ? <Text style={s.errorText}>{error}</Text> : null}
+
       <TouchableOpacity
         style={s.primaryBtn}
         onPress={activeTab === "register" ? handleRegisterOtp : handleLoginOtp}
@@ -261,18 +290,18 @@ export default function LoginScreen() {
       <Text style={s.fieldLabel}>
         {t("fullName")} <Text style={s.required}>*</Text>
       </Text>
+
       <TextInput
         style={s.input}
         placeholder={t("enterFullName")}
         placeholderTextColor="#94A3B8"
         value={regName}
-        onChangeText={(v) => {
-          setRegName(v);
-        }}
+        onChangeText={setRegName}
         autoCapitalize="words"
       />
 
       <Text style={s.fieldLabel}>{t("age")}</Text>
+
       <TextInput
         style={s.input}
         placeholder={t("enterAge")}
@@ -280,14 +309,13 @@ export default function LoginScreen() {
         keyboardType="number-pad"
         maxLength={3}
         value={regAge}
-        onChangeText={(v) => {
-          setRegAge(v);
-        }}
+        onChangeText={setRegAge}
       />
 
       <Text style={s.fieldLabel}>
         {t("email")} <Text style={s.optional}>({t("optional")})</Text>
       </Text>
+
       <TextInput
         style={s.input}
         placeholder="yourname@email.com"
@@ -295,14 +323,13 @@ export default function LoginScreen() {
         keyboardType="email-address"
         autoCapitalize="none"
         value={regEmail}
-        onChangeText={(v) => {
-          setRegEmail(v);
-        }}
+        onChangeText={setRegEmail}
       />
 
       <Text style={s.fieldLabel}>
         {t("currentAddress")} <Text style={s.required}>*</Text>
       </Text>
+
       <TextInput
         style={[s.input, { minHeight: 60, textAlignVertical: "top" }]}
         placeholder={t("enterAddress")}
@@ -310,18 +337,18 @@ export default function LoginScreen() {
         multiline
         numberOfLines={2}
         value={regAddress}
-        onChangeText={(v) => {
-          setRegAddress(v);
-        }}
+        onChangeText={setRegAddress}
       />
 
       <Text style={s.fieldLabel}>
         {t("phoneNumber")} <Text style={s.required}>*</Text>
       </Text>
+
       <View style={s.phoneRow}>
         <View style={s.countryCode}>
           <Text style={s.countryCodeText}>IN +91</Text>
         </View>
+
         <TextInput
           style={[s.input, s.phoneInput]}
           placeholder="10-digit mobile number"
@@ -329,15 +356,14 @@ export default function LoginScreen() {
           keyboardType="phone-pad"
           maxLength={10}
           value={regPhone}
-          onChangeText={(v) => {
-            setRegPhone(v);
-          }}
+          onChangeText={setRegPhone}
         />
       </View>
 
       <Text style={s.fieldLabel}>
         {t("wardLocation")} <Text style={s.required}>*</Text>
       </Text>
+
       <TouchableOpacity
         style={[s.input, s.pickerInput]}
         onPress={() => setWardModal(true)}
@@ -348,9 +374,11 @@ export default function LoginScreen() {
           size={14}
           color={regWard ? "#EA580C" : "#94A3B8"}
         />
+
         <Text style={[s.pickerText, !regWard && { color: "#94A3B8" }]}>
           {regWard || t("selectWard")}
         </Text>
+
         <Feather name="chevron-down" size={14} color="#94A3B8" />
       </TouchableOpacity>
 
@@ -379,6 +407,7 @@ export default function LoginScreen() {
       <View style={s.otpIconWrap}>
         <Feather name="check-circle" size={28} color="#059669" />
       </View>
+
       <Text style={s.otpTitle}>{t("phoneVerified")}</Text>
       <Text style={s.otpSub}>{t("allowNotifications")}</Text>
 
@@ -391,11 +420,13 @@ export default function LoginScreen() {
           <View style={[s.checkbox, notifyEmail && s.checkboxActive]}>
             {notifyEmail && <Feather name="check" size={14} color="white" />}
           </View>
+
           <View style={{ flex: 1 }}>
             <Text style={s.checkLabel}>{t("emailNotifications")}</Text>
             <Text style={s.checkSub}>{t("emailNotifDesc")}</Text>
           </View>
         </TouchableOpacity>
+
         <TouchableOpacity
           style={s.checkRow}
           onPress={() => setNotifyWhatsapp(!notifyWhatsapp)}
@@ -404,6 +435,7 @@ export default function LoginScreen() {
           <View style={[s.checkbox, notifyWhatsapp && s.checkboxActive]}>
             {notifyWhatsapp && <Feather name="check" size={14} color="white" />}
           </View>
+
           <View style={{ flex: 1 }}>
             <Text style={s.checkLabel}>{t("whatsappNotifications")}</Text>
             <Text style={s.checkSub}>{t("whatsappNotifDesc")}</Text>
@@ -446,6 +478,7 @@ export default function LoginScreen() {
       <View style={s.successIconWrap}>
         <Feather name="check-circle" size={48} color="#059669" />
       </View>
+
       <Text style={s.successTitle}>{t("registrationSuccess")}</Text>
       <Text style={s.successSub}>{t("redirectingHome")}</Text>
       <ActivityIndicator color="#EA580C" style={{ marginTop: 16 }} />
@@ -455,10 +488,12 @@ export default function LoginScreen() {
   const renderLoginForm = () => (
     <View style={s.formCard}>
       <Text style={s.fieldLabel}>{t("phoneNumber")}</Text>
+
       <View style={s.phoneRow}>
         <View style={s.countryCode}>
           <Text style={s.countryCodeText}>IN +91</Text>
         </View>
+
         <TextInput
           style={[s.input, s.phoneInput]}
           placeholder={t("enterPhoneNumber")}
@@ -466,9 +501,7 @@ export default function LoginScreen() {
           keyboardType="phone-pad"
           maxLength={10}
           value={loginPhone}
-          onChangeText={(v) => {
-            setLoginPhone(v);
-          }}
+          onChangeText={setLoginPhone}
         />
       </View>
 
@@ -499,11 +532,13 @@ export default function LoginScreen() {
       style={[s.root, { paddingTop: topPad, overflow: "hidden" }]}
     >
       <TopShade height={220} />
+
       <View style={[ld.blob, ld.b1]} />
       <View style={[ld.blob, ld.b2]} />
       <View style={[ld.ring, ld.r1]} />
       <View style={[ld.ring, ld.r2]} />
       <View style={[ld.ring, ld.r3]} />
+
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
@@ -523,6 +558,7 @@ export default function LoginScreen() {
           showsVerticalScrollIndicator={false}
         >
           <Text style={s.connectTitle}>Connect T</Text>
+
           <View style={s.langRow}>
             {languageOptions.map((opt) => (
               <TouchableOpacity
@@ -560,6 +596,7 @@ export default function LoginScreen() {
                 {t("registerBtn")}
               </Text>
             </TouchableOpacity>
+
             <TouchableOpacity
               style={[s.tab, activeTab === "login" && s.tabActive]}
               onPress={() => switchTab("login")}
@@ -611,15 +648,20 @@ export default function LoginScreen() {
           <View style={s.modalSheet}>
             <View style={s.modalHeader}>
               <Text style={s.modalTitle}>{t("selectWard")}</Text>
+
               <TouchableOpacity onPress={() => setWardModal(false)}>
                 <Feather name="x" size={20} color="#64748B" />
               </TouchableOpacity>
             </View>
+
             <ScrollView showsVerticalScrollIndicator={false}>
               {WARDS.map((ward) => (
                 <TouchableOpacity
-                  key={ward.label}
-                  style={[s.wardRow, regWard === ward && s.wardRowActive]}
+                  key={ward.code}
+                  style={[
+                    s.wardRow,
+                    regWardCode === ward.code && s.wardRowActive,
+                  ]}
                   onPress={() => {
                     setRegWard(ward.label);
                     setRegWardCode(ward.code);
@@ -630,12 +672,13 @@ export default function LoginScreen() {
                   <Feather
                     name="map-pin"
                     size={14}
-                    color={regWard === ward ? "#EA580C" : "#94A3B8"}
+                    color={regWardCode === ward.code ? "#EA580C" : "#94A3B8"}
                   />
+
                   <Text
                     style={[
                       s.wardRowText,
-                      regWard === ward && {
+                      regWardCode === ward.code && {
                         color: "#EA580C",
                         fontWeight: "700",
                       },
@@ -643,7 +686,8 @@ export default function LoginScreen() {
                   >
                     {ward.label}
                   </Text>
-                  {regWard === ward && (
+
+                  {regWardCode === ward.code && (
                     <Feather name="check" size={14} color="#EA580C" />
                   )}
                 </TouchableOpacity>
@@ -740,7 +784,6 @@ const s = StyleSheet.create({
     fontFamily: "Inter_700Bold",
   },
   tabTextActive: { color: "#EA580C" },
-
   formCard: {
     width: "100%",
     backgroundColor: "white",
@@ -836,7 +879,6 @@ const s = StyleSheet.create({
     color: "white",
     fontFamily: "Inter_700Bold",
   },
-
   otpSection: {
     width: "100%",
     backgroundColor: "white",
@@ -895,7 +937,6 @@ const s = StyleSheet.create({
     fontFamily: "Inter_400Regular",
     marginBottom: 4,
   },
-
   notifSection: { width: "100%", gap: 12, marginTop: 16, marginBottom: 8 },
   checkRow: {
     flexDirection: "row",
@@ -930,7 +971,6 @@ const s = StyleSheet.create({
     fontFamily: "Inter_400Regular",
     marginTop: 1,
   },
-
   successCard: {
     width: "100%",
     backgroundColor: "white",
@@ -965,7 +1005,6 @@ const s = StyleSheet.create({
     fontFamily: "Inter_400Regular",
     textAlign: "center",
   },
-
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -1009,6 +1048,7 @@ const s = StyleSheet.create({
 });
 
 const { width: SW } = Dimensions.get("window");
+
 const ld = StyleSheet.create({
   blob: {
     position: "absolute",
@@ -1021,7 +1061,12 @@ const ld = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.20)",
     borderWidth: 1.5,
   },
-  b1: { width: SW * 0.5, height: SW * 0.5, top: -SW * 0.16, right: -SW * 0.14 },
+  b1: {
+    width: SW * 0.5,
+    height: SW * 0.5,
+    top: -SW * 0.16,
+    right: -SW * 0.14,
+  },
   b2: {
     width: SW * 0.28,
     height: SW * 0.28,
@@ -1034,7 +1079,12 @@ const ld = StyleSheet.create({
     top: -SW * 0.32,
     right: -SW * 0.32,
   },
-  r2: { width: SW * 0.62, height: SW * 0.62, top: -SW * 0.1, right: -SW * 0.1 },
+  r2: {
+    width: SW * 0.62,
+    height: SW * 0.62,
+    top: -SW * 0.1,
+    right: -SW * 0.1,
+  },
   r3: {
     width: SW * 0.72,
     height: SW * 0.72,

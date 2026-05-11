@@ -60,23 +60,16 @@ export type WardCode =
 
 export const WARDS: { code: WardCode; label: string }[] = Array.from(
   { length: 29 },
-  (_, index) => {
-    const wardNo = index + 1;
-
+  (_, i) => {
+    const n = i + 1;
     return [
-      {
-        code: `${wardNo}A` as WardCode,
-        label: `Ward ${wardNo}A`,
-      },
-      {
-        code: `${wardNo}B` as WardCode,
-        label: `Ward ${wardNo}B`,
-      },
+      { code: `${n}A` as WardCode, label: `Ward ${n}A` },
+      { code: `${n}B` as WardCode, label: `Ward ${n}B` },
     ];
   },
 ).flat();
 
 export function getWardLabel(code?: string | null) {
   if (!code) return "";
-  return WARDS.find((ward) => ward.code === code)?.label || `Ward ${code}`;
+  return WARDS.find((w) => w.code === code)?.label || `Ward ${code}`;
 }
