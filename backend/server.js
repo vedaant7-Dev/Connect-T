@@ -750,6 +750,31 @@ app.get("/api/jobs/:id/applications", async (req, res) => {
 });
 
 /* 404 */
+app.get("/api/complaints/:id", async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM complaints WHERE id = ?", [
+      req.params.id,
+    ]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Complaint not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      complaint: rows[0],
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+});
+
 app.use((req, res) => {
   res.status(404).json({
     success: false,
