@@ -117,6 +117,7 @@ export default function NewComplaintScreen() {
         photoUri,
         location,
         ward: user?.ward || "Ward 1 — Shivaji Chowk",
+        userId: user?.id,
         userName: user?.name,
         userMobile: user?.mobile,
         userAddress: user?.address,

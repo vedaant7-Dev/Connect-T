@@ -13,6 +13,7 @@ import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useComplaints, Complaint, ComplaintStatus } from "@/context/ComplaintContext";
+import { useAuth } from "@/context/AuthContext";
 import DecorativeCircles from "@/components/DecorativeCircles";
 import TopShade from "@/components/TopShade";
 import { useLanguage } from "@/context/LanguageContext";
@@ -132,9 +133,15 @@ export default function ComplaintsScreen() {
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const router = useRouter();
   const { complaints } = useComplaints();
+  const { user } = useAuth();
   const { t } = useLanguage();
   const { handleScroll } = useTabBarVisibility();
   const [filter, setFilter] = useState("all");
+
+  const myComplaints = complaints.filter((c) => {
+    if (c.userId) return c.userId === user?.id;
+    return c.userMobile === user?.mobile;
+  });
 
   const filterTabs = [
     { id: "all", label: t("complaints"), icon: "file-text", color: "#92400E" },
@@ -144,19 +151,19 @@ export default function ComplaintsScreen() {
   ];
 
   const filtered = filter === "all"
-    ? complaints
-    : complaints.filter((c) => {
+    ? myComplaints
+    : myComplaints.filter((c) => {
         if (filter === "in_progress") return c.status === "in_progress" || c.status === "assigned";
         if (filter === "rejected") return c.status === "rejected";
         return c.status === filter;
       });
 
   const counts = {
-    all: complaints.length,
-    submitted: complaints.filter((c) => c.status === "submitted").length,
-    in_progress: complaints.filter((c) => c.status === "in_progress" || c.status === "assigned").length,
-    resolved: complaints.filter((c) => c.status === "resolved").length,
-    rejected: complaints.filter((c) => c.status === "rejected").length,
+    all: myComplaints.length,
+    submitted: myComplaints.filter((c) => c.status === "submitted").length,
+    in_progress: myComplaints.filter((c) => c.status === "in_progress" || c.status === "assigned").length,
+    resolved: myComplaints.filter((c) => c.status === "resolved").length,
+    rejected: myComplaints.filter((c) => c.status === "rejected").length,
   };
 
   return (
@@ -172,7 +179,7 @@ export default function ComplaintsScreen() {
         <View style={styles.headerRow}>
           <View>
             <Text style={styles.headerTitle}>{t("myComplaints")}</Text>
-            <Text style={styles.headerSub}>{complaints.length} {t("total")}</Text>
+            <Text style={styles.headerSub}>{myComplaints.length} {t("total")}</Text>
           </View>
           <TouchableOpacity
             style={styles.newBtn}

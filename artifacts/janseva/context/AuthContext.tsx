@@ -25,6 +25,15 @@ export interface User {
   wardChanged?: boolean;
 }
 
+export interface GoogleUserInfo {
+  sub: string;
+  name: string;
+  email: string;
+  picture?: string;
+  given_name?: string;
+  family_name?: string;
+}
+
 interface AuthContextType {
   user: User | null;
   isLoggedIn: boolean;
@@ -35,6 +44,7 @@ interface AuthContextType {
   register: (userData: Omit<User, "id" | "avatarColor" | "createdAt">) => Promise<User>;
   loginWithPhone: (mobile: string) => Promise<User | null>;
   loginWithNagarsevakId: (mobile: string, nagarsevakId: string) => Promise<User | null>;
+  loginWithGoogle: (googleUser: GoogleUserInfo) => Promise<User>;
   updateUser: (updates: Partial<User>) => Promise<void>;
 }
 
@@ -235,6 +245,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return newUser;
   };
 
+  const loginWithGoogle = async (googleUser: GoogleUserInfo): Promise<User> => {
+    const normalizedEmail = googleUser.email.toLowerCase();
+    const users = await getAllUsers();
+    const existing = users.find(
+      (u) => u.email && u.email.toLowerCase() === normalizedEmail
+    );
+    if (existing) {
+      const refreshed: User = {
+        ...existing,
+        name: googleUser.name,
+        profilePhoto: googleUser.picture,
+        email: googleUser.email,
+      };
+      const idx = users.findIndex((u) => u.id === existing.id);
+      if (idx >= 0) users[idx] = refreshed;
+      await saveAllUsers(users);
+      await login(refreshed);
+      return refreshed;
+    }
+    const colorIndex = Math.floor(Math.random() * AVATAR_COLORS.length);
+    const newUser: User = {
+      id: "G_" + googleUser.sub,
+      name: googleUser.name,
+      mobile: "",
+      email: googleUser.email,
+      role: "citizen",
+      profilePhoto: googleUser.picture,
+      avatarColor: AVATAR_COLORS[colorIndex],
+      isSuperAdmin: false,
+      createdAt: new Date().toISOString(),
+    };
+    users.push(newUser);
+    await saveAllUsers(users);
+    await login(newUser);
+    return newUser;
+  };
+
   const updateUser = async (updates: Partial<User>) => {
     if (!user) return;
     const updated: User = {
@@ -260,7 +307,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn: !!user, loading, login, logout, checkPhone, register, loginWithPhone, loginWithNagarsevakId, updateUser }}>
+    <AuthContext.Provider value={{ user, isLoggedIn: !!user, loading, login, logout, checkPhone, register, loginWithPhone, loginWithNagarsevakId, loginWithGoogle, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

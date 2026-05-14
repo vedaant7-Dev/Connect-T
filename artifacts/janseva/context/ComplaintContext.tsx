@@ -22,6 +22,7 @@ export interface StatusUpdate {
 
 export interface Complaint {
   id: string;
+  userId?: string;
   title: string;
   description: string;
   category: ComplaintCategory;

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -13,16 +13,21 @@ import {
   Animated,
   Dimensions,
   useWindowDimensions,
+  Image,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
 
 import { useAuth } from "@/context/AuthContext";
 import TopShade from "@/components/TopShade";
 import { ambernathWards } from "@/data/mumbaiServices";
 import { useLanguage, languageOptions } from "@/context/LanguageContext";
+
+WebBrowser.maybeCompleteAuthSession();
 
 type AuthTab = "register" | "login";
 type RegisterStep = "form" | "otp" | "notifications" | "success";
@@ -31,8 +36,46 @@ type LoginStep = "form" | "otp";
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
   const topPad = Platform.OS === "web" ? 44 : insets.top;
-  const { register, loginWithPhone } = useAuth();
+  const { register, loginWithPhone, loginWithGoogle } = useAuth();
   const { language, setLanguage, t } = useLanguage();
+
+  const GOOGLE_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID;
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    webClientId: GOOGLE_CLIENT_ID || "not-configured",
+    iosClientId: GOOGLE_CLIENT_ID || "not-configured",
+    androidClientId: GOOGLE_CLIENT_ID || "not-configured",
+  });
+
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  useEffect(() => {
+    if (response?.type === "success") {
+      const { access_token } = response.params;
+      setGoogleLoading(true);
+      fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+        .then((r) => r.json())
+        .then(async (userInfo) => {
+          await loginWithGoogle(userInfo);
+          router.replace("/portal-select" as any);
+        })
+        .catch(() => {
+          setError("Google sign-in failed. Please try again.");
+        })
+        .finally(() => setGoogleLoading(false));
+    }
+  }, [response]);
+
+  const handleGoogleSignIn = async () => {
+    if (!GOOGLE_CLIENT_ID) {
+      setError("Google Sign-In is not configured yet.");
+      return;
+    }
+    setError("");
+    await promptAsync();
+  };
 
   const [activeTab, setActiveTab] = useState<AuthTab>("register");
   const [loading, setLoading] = useState(false);
@@ -508,6 +551,39 @@ export default function LoginScreen() {
           {activeTab === "login" && loginStep === "form" && renderLoginForm()}
           {activeTab === "login" && loginStep === "otp" && renderOtpInput()}
 
+          <View style={s.orRow}>
+            <View style={s.orLine} />
+            <Text style={s.orText}>or continue with</Text>
+            <View style={s.orLine} />
+          </View>
+
+          <TouchableOpacity
+            style={[s.googleBtn, (googleLoading || !request) && { opacity: 0.6 }]}
+            onPress={handleGoogleSignIn}
+            activeOpacity={0.85}
+            disabled={googleLoading}
+          >
+            {googleLoading ? (
+              <ActivityIndicator color="#EA580C" size="small" />
+            ) : (
+              <>
+                <View style={s.googleIconWrap}>
+                  <Text style={s.googleG}>G</Text>
+                </View>
+                <Text style={s.googleBtnText}>Continue with Google</Text>
+              </>
+            )}
+          </TouchableOpacity>
+
+          {!process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID && (
+            <View style={s.googleNote}>
+              <Feather name="info" size={12} color="rgba(255,255,255,0.6)" />
+              <Text style={s.googleNoteText}>
+                Google Sign-In needs a Client ID — contact your admin to enable it.
+              </Text>
+            </View>
+          )}
+
           <TouchableOpacity
             style={s.backPill}
             onPress={() => router.replace("/portal-select" as any)}
@@ -726,6 +802,39 @@ const s = StyleSheet.create({
   wardRowActive: { backgroundColor: "#FFF7ED" },
   wardRowText: {
     flex: 1, fontSize: 14, color: "#334155", fontFamily: "Inter_400Regular",
+  },
+  orRow: {
+    flexDirection: "row", alignItems: "center", gap: 10,
+    width: "100%", marginTop: 20, marginBottom: 4,
+  },
+  orLine: { flex: 1, height: 1, backgroundColor: "rgba(255,255,255,0.25)" },
+  orText: {
+    fontSize: 12, color: "rgba(255,255,255,0.6)",
+    fontFamily: "Inter_400Regular", fontWeight: "600",
+  },
+  googleBtn: {
+    width: "100%", flexDirection: "row", alignItems: "center", justifyContent: "center",
+    gap: 12, backgroundColor: "white", borderRadius: 16, paddingVertical: 14,
+    shadowColor: "#000", shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15, shadowRadius: 12, elevation: 6, marginTop: 8,
+  },
+  googleIconWrap: {
+    width: 28, height: 28, borderRadius: 14,
+    backgroundColor: "#EA580C", alignItems: "center", justifyContent: "center",
+  },
+  googleG: {
+    fontSize: 16, fontWeight: "900", color: "white", fontFamily: "Inter_700Bold",
+  },
+  googleBtnText: {
+    fontSize: 15, fontWeight: "700", color: "#1F2937", fontFamily: "Inter_700Bold",
+  },
+  googleNote: {
+    flexDirection: "row", alignItems: "center", gap: 6,
+    marginTop: 8, paddingHorizontal: 4,
+  },
+  googleNoteText: {
+    flex: 1, fontSize: 11, color: "rgba(255,255,255,0.55)",
+    fontFamily: "Inter_400Regular", lineHeight: 16,
   },
 });
 
