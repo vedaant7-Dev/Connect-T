@@ -6,7 +6,6 @@ import {
   Inter_700Bold,
   useFonts,
 } from "@expo-google-fonts/inter";
-import { Image } from "react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useRouter, useSegments, router as staticRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -29,6 +28,10 @@ SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
 
+function isSuperAdminUser(user: any) {
+  return user?.role === "super_admin" || user?.isSuperAdmin === true;
+}
+
 function AuthGate({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -40,16 +43,26 @@ function AuthGate({ children }: { children: React.ReactNode }) {
     const inTabs = segments[0] === "(tabs)";
     const inJobs = segments[0] === "jobs";
     const inPortalSelect = segments[0] === "portal-select";
+    const inSuperAdmin = segments[0] === "super-admin";
     const currentTab = inTabs ? segments[1] : undefined;
 
     if (inJobs) return;
     if (inPortalSelect) return;
+    if (inSuperAdmin && user && isSuperAdminUser(user)) return;
 
     if (!user && !inLogin) {
       router.replace("/login");
     } else if (user && inLogin) {
-      router.replace(user.role === "nagarsevak" ? "/(tabs)/admin" as any : "/(tabs)/");
-    } else if (user && user.role === "nagarsevak" && inTabs && currentTab !== "admin") {
+      if (isSuperAdminUser(user)) {
+        router.replace("/super-admin" as any);
+      } else if (user.role === "nagarsevak") {
+        router.replace("/(tabs)/admin" as any);
+      } else {
+        router.replace("/(tabs)/");
+      }
+    } else if (user && isSuperAdminUser(user) && !inSuperAdmin) {
+      router.replace("/super-admin" as any);
+    } else if (user && user.role === "nagarsevak" && !isSuperAdminUser(user) && inTabs && currentTab !== "admin") {
       router.replace("/(tabs)/admin" as any);
     }
   }, [user, loading, segments]);
@@ -64,14 +77,30 @@ function AppShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!loading && user) {
       setSplashDone(true);
-      staticRouter.replace(user.role === "nagarsevak" ? "/(tabs)/admin" as any : "/(tabs)/");
+      if (isSuperAdminUser(user)) {
+        staticRouter.replace("/super-admin" as any);
+      } else if (user.role === "nagarsevak") {
+        staticRouter.replace("/(tabs)/admin" as any);
+      } else {
+        staticRouter.replace("/(tabs)/");
+      }
     }
   }, [user, loading]);
 
   const handleFinish = async (portal: "civic" | "jobs") => {
     if (portal === "civic") {
       setSplashDone(true);
-      staticRouter.replace(user ? (user.role === "nagarsevak" ? "/(tabs)/admin" as any : "/(tabs)/") : "/login");
+      if (user) {
+        if (isSuperAdminUser(user)) {
+          staticRouter.replace("/super-admin" as any);
+        } else if (user.role === "nagarsevak") {
+          staticRouter.replace("/(tabs)/admin" as any);
+        } else {
+          staticRouter.replace("/(tabs)/");
+        }
+      } else {
+        staticRouter.replace("/login");
+      }
     } else {
       setSplashDone(true);
       staticRouter.replace("/jobs/login" as any);
@@ -92,31 +121,14 @@ function RootLayoutNav() {
       <Stack.Screen name="login" options={{ headerShown: false, animation: "fade" }} />
       <Stack.Screen name="portal-select" options={{ headerShown: false, animation: "fade" }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="super-admin" options={{ headerShown: false, animation: "fade" }} />
       <Stack.Screen name="jobs" options={{ headerShown: false, animation: "fade" }} />
-      <Stack.Screen
-        name="complaint/new"
-        options={{ headerShown: false, presentation: "modal" }}
-      />
-      <Stack.Screen
-        name="complaint/[id]"
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="complaint/list"
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="alert/new"
-        options={{ headerShown: false, presentation: "modal" }}
-      />
-      <Stack.Screen
-        name="alert/list"
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="service/[id]"
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="complaint/new" options={{ headerShown: false, presentation: "modal" }} />
+      <Stack.Screen name="complaint/[id]" options={{ headerShown: false }} />
+      <Stack.Screen name="complaint/list" options={{ headerShown: false }} />
+      <Stack.Screen name="alert/new" options={{ headerShown: false, presentation: "modal" }} />
+      <Stack.Screen name="alert/list" options={{ headerShown: false }} />
+      <Stack.Screen name="service/[id]" options={{ headerShown: false }} />
     </Stack>
   );
 }
@@ -151,19 +163,19 @@ export default function RootLayout() {
           <LanguageProvider>
             <AuthProvider>
               <AlertProvider>
-              <ComplaintProvider>
-                <FeedProvider>
-                  <GestureHandlerRootView style={{ flex: 1 }}>
-                    <TabBarVisibilityProvider>
-                      <AppShell>
-                        <AuthGate>
-                          <RootLayoutNav />
-                        </AuthGate>
-                      </AppShell>
-                    </TabBarVisibilityProvider>
-                  </GestureHandlerRootView>
-                </FeedProvider>
-              </ComplaintProvider>
+                <ComplaintProvider>
+                  <FeedProvider>
+                    <GestureHandlerRootView style={{ flex: 1 }}>
+                      <TabBarVisibilityProvider>
+                        <AppShell>
+                          <AuthGate>
+                            <RootLayoutNav />
+                          </AuthGate>
+                        </AppShell>
+                      </TabBarVisibilityProvider>
+                    </GestureHandlerRootView>
+                  </FeedProvider>
+                </ComplaintProvider>
               </AlertProvider>
             </AuthProvider>
           </LanguageProvider>

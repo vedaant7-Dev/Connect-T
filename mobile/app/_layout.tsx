@@ -49,16 +49,25 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 
     if (inJobs) return;
     if (inPortalSelect) return;
+    const inSuperAdmin = segments[0] === "super-admin";
+    if (inSuperAdmin && user && (user.role === "super_admin" || user.isSuperAdmin)) return;
 
     if (!user && !inLogin) {
       router.replace("/login");
     } else if (user && inLogin) {
-      router.replace(
-        user.role === "nagarsevak" ? ("/(tabs)/admin" as any) : "/(tabs)/",
-      );
+      if (user.role === "super_admin" || user.isSuperAdmin) {
+        router.replace("/super-admin" as any);
+      } else if (user.role === "nagarsevak") {
+        router.replace("/(tabs)/admin" as any);
+      } else {
+        router.replace("/(tabs)/");
+      }
+    } else if (user && (user.role === "super_admin" || user.isSuperAdmin) && !inSuperAdmin) {
+      router.replace("/super-admin" as any);
     } else if (
       user &&
       user.role === "nagarsevak" &&
+      !user.isSuperAdmin &&
       inTabs &&
       currentTab !== "admin"
     ) {
@@ -76,9 +85,13 @@ function AppShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!loading && user) {
       setSplashDone(true);
-      staticRouter.replace(
-        user.role === "nagarsevak" ? ("/(tabs)/admin" as any) : "/(tabs)/",
-      );
+      if (user.role === "super_admin" || user.isSuperAdmin) {
+        staticRouter.replace("/super-admin" as any);
+      } else if (user.role === "nagarsevak") {
+        staticRouter.replace("/(tabs)/admin" as any);
+      } else {
+        staticRouter.replace("/(tabs)/");
+      }
     }
   }, [user, loading]);
 
@@ -118,6 +131,10 @@ function RootLayoutNav() {
         options={{ headerShown: false, animation: "fade" }}
       />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="super-admin"
+        options={{ headerShown: false, animation: "fade" }}
+      />
       <Stack.Screen
         name="jobs"
         options={{ headerShown: false, animation: "fade" }}
